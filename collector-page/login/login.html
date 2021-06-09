@@ -198,15 +198,12 @@
         <div id="sphere3"></div>
     </div>
     <script>
-        var tok = ""; //token da salvare per il cambio pagina
-        var supp; //per salvare il token al momento della pressione del bottone
-        var suppCode; //salvare il codice se passato in checkLogin()
+        var tok = localStorage.setItem("user")
 
         function getLoginData() {
             var email = document.getElementById("email").value;
             var psw = document.getElementById("password").value;
-            supp = document.getElementById("token").value;
-            return email + ";" + psw + ";" + supp;
+            return email + ";" + psw;
         }
 
         async function checkLogin(code) {
@@ -233,6 +230,7 @@
             checkResponse(contentType, resp);
         }
 
+        //mini easteregg :D oggi é il 9/6/21 xD
         function checkResponse(cont, resp) {
             errore = document.getElementById("errore");
             if (cont != "text/html") {
