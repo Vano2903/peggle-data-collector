@@ -23,8 +23,8 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	var post LoginPost
+	w.Header().Set("Content-Type", "application/json")
 	_ = json.NewDecoder(r.Body).Decode(post)
 	if IsAuthorised(post.Username, post.Password) {
 
