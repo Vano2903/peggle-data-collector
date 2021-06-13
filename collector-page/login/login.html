@@ -187,7 +187,7 @@
     <div>
         <h1>LOGIN</h1>
         <div class="logArea">
-            <label for="user">Indirizzo user</label>
+            <label for="user">Username</label>
             <input type="user" id="user" placeholder="mail@gmail.com">
             <label for="password">Password</label>
             <input type="password" id="password">
@@ -199,12 +199,12 @@
     </div>
     <script>
         //TODO jwt implementation
-        var tok = localStorage.setItem("user")
+        //var tok = localStorage.setItem("user")
 
         function getLoginData() {
             var user = document.getElementById("user").value;
             var psw = document.getElementById("password").value;
-            return { user: user, password: psw }
+            return { username: user, password: psw }
         }
 
         async function checkLogin(code) {
@@ -213,13 +213,17 @@
                 user = getLoginData()
             } else {
                 var ele = code.split(";");
-                user = { user: ele[0], password: ele[1] };
+                user = { username: ele[0], password: ele[1] };
             }
             console.log(user);
-
-            const res = await fetch('/', {
+            console.log(JSON.stringify(user))
+            const res = await fetch('/users/login', {
                 method: "POST",
-                body: user
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
             });
             const contentType = res.headers.get("Content-Type");
             const resp = await res.text();
