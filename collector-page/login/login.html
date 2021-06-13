@@ -187,8 +187,8 @@
     <div>
         <h1>LOGIN</h1>
         <div class="logArea">
-            <label for="email">Indirizzo email</label>
-            <input type="email" id="email" placeholder="mail@gmail.com">
+            <label for="user">Indirizzo user</label>
+            <input type="user" id="user" placeholder="mail@gmail.com">
             <label for="password">Password</label>
             <input type="password" id="password">
             <a class="top" id="errore" style="display: none;"></a>
@@ -198,36 +198,35 @@
         <div id="sphere3"></div>
     </div>
     <script>
+        //TODO jwt implementation
         var tok = localStorage.setItem("user")
 
         function getLoginData() {
-            var email = document.getElementById("email").value;
+            var user = document.getElementById("user").value;
             var psw = document.getElementById("password").value;
-            return email + ";" + psw;
+            return { user: user, password: psw }
         }
 
         async function checkLogin(code) {
-            console.log("pressed")
-            console.log(code);
-            var data;
+            var user
             if (code == undefined) {
-                data = getLoginData()
+                user = getLoginData()
             } else {
-                data = code;
                 var ele = code.split(";");
-                suppCode = ele[2];
+                user = { user: ele[0], password: ele[1] };
             }
+            console.log(user);
 
             const res = await fetch('/', {
                 method: "POST",
-                body: data
+                body: user
             });
             const contentType = res.headers.get("Content-Type");
             const resp = await res.text();
 
             console.log(contentType);
             console.log(resp);
-            checkResponse(contentType, resp);
+            //checkResponse(contentType, resp);
         }
 
         //mini easteregg :D oggi é il 9/6/21 xD

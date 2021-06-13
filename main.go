@@ -51,11 +51,10 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
-	//login area
-	r.HandleFunc("/", HomeHandler).Methods("GET")
-	r.HandleFunc("/", LoginHandler).Methods("POST")
 
-	//collectors endpoints
-	
+	//user login area
+	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")
+	r.HandleFunc(usersLogin.String(), LoginHandler).Methods("POST")
+
 	http.ListenAndServe(":8080", r)
 }

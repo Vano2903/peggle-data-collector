@@ -11,11 +11,7 @@ const (
 	endApi endpoints = "/api/"
 
 	//users endpoint
-	endAdmin            endpoints = "/user/"
-	adminAddLearning    endpoints = "/learning/add"
-	adminGetLearning    endpoints = "/learning/get"
-	adminSetLearning    endpoints = "/learning/set"
-	adminModifyLearning endpoints = "/learning/modify"
+	usersLogin endpoints = "/users/login"
 )
 
 func (e endpoints) String() string {

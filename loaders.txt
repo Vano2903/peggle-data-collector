@@ -1,0 +1,12 @@
+--user related
+user-login: https://codepen.io/avstorm/pen/RwNzPNN 
+deleting-user: https://codepen.io/Pixmy/pen/xxKBMKR
+creating-user: https://codepen.io/avstorm/pen/qjQaJa
+
+--generic
+generic-loader-1: https://codepen.io/avstorm/pen/QZEKWr
+generic-loader-2: https://codepen.io/thebabydino/pen/yjoPMJ
+generic-loader-3: https://codepen.io/aaroniker/pen/MzoXaZ
+
+--graphs related
+graph-page: https://codepen.io/ispal/pen/mVaaJe/
