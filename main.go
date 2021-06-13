@@ -2,9 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -17,7 +18,10 @@ type LoginPost struct {
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	home, err := os.ReadFile("collector-page/login.html")
 	if err != nil {
-		log.Fatalln(err)
+		//TODO add an unavailable page
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write("{\"msg\": \"page unavailable at the moment\"")
 	}
 	w.Write(home)
 }
@@ -25,10 +29,24 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var post LoginPost
 	w.Header().Set("Content-Type", "application/json")
-	_ = json.NewDecoder(r.Body).Decode(post)
-	if IsAuthorised(post.Username, post.Password) {
+	fmt.Println(r.Body)
+	_ = json.NewDecoder(r.Body).Decode(&post)
 
+	user, err := IsCorrect(post.Username, post.Password)
+	fmt.Println(post)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte(`{"code": 401, "msg": "User Unauthorized"}`))
+		return
 	}
+	w.WriteHeader(http.StatusAccepted)
+	w.Write([]byte("{\"code\": 202, \"authLvl\": " + strconv.Itoa(user.Level) + " \""))
+	fmt.Println(user)
+}
+
+func init() {
+	ConnectToDatabaseUsers()
 }
 
 func main() {
@@ -37,8 +55,7 @@ func main() {
 	r.HandleFunc("/", HomeHandler).Methods("GET")
 	r.HandleFunc("/", LoginHandler).Methods("POST")
 
-	//admin endpoints
-
-	// http.HandleFunc("/", HomeHandler)
+	//collectors endpoints
+	
 	http.ListenAndServe(":8080", r)
 }

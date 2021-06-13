@@ -27,7 +27,7 @@ type User struct {
 }
 
 //will connect to database on user's collection
-func connectToDatabaseUsers() error {
+func ConnectToDatabaseUsers() error {
 	//get context
 	ctx, _ := context.WithTimeout(context.TODO(), 10*time.Second)
 
@@ -49,30 +49,30 @@ func connectToDatabaseUsers() error {
 	return nil
 }
 
-//check if user exist in database and will return -1 if not found on the other hand will return the authorization level
+//check if user exist in database and will return empty struct if not found on the other hand will return the User informations
 //? I belive there is a bettere way to do this but rn i dont really know
-func IsCorrect(user, pass string) (int, error) {
+func IsCorrect(user, pass string) (User, error) {
 	//search in database
 	cur, err := collection.Find(ctx, bson.M{"user": user, "password": pass})
 	if err != nil {
-		return -1, err
+		return User{}, err
 	}
 	defer cur.Close(ctx)
 	var userFound []User
 
 	//convert cur in []User
 	if err = cur.All(context.TODO(), &userFound); err != nil {
-		return -1, err
+		return User{}, err
 	}
 
 	//check if user exist
 	if len(userFound) != 0 {
 		if userFound[0].User == user && userFound[0].Pass == pass {
-			return userFound[0].Level, nil
+			return userFound[0], nil
 		}
-		return -1, nil
+		return User{}, errors.New("incorrect credentials")
 	} else {
-		return -1, nil
+		return User{}, errors.New("no user found")
 	}
 }
 
@@ -118,11 +118,11 @@ func AddUser(user, pass string, authLvl int) (string, error) {
 		return "", errors.New("uncorrect/uncomplete credentials to create the user")
 	}
 	//check if not already registered
-	lvl, err := IsCorrect(user, pass)
+	found, err := IsCorrect(user, pass)
 	if err != nil {
 		return "", err
 	}
-	if lvl != -1 {
+	if found.Level != -1 {
 		return "", errors.New("user already exist")
 	}
 
@@ -173,7 +173,7 @@ func DeleteUser(user, pass string) error {
 * run this main to see all functionality
 func main() {
 	// Check the connection
-	err := connectToDatabaseUsers()
+	err := ConnectToDatabaseUsers()
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -182,7 +182,7 @@ func main() {
 	fmt.Println("all users", users)
 	fmt.Println()
 
-	query := bson.M{"user": "cami"}
+	query := bson.M{"user": "cami<3"}
 	users, _ = QueryUsers(query)
 	fmt.Println("user == cami", users)
 	fmt.Println()
@@ -191,6 +191,7 @@ func main() {
 	UpdateUser("cami", "HelloThere:D123!!!", update)
 	users, _ = GetAllUsers()
 	fmt.Println("updated cami into cami<3", users)
+	fmt.Println()
 
 	AddUser("ciao", "camiCwute", 1)
 	users, _ = GetAllUsers()
