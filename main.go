@@ -3,9 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
-	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -16,12 +16,13 @@ type LoginPost struct {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	home, err := os.ReadFile("collector-page/login/login.html")
+	home, err := os.ReadFile("pages/login/login.html")
 	if err != nil {
 		//TODO add an unavailable page
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusServiceUnavailable)
 		w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+		return
 	}
 	w.Write(home)
 }
@@ -38,16 +39,34 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(post)
 
 	//return response
-	w.Header().Set("Content-Type", "application/json")
 	if err != nil {
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Println(err)
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte(`{"code": 401, "msg": "User Unauthorized"}`))
 		return
 	}
 	w.WriteHeader(http.StatusAccepted)
-	w.Write([]byte("{\"code\": 202, \"authLvl\": " + strconv.Itoa(user.Level) + " \"}"))
-	fmt.Println(user)
+	// w.Write([]byte("{\"code\": 202, \"authLvl\": " + strconv.Itoa(user.Level) + " \"}"))
+
+	var page []byte
+	switch user.Level {
+	case 0:
+		page, err = os.ReadFile("pages/lvl0/index.html")
+	case 1:
+		page, err = os.ReadFile("pages/lvl1/index.html")
+	case 2:
+		page, err = os.ReadFile("pages/lvl2/index.html")
+	}
+	if err != nil {
+		//TODO add an unavailable page
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+		return
+	}
+	w.Write(page)
+	fmt.Println("the user: ", user.User, " just logged in, the auth lvl is: ", user.Level)
 }
 
 func init() {
@@ -60,6 +79,6 @@ func main() {
 	//user login area
 	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")
 	r.HandleFunc(usersLogin.String(), LoginHandler).Methods("POST")
-
-	http.ListenAndServe(":8080", r)
+	log.Println("starting on 8080")
+	log.Fatal(http.ListenAndServe(":8080", r))
 }

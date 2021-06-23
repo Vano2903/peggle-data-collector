@@ -10,3 +10,7 @@ generic-loader-3: https://codepen.io/aaroniker/pen/MzoXaZ
 
 --graphs related
 graph-page: https://codepen.io/ispal/pen/mVaaJe/
+linear-graph: https://codepen.io/chrisgannon/pen/pbzEYr
+
+--search related
+https://codepen.io/suez/pen/ogVqYW

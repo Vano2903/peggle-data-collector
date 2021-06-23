@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="it" id="html">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Area Login</title>
+    <script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+    <script src="https://cdn.lordicon.com/libs/frhvbuzj/lord-icon-2.0.2.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <button onclick="checkLogin()" id="login">></button>
+    <div>
+        <h1>LOGIN</h1>
+        <div class="logArea">
+            <label for="user">Username</label>
+            <input type="user" id="user" placeholder="mail@gmail.com">
+            <label for="password">Password</label>
+            <input type="password" id="password">
+            <br>
+            <a class="top" id="errore" style="display: none;"></a>
+
+            <!-- loading animation -->
+            <div style="display: none;" id="loader-wrapper">
+                <div class="center">
+                    <lord-icon src="https://cdn.lordicon.com/xjovhxra.json" trigger="loop"
+                        colors="primary:#0B6454,secondary:#0B6454" style="width:100px;height:100px">
+                    </lord-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="sphere1"></div>
+    <div id="sphere2"></div>
+    <div id="sphere3"></div>
+    <script>
+        //TODO add login with google (maybe github tho)
+        //TODO jwt implementation
+        //var tok = localStorage.setItem("user")
+
+        function getLoginData() {
+            var user = document.getElementById("user").value;
+            var psw = document.getElementById("password").value;
+            return { username: user, password: psw }
+        }
+
+        async function checkLogin(code) {
+            document.getElementById("loader-wrapper").style.display = "block";
+            var user
+            if (code == undefined) {
+                user = getLoginData()
+            } else {
+                var ele = code.split(";");
+                user = { username: ele[0], password: ele[1] };
+            }
+            console.log(user);
+            console.log(JSON.stringify(user))
+            const res = await fetch('/users/login', {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            });
+            const contentType = res.headers.get("Content-Type");
+            const resp = await res.text();
+            document.getElementById("loader-wrapper").style.display = "none";
+            console.log(contentType);
+            console.log(resp);
+            //checkResponse(contentType, resp);
+        }
+
+        //mini easteregg :D oggi é il 9/6/21 xD
+        function checkResponse(cont, resp) {
+            errore = document.getElementById("errore");
+            if (cont != "text/html") {
+                const respJson = JSON.parse(resp);
+                console.log(respJson.message);
+                errore.innerHTML = respJson.message;
+                errore.style.display = "block";
+            } else {
+                tok = suppCode == undefined ? supp : suppCode;
+                document.write(resp);
+                document.close();
+            }
+        }
+    </script>
+
+</body>
+
+</html>
