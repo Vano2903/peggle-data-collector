@@ -40,7 +40,8 @@
     <script>
         //TODO add login with google (maybe github tho)
         //TODO jwt implementation
-        //var tok = localStorage.setItem("user")
+
+        var tok
 
         function getLoginData() {
             var user = document.getElementById("user").value;
@@ -72,18 +73,21 @@
             document.getElementById("loader-wrapper").style.display = "none";
             console.log(contentType);
             console.log(resp);
-            //checkResponse(contentType, resp);
+            checkResponse(contentType, resp);
         }
 
         //mini easteregg :D oggi é il 9/6/21 xD
-        function checkResponse(cont, resp) {
+        function checkResponse(cont, resp, user) {
             errore = document.getElementById("errore");
             if (cont != "text/html") {
+                console.log("ma sono storto")
                 const respJson = JSON.parse(resp);
                 console.log(respJson.message);
                 errore.innerHTML = respJson.message;
                 errore.style.display = "block";
             } else {
+                console.log("si, puó darsi che io sia stortissimo")
+                // localStorage.setItem("user", user)
                 tok = suppCode == undefined ? supp : suppCode;
                 document.write(resp);
                 document.close();
