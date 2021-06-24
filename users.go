@@ -170,9 +170,9 @@ func DeleteUser(user, pass string) error {
 	return nil
 }
 
-//* run this main to see all functionality
+/* run this main to see all functionality
 func main() {
-	// Check the connection
+	Check the connection
 	err := ConnectToDatabaseUsers()
 	if err != nil {
 		fmt.Println(err)
@@ -182,45 +182,38 @@ func main() {
 	fmt.Println("all users", users)
 	fmt.Println()
 
-	// query := bson.M{"user": "cami<3"}
-	// users, _ = QueryUsers(query)
-	// fmt.Println("user == cami", users)
-	// fmt.Println()
-
-	// update := bson.M{"user": "cami<3"}
-	// UpdateUser("cami", "HelloThere:D123!!!", update)
-	// users, _ = GetAllUsers()
-	// fmt.Println("updated cami into cami<3", users)
-	// fmt.Println()
-
-	ciao, err := AddUser("MoraGames", "Amorandi_26122002", 0)
-	fmt.Println(ciao)
-	fmt.Println(err)
-	users, _ = GetAllUsers()
-	fmt.Println("usres: ", users)
-	// fmt.Println("added user: ciao, camiCwute, 1", users)
+	query := bson.M{"user": "cami<3"}
+	users, _ = QueryUsers(query)
+	fmt.Println("user == cami", users)
 	fmt.Println()
 
-	// DeleteUser("ciao", "camiCwute")
-	// users, _ = GetAllUsers()
-	// fmt.Println("deleted ciao", users)
-	// fmt.Println()
+	update := bson.M{"user": "cami<3"}
+	UpdateUser("cami", "HelloThere:D123!!!", update)
+	users, _ = GetAllUsers()
+	fmt.Println("updated cami into cami<3", users)
+	fmt.Println()
 
-	// found, err := IsCorrect("vano", "HelloThere:D123!!!")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println("correct:", found)
+	DeleteUser("ciao", "camiCwute")
+	users, _ = GetAllUsers()
+	fmt.Println("deleted ciao", users)
+	fmt.Println()
 
-	// found, err = IsCorrect("cami", "HelloThere:D123")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println("incorrect psw:", found)
+	found, err := IsCorrect("vano", "HelloThere:D123!!!")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("correct:", found)
 
-	// found, err = IsCorrect("chonky", "HelloThere:D123!!!")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println("incorrect user:", found)
+	found, err = IsCorrect("cami", "HelloThere:D123")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("incorrect psw:", found)
+
+	found, err = IsCorrect("chonky", "HelloThere:D123!!!")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println("incorrect user:", found)
 }
+*/
