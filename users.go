@@ -4,8 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"reflect"
 	"strings"
 	"time"
+
+	"github.com/fxtlabs/date"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -19,6 +23,16 @@ var (
 	collection *mongo.Collection
 )
 
+type Commit struct {
+	Totals int    `bson:"totals, omitempty" json: "totals, omitempty"`
+	Day    string `bson:"day, omitempty" json: "day, omitempty"`
+}
+
+type Stats struct {
+	TotalCommits int      `bson:"totals, omitempty" json: "totals, omitempty"`
+	Commits      []Commit `bson:"commits, omitempty" json: "commits, omitempty"`
+}
+
 //TODO pfpUrl and gitusername can be used as search parameters
 type User struct {
 	ID          primitive.ObjectID `bson:"_id, omitempty"       json: "_id, omitempty"`
@@ -27,6 +41,11 @@ type User struct {
 	PfpUrl      string             `bson:"pfp_url, omitempty" json: "pfp_url, omitempty"`
 	Pass        string             `bson:"password, omitempty"  json: "password, omitempty"`
 	Level       int                `bson:"authLevel, omitempty" json: "authLevel, omitempty"` //0 admin (every priviliges), 1 every power relative to the games, 2 just adding
+	Stats       Stats              `bson:"stats, omitempty" json:"stats, omitempty"`
+}
+
+func (x User) IsStructureEmpty() bool {
+	return reflect.DeepEqual(x, User{})
 }
 
 //will connect to database on user's collection
@@ -49,6 +68,35 @@ func ConnectToDatabaseUsers() error {
 
 	//assign to the global variable "collection" the users' collection
 	collection = client.Database("qdss-peggle").Collection("users")
+	return nil
+}
+
+func AddCommit(user, pass string) error {
+	User, err := QueryUser(user, pass)
+	fmt.Println("user in commit function ", User)
+	if err != nil {
+		return err
+	}
+	for ind, com := range User.Stats.Commits {
+		fmt.Println(com.Day, " == ", date.Today().String())
+		if com.Day == date.Today().String() {
+			User.Stats.TotalCommits += 1
+			User.Stats.Commits[ind].Totals += 1
+			fmt.Println("user in commit function at the end ", User)
+			update := bson.M{"stats": User.Stats}
+			fmt.Println(update)
+			UpdateUser(user, pass, update)
+			return nil
+		}
+	}
+
+	com := Commit{1, date.Today().String()}
+	User.Stats.Commits = append(User.Stats.Commits, com)
+	User.Stats.TotalCommits += 1
+	fmt.Println("user in commit function at the end ", User)
+	update := bson.M{"stats": User.Stats}
+	fmt.Println(update)
+	UpdateUser(user, pass, update)
 	return nil
 }
 
@@ -77,6 +125,23 @@ func IsCorrect(user, pass string) (User, error) {
 	} else {
 		return User{}, errors.New("no user found")
 	}
+}
+
+//return the user based on username and password
+func QueryUser(user, pass string) (User, error) {
+	query := bson.M{"user": user, "password": pass}
+	cur, err := collection.Find(ctx, query)
+	if err != nil {
+		return User{}, err
+	}
+	defer cur.Close(ctx)
+	var userFound []User
+
+	//convert cur in []User
+	if err = cur.All(context.TODO(), &userFound); err != nil {
+		return User{}, err
+	}
+	return userFound[0], nil
 }
 
 //return a []User given a bson.M query (possible queries: user, authLevel)
@@ -123,7 +188,7 @@ func AddUser(user, pass string, authLvl int) (string, error) {
 	//check if not already registered
 	found, err := IsCorrect(user, pass)
 
-	if (User{}) != found {
+	if !found.IsStructureEmpty() {
 		return "", errors.New("user already exist")
 	}
 
@@ -168,6 +233,39 @@ func DeleteUser(user, pass string) error {
 		return err
 	}
 	return nil
+}
+
+func main() {
+	err := ConnectToDatabaseUsers()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// a, err := AddUser("vano", "HelloThere:D123!!!", 0)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	// fmt.Println(a)
+
+	err = AddCommit("vano", "HelloThere:D123!!!")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = AddCommit("vano", "HelloThere:D123!!!")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = AddCommit("vano", "HelloThere:D123!!!")
+	if err != nil {
+		log.Fatal(err)
+	}
+	u, err := QueryUser("vano", "HelloThere:D123!!!")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(u)
 }
 
 /* run this main to see all functionality
