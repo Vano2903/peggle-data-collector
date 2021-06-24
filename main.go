@@ -75,6 +75,8 @@ func init() {
 
 func main() {
 	r := mux.NewRouter()
+	//statics
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
 
 	//user login area
 	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")

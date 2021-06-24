@@ -10,6 +10,9 @@ const (
 	//API route
 	endApi endpoints = "/api/"
 
+	//statics
+	css endpoints = "/css/"
+
 	//users endpoint
 	usersLogin endpoints = "/users/login"
 )
