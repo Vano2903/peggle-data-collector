@@ -70,6 +70,11 @@ func ConnectToDatabaseUsers() error {
 	return nil
 }
 
+func getCommits(user, pass string, year int) {
+
+}
+
+//increment commits total nuber and increment totals commit of the day or create a new day if it's the first one of the day
 func AddCommit(user, pass string) error {
 	User, err := QueryUser(user, pass)
 	if err != nil {
