@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 	"strings"
 	"time"
@@ -73,7 +72,6 @@ func ConnectToDatabaseUsers() error {
 
 func AddCommit(user, pass string) error {
 	User, err := QueryUser(user, pass)
-	fmt.Println("user in commit function ", User)
 	if err != nil {
 		return err
 	}
@@ -82,7 +80,6 @@ func AddCommit(user, pass string) error {
 		if com.Day == date.Today().String() {
 			User.Stats.TotalCommits += 1
 			User.Stats.Commits[ind].Totals += 1
-			fmt.Println("user in commit function at the end ", User)
 			update := bson.M{"stats": User.Stats}
 			fmt.Println(update)
 			UpdateUser(user, pass, update)
@@ -93,7 +90,6 @@ func AddCommit(user, pass string) error {
 	com := Commit{1, date.Today().String()}
 	User.Stats.Commits = append(User.Stats.Commits, com)
 	User.Stats.TotalCommits += 1
-	fmt.Println("user in commit function at the end ", User)
 	update := bson.M{"stats": User.Stats}
 	fmt.Println(update)
 	UpdateUser(user, pass, update)
@@ -233,39 +229,6 @@ func DeleteUser(user, pass string) error {
 		return err
 	}
 	return nil
-}
-
-func main() {
-	err := ConnectToDatabaseUsers()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// a, err := AddUser("vano", "HelloThere:D123!!!", 0)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Println(a)
-
-	err = AddCommit("vano", "HelloThere:D123!!!")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = AddCommit("vano", "HelloThere:D123!!!")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = AddCommit("vano", "HelloThere:D123!!!")
-	if err != nil {
-		log.Fatal(err)
-	}
-	u, err := QueryUser("vano", "HelloThere:D123!!!")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(u)
 }
 
 /* run this main to see all functionality
