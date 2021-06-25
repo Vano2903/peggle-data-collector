@@ -298,17 +298,6 @@ func DeleteUser(user, pass string) error {
 	return nil
 }
 
-func main() {
-	err := ConnectToDatabaseUsers()
-	if err != nil {
-		fmt.Println(err)
-	}
-	// fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
-	fmt.Println(GetCommitsYear("vano", "HelloThere:D123!!!"))
-	fmt.Println(GetCommitsByYear("vano", "HelloThere:D123!!!", 2021))
-	fmt.Println(GetCommits("vano", "HelloThere:D123!!!"))
-}
-
 /* run this main to see all functionality
 func main() {
 	Check the connection
