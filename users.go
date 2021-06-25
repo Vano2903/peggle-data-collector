@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/fxtlabs/date"
-
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -22,9 +20,23 @@ var (
 	collection *mongo.Collection
 )
 
+type Date struct {
+	Day   int `bson:"day, omitempty" json: "day, omitempty"`
+	Month int `bson:"month, omitempty" json: "month, omitempty"`
+	Year  int `bson:"year, omitempty" json: "year, omitempty"`
+}
+
+func (d *Date) Today() {
+	t := time.Now()
+	y, m, da := t.Date()
+	d.Year = y
+	d.Month = int(m)
+	d.Day = da
+}
+
 type Commit struct {
-	Totals int    `bson:"totals, omitempty" json: "totals, omitempty"`
-	Day    string `bson:"day, omitempty" json: "day, omitempty"`
+	Totals int  `bson:"totals, omitempty" json: "totals, omitempty"`
+	Date   Date `bson:"date, omitempty" json: "date, omitempty"`
 }
 
 type Stats struct {
@@ -70,8 +82,56 @@ func ConnectToDatabaseUsers() error {
 	return nil
 }
 
-func getCommits(user, pass string, year int) {
+//check if element is present in a slice of int
+func contains(slice []int, item int) bool {
+	set := make(map[int]struct{}, len(slice))
+	for _, s := range slice {
+		set[s] = struct{}{}
+	}
 
+	_, ok := set[item]
+	return ok
+}
+
+//return all the years in which something has been commited
+func GetCommitsYear(user, pass string) ([]int, error) {
+	u, err := QueryUser(user, pass)
+	if err != nil {
+		return nil, err
+	}
+
+	var years []int
+	for _, c := range u.Stats.Commits {
+		if !contains(years, c.Date.Year) {
+			years = append(years, c.Date.Year)
+		}
+	}
+	return years, nil
+}
+
+//!return all commits made by an user
+func GetCommits(user, pass string) ([]Commit, error) {
+	u, err := QueryUser(user, pass)
+	if err != nil {
+		return nil, err
+	}
+	return u.Stats.Commits, nil
+}
+
+//return all the commits made by an user in one year
+func GetCommitsByYear(user, pass string, year int) ([]Commit, error) {
+	u, err := QueryUser(user, pass)
+	if err != nil {
+		return nil, err
+	}
+
+	var commitsFoundByYear []Commit
+	for _, c := range u.Stats.Commits {
+		if c.Date.Year == year {
+			commitsFoundByYear = append(commitsFoundByYear, c)
+		}
+	}
+	return commitsFoundByYear, nil
 }
 
 //increment commits total nuber and increment totals commit of the day or create a new day if it's the first one of the day
@@ -80,9 +140,11 @@ func AddCommit(user, pass string) error {
 	if err != nil {
 		return err
 	}
+	var today Date
+	today.Today()
+	// today := today.Date()
 	for ind, com := range User.Stats.Commits {
-		fmt.Println(com.Day, " == ", date.Today().String())
-		if com.Day == date.Today().String() {
+		if com.Date == today {
 			User.Stats.TotalCommits += 1
 			User.Stats.Commits[ind].Totals += 1
 			update := bson.M{"stats": User.Stats}
@@ -92,7 +154,7 @@ func AddCommit(user, pass string) error {
 		}
 	}
 
-	com := Commit{1, date.Today().String()}
+	com := Commit{1, today}
 	User.Stats.Commits = append(User.Stats.Commits, com)
 	User.Stats.TotalCommits += 1
 	update := bson.M{"stats": User.Stats}
@@ -234,6 +296,17 @@ func DeleteUser(user, pass string) error {
 		return err
 	}
 	return nil
+}
+
+func main() {
+	err := ConnectToDatabaseUsers()
+	if err != nil {
+		fmt.Println(err)
+	}
+	// fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
+	fmt.Println(GetCommitsYear("vano", "HelloThere:D123!!!"))
+	fmt.Println(GetCommitsByYear("vano", "HelloThere:D123!!!", 2021))
+	fmt.Println(GetCommits("vano", "HelloThere:D123!!!"))
 }
 
 /* run this main to see all functionality
