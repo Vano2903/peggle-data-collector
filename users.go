@@ -109,7 +109,7 @@ func GetCommitsYear(user, pass string) ([]int, error) {
 	return years, nil
 }
 
-//!return all commits made by an user
+//return all commits made by an user
 func GetCommits(user, pass string) ([]Commit, error) {
 	u, err := QueryUser(user, pass)
 	if err != nil {
