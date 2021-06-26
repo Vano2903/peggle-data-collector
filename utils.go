@@ -6,10 +6,10 @@ import (
 )
 
 //printInternalErr set the status code to 500 of the http response
-func PrintInternalErr(w http.ResponseWriter) {
+func PrintInternalErr(w http.ResponseWriter, err string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusInternalServerError)
-	w.Write([]byte(`{"code": 500, "msg": "Internal Server Error"}`))
+	w.Write([]byte(fmt.Sprintf(`{"code": 500, "msg": "Internal Server Error", "error": "%s"}`, err)))
 }
 
 //printErr will return 400 error code to the client

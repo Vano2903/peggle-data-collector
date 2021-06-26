@@ -118,6 +118,14 @@ func GetCommits(user, pass string) ([]Commit, error) {
 	return u.Stats.Commits, nil
 }
 
+func GetTotalCommits(user, pass string) (int, error) {
+	u, err := QueryUser(user, pass)
+	if err != nil {
+		return -1, err
+	}
+	return u.Stats.TotalCommits, nil
+}
+
 //return all the commits made by an user in one year
 func GetCommitsByYear(user, pass string, year int) ([]Commit, error) {
 	u, err := QueryUser(user, pass)

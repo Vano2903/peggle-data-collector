@@ -10,9 +10,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type LoginPost struct {
-	Username string `json: "username"`
-	Password string `json: "password"`
+type Post struct {
+	Username string `json: "username, omitempty"`
+	Password string `json: "password, omitempty"`
+	Year     int    `json: "year, omitempty"`
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -28,7 +29,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	var post LoginPost
+	var post Post
 	fmt.Println(r.Body)
 
 	//read post body
@@ -69,6 +70,69 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("the user: ", user.User, " just logged in, the auth lvl is: ", user.Level)
 }
 
+func CommitHandler(w http.ResponseWriter, r *http.Request) {
+	//read user credentials
+	var post Post
+	json.NewDecoder(r.Body).Decode(&post)
+
+	//get param from url
+	param := mux.Vars(r)["param"]
+	fmt.Println("param ", param)
+
+	switch param {
+	case "totCommits":
+		tot, err := GetTotalCommits(post.Username, post.Password)
+		if err != nil {
+			PrintErr(w, err.Error())
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(fmt.Sprintf(`{"totalCommits": %d}`, tot)))
+	case "years":
+		years, err := GetCommitsYear(post.Username, post.Password)
+		if err != nil {
+			PrintErr(w, err.Error())
+			return
+		}
+		j, err := json.Marshal(years)
+		if err != nil {
+			PrintInternalErr(w, err.Error())
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(j)
+		return
+	case "year":
+		commits, err := GetCommitsByYear(post.Username, post.Password, post.Year)
+		if err != nil {
+			PrintErr(w, err.Error())
+			return
+		}
+		j, err := json.Marshal(commits)
+		if err != nil {
+			PrintInternalErr(w, err.Error())
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(j)
+		return
+	case "add":
+		err := AddCommit(post.Username, post.Password)
+		if err != nil {
+			PrintErr(w, err.Error())
+			return
+		}
+		w.Write([]byte("commit registered"))
+		return
+	default:
+		PrintErr(w, "invalid parameter")
+		return
+	}
+}
+
 func init() {
 	ConnectToDatabaseUsers()
 }
@@ -76,11 +140,14 @@ func init() {
 func main() {
 	r := mux.NewRouter()
 	//statics
-	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static/"))))
+	r.PathPrefix(statics.String()).Handler(http.StripPrefix(statics.String(), http.FileServer(http.Dir("static/"))))
 
 	//user login area
 	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")
 	r.HandleFunc(usersLogin.String(), LoginHandler).Methods("POST")
+
+	//commit area
+	r.HandleFunc(getCommits.String(), CommitHandler).Methods("POST")
 	log.Println("starting on 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

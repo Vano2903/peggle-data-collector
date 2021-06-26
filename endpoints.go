@@ -11,10 +11,12 @@ const (
 	endApi endpoints = "/api/"
 
 	//statics
-	css endpoints = "/css/"
+	statics endpoints = "/static/"
 
 	//users endpoint
-	usersLogin endpoints = "/users/login"
+	usersLogin     endpoints = "/users/login"
+	getCommits     endpoints = "/commit/{param}"
+	getCommitsYear endpoints = "/commit/{year}"
 )
 
 func (e endpoints) String() string {
