@@ -46,8 +46,8 @@ type Stats struct {
 
 //TODO pfpUrl and gitusername can be used as search parameters
 type User struct {
-	ID          primitive.ObjectID `bson:"_id, omitempty"       json: "_id, omitempty"`
-	User        string             `bson:"user, omitempty"      json: "user, omitempty"`
+	ID          primitive.ObjectID `bson:"_id, omitempty" json: "_id, omitempty"`
+	User        string             `bson:"user, omitempty" json: "user, omitempty"`
 	GitUserName string             `bson:"git_user_name, omitempty" json: "git_user_name, omitempty"`
 	PfpUrl      string             `bson:"pfp_url, omitempty" json: "pfp_url, omitempty"`
 	Pass        string             `bson:"password, omitempty"  json: "password, omitempty"`

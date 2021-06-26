@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -80,6 +81,7 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("param ", param)
 
 	switch param {
+	//return the ammount of total commits made by the user
 	case "totCommits":
 		tot, err := GetTotalCommits(post.Username, post.Password)
 		if err != nil {
@@ -89,21 +91,25 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(fmt.Sprintf(`{"totalCommits": %d}`, tot)))
+
+	//return all the years a user has made at least 1 commit
 	case "years":
 		years, err := GetCommitsYear(post.Username, post.Password)
 		if err != nil {
 			PrintErr(w, err.Error())
 			return
 		}
-		j, err := json.Marshal(years)
-		if err != nil {
-			PrintInternalErr(w, err.Error())
-			return
+		var resp string
+		for _, y := range years {
+			resp += strconv.Itoa(y) + ";"
 		}
+		resp = resp[:len(resp)-1]
 		w.WriteHeader(http.StatusOK)
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(j)
+		w.Header().Set("Content-Type", "text/plain")
+		w.Write([]byte(resp))
 		return
+
+	//return all the commits made by the user over the selected year
 	case "year":
 		commits, err := GetCommitsByYear(post.Username, post.Password, post.Year)
 		if err != nil {
@@ -119,6 +125,8 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(j)
 		return
+
+	//increment the ammount of commits by 1 on the user's document
 	case "add":
 		err := AddCommit(post.Username, post.Password)
 		if err != nil {
@@ -127,6 +135,8 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		w.Write([]byte("commit registered"))
 		return
+
+	//return bad request
 	default:
 		PrintErr(w, "invalid parameter")
 		return

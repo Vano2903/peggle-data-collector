@@ -10,6 +10,8 @@
     <script src="https://cdn.lordicon.com/libs/frhvbuzj/lord-icon-2.0.2.js"></script>
     <link rel="stylesheet" href="/static/css/login.css">
     <link rel="stylesheet" href="/static/css/loader.css">
+
+    <script type="text/javascript" src="/static/js/login.js"></script>
 </head>
 
 <body>
@@ -25,7 +27,7 @@
             <a class="top" id="errore" style="display: none;"></a>
 
             <!-- loading animation -->
-            <div style="display: none;" id="loader-wrapper">
+            <div style="display: none;" id="loader-wrapper" class="loader-wrapper">
                 <div class="center">
                     <lord-icon src="https://cdn.lordicon.com/xjovhxra.json" trigger="loop"
                         colors="primary:#0B6454,secondary:#0B6454" style="width:100px;height:100px">
@@ -37,61 +39,8 @@
     <div id="sphere1"></div>
     <div id="sphere2"></div>
     <div id="sphere3"></div>
-    <script>
-        //TODO add login with google (maybe github tho)
-        //TODO jwt implementation
 
-        var user
 
-        function getLoginData() {
-            var user = document.getElementById("user").value;
-            var psw = document.getElementById("password").value;
-            return { username: user, password: psw }
-        }
-
-        async function checkLogin(code) {
-            document.getElementById("loader-wrapper").style.display = "block";
-
-            if (code == undefined) {
-                user = getLoginData()
-            } else {
-                var ele = code.split(";");
-                user = { username: ele[0], password: ele[1] };
-            }
-            console.log(user);
-            console.log(JSON.stringify(user))
-            const res = await fetch('/users/login', {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(user)
-            });
-            const contentType = res.headers.get("Content-Type");
-            const resp = await res.text();
-            document.getElementById("loader-wrapper").style.display = "none";
-            console.log(contentType);
-            console.log(resp);
-            checkResponse(contentType, resp);
-        }
-
-        //mini easteregg :D oggi é il 9/6/21 xD
-        function checkResponse(cont, resp, user) {
-            errore = document.getElementById("errore");
-            if (!cont.includes("text/html")) {
-                const respJson = JSON.parse(resp);
-                console.log(respJson.message);
-                errore.innerHTML = respJson.message;
-                errore.style.display = "block";
-            } else {
-                // localStorage.setItem("user", user)
-                // tok = suppCode == undefined ? supp : suppCode;
-                document.write(resp);
-                document.close();
-            }
-        }
-    </script>
 
 </body>
 
