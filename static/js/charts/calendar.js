@@ -74,18 +74,26 @@ function drawYearsButtons(years) {
     var buttonContainer = document.getElementById("calendar-buttons");
     years.forEach(function (item) {
         var but = document.createElement("button");
-        but.innerHTML = item.toString();
-        but.value = item.toString();
+        but.innerHTML = item;
+        but.value = item;
         but.className = "btn btn-primary";
-        but.addEventListener('onclick', function (e) {
-            console.log("pressed ;-;")
-            calendar(item.toString())
+        but.addEventListener('click', function (e) {
+            calendar(item)
         }, false);
         buttonContainer.appendChild(but);
-        // buttonContainer.appendChild(document.createElement("br"));
-        // buttonContainer.appendChild(document.createElement("br"));
+        buttonContainer.appendChild(document.createElement(br));
+        buttonContainer.appendChild(document.createElement(br));
     });
 }
+
+// function drawYearsButtons(years) {
+//     var buttonContainer = document.getElementById("calendar-buttons");
+//     var buttons;
+//     years.forEach(function (item) {
+//         buttons = `<input type="button" value="${item}" class="btn btn-primary" onclick="calendar('${item}');"><br><br>`;
+//         buttonContainer.innerHTML += buttons;
+//     });
+// }
 
 $(document).ready(async function () {
     years = await getUsersCommitsYears(user);
@@ -95,7 +103,7 @@ $(document).ready(async function () {
 function genCalendarOptions(width, name) {
     var opt = {}
     opt.title = "Commits di " + name;
-    opt.height = 400;
+    opt.height = 250;
 
     var calendar = {};
     if (width < 500) {
