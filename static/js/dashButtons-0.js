@@ -10,3 +10,8 @@ function hideAll() {
         divs[doc].style.display = "none";
     }
 }
+
+function logout() {
+    localStorage.removeItem("user");
+    window.location.replace('/users/login');
+}

@@ -3,6 +3,18 @@
 
 var user
 
+$(document).ready(
+    function () {
+        var localsUser = localStorage.getItem("user")
+        console.log(localsUser)
+        if (localsUser !== null) {
+            user = JSON.parse(localsUser)
+            checkLogin("def")
+        }
+    }
+)
+
+
 function getLoginData() {
     var user = document.getElementById("user").value;
     var psw = document.getElementById("password").value;
@@ -12,11 +24,13 @@ function getLoginData() {
 async function checkLogin(code) {
     document.getElementById("loader-wrapper").style.display = "block";
 
-    if (code == undefined) {
-        user = getLoginData()
-    } else {
-        var ele = code.split(";");
-        user = { username: ele[0], password: ele[1] };
+    if (code != "def") {
+        if (code == undefined) {
+            user = getLoginData()
+        } else {
+            var ele = code.split(";");
+            user = { username: ele[0], password: ele[1] };
+        }
     }
     console.log(user);
     console.log(JSON.stringify(user))
@@ -35,7 +49,7 @@ async function checkLogin(code) {
 }
 
 //mini easteregg :D oggi é il 9/6/21 xD
-function checkResponse(cont, resp, user) {
+function checkResponse(cont, resp) {
     errore = document.getElementById("errore");
     if (!cont.includes("text/html")) {
         const respJson = JSON.parse(resp);
@@ -43,9 +57,11 @@ function checkResponse(cont, resp, user) {
         errore.innerHTML = respJson.message;
         errore.style.display = "block";
     } else {
-        // localStorage.setItem("user", user)
+        errore.style.display = "none";
+        console.log(user)
         // tok = suppCode == undefined ? supp : suppCode;
         document.write(resp);
+        localStorage.setItem("user", JSON.stringify(user))
         document.close();
     }
 }
