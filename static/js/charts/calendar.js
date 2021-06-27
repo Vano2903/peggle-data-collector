@@ -2,6 +2,7 @@ google.charts.load("current", { packages: ["calendar"] });
 google.charts.setOnLoadCallback(calendar);
 
 var years
+var commits
 
 async function getUsersCommitsYears(user) {
     var res = await fetch('/commit/years', {
@@ -50,24 +51,19 @@ function drawCommitChart(opt, dataSet) {
     chart.draw(dataTable, opt);
 }
 
-async function calendar(year) {
+async function calendar() {
     var width = $(window).width();
     var calendarOptions = genCalendarOptions(width, user.username)
 
-    // var years = await getUsersCommitsYears(user)
-    // drawCommitChart(years)
-    //if default button pressed do this else check which year
-    if (year == undefined) {
-        var commits = await genCalendarCommits(user, years[years.length - 1])
-    } else {
-        var commits = await genCalendarCommits(user, year)
+    if (commits == undefined) {
+        commits = await genCalendarCommits(user, years[years.length - 1])
     }
 
     drawCommitChart(calendarOptions, commits);
 }
 
 $(window).resize(function () {
-    calendar(years)
+    calendar()
 });
 
 function drawYearsButtons(years) {
@@ -77,23 +73,15 @@ function drawYearsButtons(years) {
         but.innerHTML = item;
         but.value = item;
         but.className = "btn btn-primary";
-        but.addEventListener('click', function (e) {
-            calendar(item)
+        but.addEventListener('click', async function (e) {
+            commits = await genCalendarCommits(user, item)
+            calendar()
         }, false);
         buttonContainer.appendChild(but);
-        buttonContainer.appendChild(document.createElement(br));
-        buttonContainer.appendChild(document.createElement(br));
+        buttonContainer.appendChild(document.createElement("br"));
+        buttonContainer.appendChild(document.createElement("br"));
     });
 }
-
-// function drawYearsButtons(years) {
-//     var buttonContainer = document.getElementById("calendar-buttons");
-//     var buttons;
-//     years.forEach(function (item) {
-//         buttons = `<input type="button" value="${item}" class="btn btn-primary" onclick="calendar('${item}');"><br><br>`;
-//         buttonContainer.innerHTML += buttons;
-//     });
-// }
 
 $(document).ready(async function () {
     years = await getUsersCommitsYears(user);
