@@ -14,9 +14,14 @@ const (
 	statics endpoints = "/static/"
 
 	//users endpoint
-	usersLogin     endpoints = "/users/login"
+	usersLogin endpoints = "/users/login"
+
+	//commits endpoints
 	getCommits     endpoints = "/commit/{param}"
 	getCommitsYear endpoints = "/commit/{year}"
+
+	//games endpoints
+	games endpoints = "/games/search"
 )
 
 func (e endpoints) String() string {

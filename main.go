@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type Post struct {
@@ -143,6 +145,46 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("ciaoo")
+	r.ParseForm()
+
+	fmt.Println(r.Form)
+
+	var query bson.M
+	// var result []User
+	for k, v := range r.Form {
+		switch k {
+		case "url":
+			for _, u := range v {
+				query["url"] = u
+			}
+		case "title":
+			query["title"] = v
+		case "wonBy":
+			query["wonBy"] = v
+		case "upload":
+			var d Date
+			if strings.Contains(v[0], ";") {
+				fmt.Println(d)
+			}
+			// query
+		case "game":
+
+		case "points":
+
+		case "n-25":
+
+		case "valEF":
+
+		case "character":
+
+		}
+	}
+
+	fmt.Println(query)
+}
+
 func init() {
 	ConnectToDatabaseUsers()
 }
@@ -158,6 +200,10 @@ func main() {
 
 	//commit area
 	r.HandleFunc(getCommits.String(), CommitHandler).Methods("POST")
+
+	//game area
+	r.HandleFunc(games.String(), SeachGameHandler).Methods("GET")
+
 	log.Println("starting on 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

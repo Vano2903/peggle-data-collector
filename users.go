@@ -15,18 +15,18 @@ import (
 )
 
 var (
-	client     *mongo.Client
-	ctx        context.Context
-	collection *mongo.Collection
+	clientUser     *mongo.Client
+	ctxUser        context.Context
+	collectionUser *mongo.Collection
 )
 
-type Date struct {
+type DateU struct {
 	Day   int `bson:"day, omitempty" json: "day, omitempty"`
 	Month int `bson:"month, omitempty" json: "month, omitempty"`
 	Year  int `bson:"year, omitempty" json: "year, omitempty"`
 }
 
-func (d *Date) Today() {
+func (d *DateU) Today() {
 	t := time.Now()
 	y, m, da := t.Date()
 	d.Year = y
@@ -35,8 +35,8 @@ func (d *Date) Today() {
 }
 
 type Commit struct {
-	Totals int  `bson:"totals, omitempty" json: "totals, omitempty"`
-	Date   Date `bson:"date, omitempty" json: "date, omitempty"`
+	Totals int   `bson:"totals, omitempty" json: "totals, omitempty"`
+	Date   DateU `bson:"date, omitempty" json: "date, omitempty"`
 }
 
 type Stats struct {
@@ -46,7 +46,7 @@ type Stats struct {
 
 //TODO pfpUrl and gitusername can be used as search parameters
 type User struct {
-	ID          primitive.ObjectID `bson:"_id, omitempty" json: "_id, omitempty"`
+	ID          primitive.ObjectID `bson:"_id, omitempty" json: "id, omitempty"`
 	User        string             `bson:"user, omitempty" json: "user, omitempty"`
 	GitUserName string             `bson:"git_user_name, omitempty" json: "git_user_name, omitempty"`
 	PfpUrl      string             `bson:"pfp_url, omitempty" json: "pfp_url, omitempty"`
@@ -59,26 +59,26 @@ func (x User) IsStructureEmpty() bool {
 	return reflect.DeepEqual(x, User{})
 }
 
-//will connect to database on user's collection
+//will connect to database on user's collectionn
 func ConnectToDatabaseUsers() error {
 	//get context
-	ctx, _ := context.WithTimeout(context.TODO(), 10*time.Second)
+	ctxUser, _ := context.WithTimeout(context.TODO(), 10*time.Second)
 
 	//try to connect
 	clientOptions := options.Client().ApplyURI("mongodb://192.168.1.9:27017")
-	client, err := mongo.Connect(ctx, clientOptions)
+	clientUser, err := mongo.Connect(ctxUser, clientOptions)
 	if err != nil {
 		return err
 	}
 
 	//check if connection is established
-	err = client.Ping(context.TODO(), nil)
+	err = clientUser.Ping(context.TODO(), nil)
 	if err != nil {
 		return err
 	}
 
 	//assign to the global variable "collection" the users' collection
-	collection = client.Database("qdss-peggle").Collection("users")
+	collectionUser = clientUser.Database("qdss-peggle").Collection("users")
 	return nil
 }
 
@@ -148,7 +148,7 @@ func AddCommit(user, pass string) error {
 	if err != nil {
 		return err
 	}
-	var today Date
+	var today DateU
 	today.Today()
 	// today := today.Date()
 	for ind, com := range User.Stats.Commits {
@@ -164,6 +164,7 @@ func AddCommit(user, pass string) error {
 
 	com := Commit{1, today}
 	User.Stats.Commits = append(User.Stats.Commits, com)
+
 	User.Stats.TotalCommits += 1
 	update := bson.M{"stats": User.Stats}
 	fmt.Println(update)
@@ -175,11 +176,11 @@ func AddCommit(user, pass string) error {
 //? I belive there is a bettere way to do this but rn i dont really know
 func IsCorrect(user, pass string) (User, error) {
 	//search in database
-	cur, err := collection.Find(ctx, bson.M{"user": user, "password": pass})
+	cur, err := collectionUser.Find(ctxUser, bson.M{"user": user, "password": pass})
 	if err != nil {
 		return User{}, err
 	}
-	defer cur.Close(ctx)
+	defer cur.Close(ctxUser)
 	var userFound []User
 
 	//convert cur in []User
@@ -201,11 +202,11 @@ func IsCorrect(user, pass string) (User, error) {
 //return the user based on username and password
 func QueryUser(user, pass string) (User, error) {
 	query := bson.M{"user": user, "password": pass}
-	cur, err := collection.Find(ctx, query)
+	cur, err := collectionUser.Find(ctxUser, query)
 	if err != nil {
 		return User{}, err
 	}
-	defer cur.Close(ctx)
+	defer cur.Close(ctxUser)
 	var userFound []User
 
 	//convert cur in []User
@@ -220,11 +221,11 @@ func QueryUsers(query bson.M) ([]User, error) {
 	if _, ok := query["password"]; ok {
 		return nil, errors.New("you can't query over passwords")
 	}
-	cur, err := collection.Find(ctx, query)
+	cur, err := collectionUser.Find(ctxUser, query)
 	if err != nil {
 		return nil, err
 	}
-	defer cur.Close(ctx)
+	defer cur.Close(ctxUser)
 	var usersFound []User
 
 	//convert cur in []User
@@ -236,11 +237,11 @@ func QueryUsers(query bson.M) ([]User, error) {
 
 //retru na slice with all the users
 func GetAllUsers() ([]User, error) {
-	cur, err := collection.Find(ctx, bson.M{})
+	cur, err := collectionUser.Find(ctxUser, bson.M{})
 	if err != nil {
 		return nil, err
 	}
-	defer cur.Close(ctx)
+	defer cur.Close(ctxUser)
 	var usersFound []User
 
 	//convert cur in []User
@@ -274,7 +275,7 @@ func AddUser(user, pass string, authLvl int) (string, error) {
 		pass,
 		authLvl,
 	}
-	result, err := collection.InsertOne(ctx, toInsert)
+	result, err := collectionUser.InsertOne(ctxUser, toInsert)
 	if err != nil {
 		return "", err
 	}
@@ -285,8 +286,8 @@ func AddUser(user, pass string, authLvl int) (string, error) {
 }
 
 func UpdateUser(user, pass string, update bson.M) error {
-	_, err := collection.UpdateOne(
-		ctx,
+	_, err := collectionUser.UpdateOne(
+		ctxUser,
 		bson.M{"user": user, "password": pass},
 		bson.D{
 			{"$set", update},
@@ -299,11 +300,29 @@ func UpdateUser(user, pass string, update bson.M) error {
 }
 
 func DeleteUser(user, pass string) error {
-	_, err := collection.DeleteOne(ctx, bson.M{"user": user, "password": pass})
+	_, err := collectionUser.DeleteOne(ctxUser, bson.M{"user": user, "password": pass})
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func testAggregate() ([]User, error) {
+	names := []string{"vano", "MoraGames"}
+	query := bson.D{{"$match", bson.D{{"user", bson.M{"$in": names}}}}}
+
+	cur, err := collectionUser.Aggregate(ctxUser, mongo.Pipeline{query})
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctxUser)
+	var usersFound []User
+
+	//convert cur in []User
+	if err = cur.All(context.TODO(), &usersFound); err != nil {
+		return nil, err
+	}
+	return usersFound, nil
 }
 
 /* run this main to see all functionality
