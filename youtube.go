@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -101,5 +100,4 @@ func init() {
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
-	fmt.Println(conf)
 }
