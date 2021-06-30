@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
-	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -82,17 +81,6 @@ func ConnectToDatabaseUsers() error {
 	return nil
 }
 
-//check if element is present in a slice of int
-func contains(slice []int, item int) bool {
-	set := make(map[int]struct{}, len(slice))
-	for _, s := range slice {
-		set[s] = struct{}{}
-	}
-
-	_, ok := set[item]
-	return ok
-}
-
 //return all the years in which something has been commited
 func GetCommitsYear(user, pass string) ([]int, error) {
 	u, err := QueryUser(user, pass)
@@ -102,7 +90,7 @@ func GetCommitsYear(user, pass string) ([]int, error) {
 
 	var years []int
 	for _, c := range u.Stats.Commits {
-		if !contains(years, c.Date.Year) {
+		if Contains(years, c.Date.Year) {
 			years = append(years, c.Date.Year)
 		}
 	}
@@ -172,7 +160,7 @@ func AddCommit(user, pass string) error {
 	return nil
 }
 
-//check if user exist in database and will return empty struct if not found on the other hand will return the User informations
+//check if user exist in database and will return empty struct if not found, on the other hand will return the User informations
 //? I belive there is a bettere way to do this but rn i dont really know
 func IsCorrect(user, pass string) (User, error) {
 	//search in database
@@ -279,9 +267,7 @@ func AddUser(user, pass string, authLvl int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	InsertedID := fmt.Sprintf("%v", result.InsertedID)
-	InsertedID = strings.Replace(InsertedID, "ObjectID(\"", "", -1)
-	InsertedID = strings.Replace(InsertedID, "\")", "", -1)
+	InsertedID := CleanMongoId(fmt.Sprintf("%v", result.InsertedID))
 	return InsertedID, nil
 }
 
@@ -309,9 +295,10 @@ func DeleteUser(user, pass string) error {
 
 func testAggregate() ([]User, error) {
 	names := []string{"vano", "MoraGames"}
+	// query := bson.D{{"$match", bson.D{{"user", bson.M{"$in": names}}}}}
 	query := bson.D{{"$match", bson.D{{"user", bson.M{"$in": names}}}}}
-
-	cur, err := collectionUser.Aggregate(ctxUser, mongo.Pipeline{query})
+	sort := bson.D{{"$sort", bson.M{"authLevel": 1}}}
+	cur, err := collectionUser.Aggregate(ctxUser, mongo.Pipeline{query, sort})
 	if err != nil {
 		return nil, err
 	}
@@ -324,6 +311,11 @@ func testAggregate() ([]User, error) {
 	}
 	return usersFound, nil
 }
+
+// func main() {
+// 	ConnectToDatabaseUsers()
+// 	fmt.Println(testAggregate())
+// }
 
 /* run this main to see all functionality
 func main() {

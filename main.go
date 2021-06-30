@@ -151,7 +151,7 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(r.Form)
 
-	var query bson.M
+	var query bson.D
 	// var result []User
 	for k, v := range r.Form {
 		switch k {

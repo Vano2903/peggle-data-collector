@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,15 +13,26 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+var (
+	conf config
+)
+
 type config struct {
 	Apikey string `yaml:"yt_api_v3_key"`
 }
 
 type VideoData struct {
-	Url            string `json:"url, omitempty" json:"url,omitempty"`
+	Id             string `bson:"id, omitempty" json:"id,omitempty"`
 	Title          string `bson:"title, omitempty" json: "title, omitempty"`
 	ThumbMaxResUrl string `bson:"thumbMaxResUrl, omitempty" json: "thumbMaxResUrl, omitempty"`
 	UploadDate     DateYt `bson:"uploadDate, omitempty" json: "uploadDate, omitempty"`
+}
+
+func (v *VideoData) CheckIfNotCompleted() bool {
+	if v.Title == "" || v.ThumbMaxResUrl == "" {
+		return false
+	}
+	return true
 }
 
 //fill the structure with all the data given the id of the video
@@ -36,8 +48,10 @@ func (v *VideoData) GetYoutubeDataFromId(id string) error {
 	if err != nil {
 		return err
 	}
-
-	v.Url = "https://youtu.be/" + id
+	if len(response.Items) <= 0 {
+		return errors.New("no video found, check the id")
+	}
+	v.Id = id
 	v.Title = response.Items[0].Snippet.Title
 	v.ThumbMaxResUrl = response.Items[0].Snippet.Thumbnails.Maxres.Url
 	v.UploadDate.ParseString(response.Items[0].Snippet.PublishedAt)
@@ -74,10 +88,6 @@ func (v *DateYt) ParseString(ytDate string) error {
 	v.Day = d
 	return nil
 }
-
-var (
-	conf config
-)
 
 //return the youtube service given a valid youtube api key
 func GetYoutubeService(key string) (*youtube.Service, error) {
