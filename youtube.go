@@ -5,9 +5,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
+	"time"
 
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/api/googleapi/transport"
 	youtube "google.golang.org/api/youtube/v3"
 	"gopkg.in/yaml.v2"
@@ -22,10 +22,10 @@ type config struct {
 }
 
 type VideoData struct {
-	Id             string `bson:"id, omitempty" json:"id,omitempty"`
-	Title          string `bson:"title, omitempty" json: "title, omitempty"`
-	ThumbMaxResUrl string `bson:"thumbMaxResUrl, omitempty" json: "thumbMaxResUrl, omitempty"`
-	UploadDate     DateYt `bson:"uploadDate, omitempty" json: "uploadDate, omitempty"`
+	Id             string             `bson:"id, omitempty" json:"id,omitempty"`
+	Title          string             `bson:"title, omitempty" json: "title, omitempty"`
+	ThumbMaxResUrl string             `bson:"thumbMaxResUrl, omitempty" json: "thumbMaxResUrl, omitempty"`
+	UploadDate     primitive.DateTime `bson:"uploadDate, omitempty" json: "uploadDate, omitempty"`
 }
 
 func (v *VideoData) CheckIfNotCompleted() bool {
@@ -54,40 +54,44 @@ func (v *VideoData) GetYoutubeDataFromId(id string) error {
 	v.Id = id
 	v.Title = response.Items[0].Snippet.Title
 	v.ThumbMaxResUrl = response.Items[0].Snippet.Thumbnails.Maxres.Url
-	v.UploadDate.ParseString(response.Items[0].Snippet.PublishedAt)
+	upDate, err := time.Parse(time.RFC3339, response.Items[0].Snippet.PublishedAt)
+	if err != nil {
+		return err
+	}
+	v.UploadDate = primitive.NewDateTimeFromTime(upDate)
 	return nil
 }
 
-type DateYt struct {
-	Day   int `bson:"day, omitempty" json: "day, omitempty"`
-	Month int `bson:"month, omitempty" json: "month, omitempty"`
-	Year  int `bson:"year, omitempty" json: "year, omitempty"`
-}
+// type DateYt struct {
+// 	Day   int `bson:"day, omitempty" json: "day, omitempty"`
+// 	Month int `bson:"month, omitempty" json: "month, omitempty"`
+// 	Year  int `bson:"year, omitempty" json: "year, omitempty"`
+// }
 
-//convert the way youtube store dates in DateYt struct
-func (v *DateYt) ParseString(ytDate string) error {
-	da := ytDate[:len(ytDate)-10]
-	ele := strings.Split(da, "-")
+// //convert the way youtube store dates in DateYt struct
+// func (v *DateYt) ParseString(ytDate string) error {
+// 	da := ytDate[:len(ytDate)-10]
+// 	ele := strings.Split(da, "-")
 
-	y, err := strconv.Atoi(ele[0])
-	if err != nil {
-		return err
+// 	y, err := strconv.Atoi(ele[0])
+// 	if err != nil {
+// 		return err
 
-	}
-	m, err := strconv.Atoi(ele[1])
-	if err != nil {
-		return err
-	}
-	d, err := strconv.Atoi(ele[2])
-	if err != nil {
-		return err
-	}
+// 	}
+// 	m, err := strconv.Atoi(ele[1])
+// 	if err != nil {
+// 		return err
+// 	}
+// 	d, err := strconv.Atoi(ele[2])
+// 	if err != nil {
+// 		return err
+// 	}
 
-	v.Year = y
-	v.Month = m
-	v.Day = d
-	return nil
-}
+// 	v.Year = y
+// 	v.Month = m
+// 	v.Day = d
+// 	return nil
+// }
 
 //return the youtube service given a valid youtube api key
 func GetYoutubeService(key string) (*youtube.Service, error) {
@@ -111,3 +115,9 @@ func init() {
 		log.Fatalf("error: %v", err)
 	}
 }
+
+// func main() {
+// 	var v VideoData
+// 	v.GetYoutubeDataFromId("S0-4ouN35gw")
+// 	fmt.Println(v)
+// }

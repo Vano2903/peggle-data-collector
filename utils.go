@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -22,12 +23,13 @@ func PrintErr(w http.ResponseWriter, err string) {
 
 //check if element is present in a slice of int
 func Contains(slice []int, item int) bool {
-	set := make(map[int]struct{}, len(slice))
+	set := make(map[int]int, len(slice))
 	for _, s := range slice {
-		set[s] = struct{}{}
+		set[s] = 1
 	}
 
 	_, ok := set[item]
+	fmt.Println(ok)
 	return ok
 }
 
@@ -36,4 +38,16 @@ func CleanMongoId(mongoId string) string {
 	id = strings.Replace(id, "ObjectID(\"", "", -1)
 	id = strings.Replace(id, "\")", "", -1)
 	return id
+}
+
+func ConvertToSliceInt(s []string) ([]int, error) {
+	var converted []int
+	for _, v := range s {
+		i, err := strconv.Atoi(v)
+		if err != nil {
+			return nil, err
+		}
+		converted = append(converted, i)
+	}
+	return converted, nil
 }

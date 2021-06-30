@@ -7,10 +7,10 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Post struct {
@@ -97,6 +97,7 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 	//return all the years a user has made at least 1 commit
 	case "years":
 		years, err := GetCommitsYear(post.Username, post.Password)
+		fmt.Println(years)
 		if err != nil {
 			PrintErr(w, err.Error())
 			return
@@ -105,7 +106,9 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 		for _, y := range years {
 			resp += strconv.Itoa(y) + ";"
 		}
-		resp = resp[:len(resp)-1]
+		if len(resp) > 0 {
+			resp = resp[:len(resp)-1]
+		}
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "text/plain")
 		w.Write([]byte(resp))
@@ -151,26 +154,30 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(r.Form)
 
-	var query bson.D
+	var queries []bson.D
 	// var result []User
 	for k, v := range r.Form {
 		switch k {
-		case "url":
-			for _, u := range v {
-				query["url"] = u
-			}
+		case "id":
+			q := bson.D{{"$match", bson.D{{"videoData.id", bson.M{"$in": v}}}}}
+			queries = append(queries, q)
 		case "title":
-			query["title"] = v
-		case "wonBy":
-			query["wonBy"] = v
-		case "upload":
-			var d Date
-			if strings.Contains(v[0], ";") {
-				fmt.Println(d)
+			if len(v) != 1 {
+				PrintErr(w, "you can't query over multiple titles (yet)")
+				return
 			}
-			// query
-		case "game":
-
+			q := bson.D{{"$match", bson.D{{"videoData.title", bson.D{{"$regex", primitive.Regex{Pattern: v[0], Options: "i"}}}}}}}
+			queries = append(queries, q)
+		case "wonBy":
+			vi, err := ConvertToSliceInt(v)
+			if err != nil {
+				PrintErr(w, err.Error())
+				return
+			}
+			q := bson.D{{"$match", bson.D{{"wonBy", bson.M{"$in": vi}}}}}
+			queries = append(queries, q)
+		case "upload":
+			//TODO
 		case "points":
 
 		case "n-25":
@@ -182,11 +189,8 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	fmt.Println(query)
-}
-
-func init() {
-	ConnectToDatabaseUsers()
+	fmt.Println(queries)
+	fmt.Println(QueryGames(queries))
 }
 
 func main() {

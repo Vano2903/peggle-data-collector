@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
@@ -20,7 +19,7 @@ var (
 )
 
 type Game struct {
-	ID    primitive.ObjectID `copier:"-" bson:"_id, omitempty" json:"id,omitempty"`
+	ID    primitive.ObjectID `bson:"_id, omitempty" json:"id,omitempty"`
 	VD    VideoData          `bson:"videoData, omitempty" json:"videoData, omitempty"`
 	WonBy int                `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
 	Stats Players            `bson:"stats, omitempty" json:"stats,omitempty"`
@@ -75,7 +74,7 @@ func ConnectToDatabaseGame() error {
 }
 
 //*
-func QueryGame(q ...bson.D) ([]Game, error) {
+func QueryGames(q []bson.D) ([]Game, error) {
 	cur, err := collectionGame.Aggregate(ctxGame, q)
 	if err != nil {
 		return nil, err
@@ -166,49 +165,54 @@ func DeleteGame(id string) error {
 	return nil
 }
 
-func main() {
-	var game Game
-	err := game.VD.GetYoutubeDataFromId("S0-4ouN35gw")
-	if err != nil {
-		panic(err)
-	}
-	game.WonBy = 0
-	//syn
-	game.Stats.Synergo.Overall.TPoints = 132415
-	game.Stats.Synergo.Overall.T25 = 3
-	game.Stats.Synergo.G1 = GameStats{34195, 1, 0, "unicorno"}
-	game.Stats.Synergo.G2 = GameStats{39830, 1, 0, "girasole"}
-	game.Stats.Synergo.G3 = GameStats{58390, 1, 0, "gatto"}
-
-	game.Stats.Redez.Overall = Overall{114505, 2}
-	game.Stats.Redez.G1 = GameStats{32860, 0, 0, "castoro"}
-	game.Stats.Redez.G2 = GameStats{42840, 1, 5000, "alieno"}
-	game.Stats.Redez.G3 = GameStats{38805, 1, 0, "zucca"}
-
-	// fmt.Println(game)
+func init() {
 	ConnectToDatabaseGame()
-	// ConnectToDatabaseUsers()
-
-	fmt.Println(AddGame(game))
-	// fmt.Println(QueryGame())
-
-	// update := bson.M{"wonBy": 1}
-	// fmt.Println(UpdateGame("IwvS8ft7DM8", update))
-	// fmt.Println(DeleteGame("IwvS8ft7DM9"))
-
-	q1 := bson.D{{"$match", bson.D{{"wonBy", bson.M{"$in": []int{1}}}}}}
-	// q3 := bson.D{{"$match", bson.D{{"authLevel", bson.M{"$in": []int{0}}}}}}
-	q2 := bson.D{{"$sort", bson.M{"wonBy": 1}}}
-
-	query := []bson.D{q1, q2}
-
-	result, err := QueryGame(query...)
-	if err != nil {
-		panic(err)
-	}
-	res, err := json.MarshalIndent(&result, "", "\t")
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(string(res))
 }
+
+// func main() {
+// 	var game Game
+// 	err := game.VD.GetYoutubeDataFromId("S0-4ouN35gw")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	game.WonBy = 0
+// 	//syn
+// 	game.Stats.Synergo.Overall.TPoints = 132415
+// 	game.Stats.Synergo.Overall.T25 = 3
+// 	game.Stats.Synergo.G1 = GameStats{34195, 1, 0, "unicorno"}
+// 	game.Stats.Synergo.G2 = GameStats{39830, 1, 0, "girasole"}
+// 	game.Stats.Synergo.G3 = GameStats{58390, 1, 0, "gatto"}
+
+// 	game.Stats.Redez.Overall = Overall{114505, 2}
+// 	game.Stats.Redez.G1 = GameStats{32860, 0, 0, "castoro"}
+// 	game.Stats.Redez.G2 = GameStats{42840, 1, 5000, "alieno"}
+// 	game.Stats.Redez.G3 = GameStats{38805, 1, 0, "zucca"}
+
+// 	ConnectToDatabaseGame()
+// 	// ConnectToDatabaseUsers()
+
+// 	// fmt.Println(AddGame(game))
+// 	// fmt.Println(QueryGame())
+
+// 	// update := bson.M{"wonBy": 1}
+// 	// fmt.Println(UpdateGame("IwvS8ft7DM8", update))
+// 	// fmt.Println(DeleteGame("IwvS8ft7DM9"))
+
+// 	// q1 := bson.D{{"$match", bson.D{{"wonBy", bson.M{"$in": []int{1}}}}}}
+// 	q3 := bson.D{{"$match", bson.D{{"videoData.title", bson.M{"$in": []string{"PEGGLE: NON E' POSSIBILE CHE VADA  COSI"}}}}}}
+// 	// q3 := bson.D{{"$match", bson.D{{"authLevel", bson.M{"$in": []int{0}}}}}}
+// 	q2 := bson.D{{"$sort", bson.M{"wonBy": 1}}}
+
+// 	query := []bson.D{q3, q2}
+
+// 	result, err := QueryGames(query)
+// 	fmt.Println(result)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	res, err := json.MarshalIndent(&result, "", "\t")
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	fmt.Println(string(res))
+// }

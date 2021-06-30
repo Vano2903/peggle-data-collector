@@ -19,23 +19,23 @@ var (
 	collectionUser *mongo.Collection
 )
 
-type DateU struct {
-	Day   int `bson:"day, omitempty" json: "day, omitempty"`
-	Month int `bson:"month, omitempty" json: "month, omitempty"`
-	Year  int `bson:"year, omitempty" json: "year, omitempty"`
-}
+// type DateU struct {
+// 	Day   int `bson:"day, omitempty" json: "day, omitempty"`
+// 	Month int `bson:"month, omitempty" json: "month, omitempty"`
+// 	Year  int `bson:"year, omitempty" json: "year, omitempty"`
+// }
 
-func (d *DateU) Today() {
-	t := time.Now()
-	y, m, da := t.Date()
-	d.Year = y
-	d.Month = int(m)
-	d.Day = da
-}
+// func (d *DateU) Today() {
+// 	t := time.Now()
+// 	y, m, da := t.Date()
+// 	d.Year = y
+// 	d.Month = int(m)
+// 	d.Day = da
+// }
 
 type Commit struct {
-	Totals int   `bson:"totals, omitempty" json: "totals, omitempty"`
-	Date   DateU `bson:"date, omitempty" json: "date, omitempty"`
+	Totals    int                `bson:"totals, omitempty" json: "totals, omitempty"`
+	CreatedAt primitive.DateTime `bson:"date, omitempty" json: "date, omitempty"`
 }
 
 type Stats struct {
@@ -84,16 +84,20 @@ func ConnectToDatabaseUsers() error {
 //return all the years in which something has been commited
 func GetCommitsYear(user, pass string) ([]int, error) {
 	u, err := QueryUser(user, pass)
+	fmt.Println(u)
 	if err != nil {
 		return nil, err
 	}
 
 	var years []int
 	for _, c := range u.Stats.Commits {
-		if Contains(years, c.Date.Year) {
-			years = append(years, c.Date.Year)
+		fmt.Println(years)
+		date := c.CreatedAt.Time()
+		if !Contains(years, date.Year()) {
+			years = append(years, date.Year())
 		}
 	}
+	fmt.Println(years)
 	return years, nil
 }
 
@@ -123,7 +127,8 @@ func GetCommitsByYear(user, pass string, year int) ([]Commit, error) {
 
 	var commitsFoundByYear []Commit
 	for _, c := range u.Stats.Commits {
-		if c.Date.Year == year {
+		y := c.CreatedAt.Time().Year()
+		if y == year {
 			commitsFoundByYear = append(commitsFoundByYear, c)
 		}
 	}
@@ -136,11 +141,19 @@ func AddCommit(user, pass string) error {
 	if err != nil {
 		return err
 	}
-	var today DateU
-	today.Today()
+	type date struct {
+		d int
+		m time.Month
+		y int
+	}
+	// var today time.Time
+	today := time.Now()
+	t := date{today.Day(), today.Month(), today.Year()}
 	// today := today.Date()
 	for ind, com := range User.Stats.Commits {
-		if com.Date == today {
+		supp := com.CreatedAt.Time()
+		d := date{supp.Day(), supp.Month(), supp.Year()}
+		if reflect.DeepEqual(d, t) {
 			User.Stats.TotalCommits += 1
 			User.Stats.Commits[ind].Totals += 1
 			update := bson.M{"stats": User.Stats}
@@ -150,7 +163,7 @@ func AddCommit(user, pass string) error {
 		}
 	}
 
-	com := Commit{1, today}
+	com := Commit{1, primitive.NewDateTimeFromTime(today)}
 	User.Stats.Commits = append(User.Stats.Commits, com)
 
 	User.Stats.TotalCommits += 1
@@ -312,55 +325,64 @@ func testAggregate() ([]User, error) {
 	return usersFound, nil
 }
 
+func init() {
+	ConnectToDatabaseUsers()
+}
+
 // func main() {
 // 	ConnectToDatabaseUsers()
 // 	fmt.Println(testAggregate())
 // }
 
-/* run this main to see all functionality
+//run this main to see all functionality
 func main() {
-	Check the connection
+	// Check the connection
 	err := ConnectToDatabaseUsers()
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	users, _ := GetAllUsers()
-	fmt.Println("all users", users)
-	fmt.Println()
+	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
+	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
+	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
+	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
+	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
 
-	query := bson.M{"user": "cami<3"}
-	users, _ = QueryUsers(query)
-	fmt.Println("user == cami", users)
-	fmt.Println()
+	// users, _ := GetAllUsers()
+	// fmt.Println("all users", users)
+	// fmt.Println()
 
-	update := bson.M{"user": "cami<3"}
-	UpdateUser("cami", "HelloThere:D123!!!", update)
-	users, _ = GetAllUsers()
-	fmt.Println("updated cami into cami<3", users)
-	fmt.Println()
+	// query := bson.M{"user": "cami<3"}
+	// users, _ = QueryUsers(query)
+	// fmt.Println("user == cami", users)
+	// fmt.Println()
 
-	DeleteUser("ciao", "camiCwute")
-	users, _ = GetAllUsers()
-	fmt.Println("deleted ciao", users)
-	fmt.Println()
+	// update := bson.M{"user": "cami<3"}
+	// UpdateUser("cami", "HelloThere:D123!!!", update)
+	// users, _ = GetAllUsers()
+	// fmt.Println("updated cami into cami<3", users)
+	// fmt.Println()
 
-	found, err := IsCorrect("vano", "HelloThere:D123!!!")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("correct:", found)
+	// DeleteUser("ciao", "camiCwute")
+	// users, _ = GetAllUsers()
+	// fmt.Println("deleted ciao", users)
+	// fmt.Println()
 
-	found, err = IsCorrect("cami", "HelloThere:D123")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("incorrect psw:", found)
+	// found, err := IsCorrect("vano", "HelloThere:D123!!!")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println("correct:", found)
 
-	found, err = IsCorrect("chonky", "HelloThere:D123!!!")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("incorrect user:", found)
+	// found, err = IsCorrect("cami", "HelloThere:D123")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println("incorrect psw:", found)
+
+	// found, err = IsCorrect("chonky", "HelloThere:D123!!!")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+	// fmt.Println("incorrect user:", found)
 }
-*/
