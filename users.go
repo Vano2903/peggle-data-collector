@@ -334,7 +334,7 @@ func init() {
 // 	fmt.Println(testAggregate())
 // }
 
-//run this main to see all functionality
+/*run this main to see all functionality
 func main() {
 	// Check the connection
 	err := ConnectToDatabaseUsers()
@@ -342,11 +342,6 @@ func main() {
 		fmt.Println(err)
 	}
 
-	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
-	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
-	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
-	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
-	fmt.Println(AddCommit("vano", "HelloThere:D123!!!"))
 
 	// users, _ := GetAllUsers()
 	// fmt.Println("all users", users)
@@ -386,3 +381,4 @@ func main() {
 	// }
 	// fmt.Println("incorrect user:", found)
 }
+*/
