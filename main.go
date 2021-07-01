@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -29,6 +31,26 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(home)
+}
+
+func GetPfp(w http.ResponseWriter, r *http.Request) {
+	var post Post
+	fmt.Println(r.Body)
+
+	//read post body
+	_ = json.NewDecoder(r.Body).Decode(&post)
+
+	//check if user is correct
+	user, err := QueryUser(post.Username, post.Password)
+	fmt.Println(post)
+	if err != nil {
+		PrintErr(w, err.Error())
+		return
+	}
+	imgJson := fmt.Sprintf(`{"url":"%s"}`, user.PfpUrl)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	w.Write([]byte(imgJson))
 }
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -148,12 +170,14 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//TODO let user insert a date like 2021-2-4 and convert it to 2021-02-04 otherwhise it will return and error and it can be annoying
+//TODO documentation cause error messages are becoming a bit too long XD
 func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("ciaoo")
 	r.ParseForm()
-
+	sortByDate := true
 	fmt.Println(r.Form)
-
+	lim := 25
 	var queries []bson.D
 	// var result []User
 	for k, v := range r.Form {
@@ -176,18 +200,332 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			q := bson.D{{"$match", bson.D{{"wonBy", bson.M{"$in": vi}}}}}
 			queries = append(queries, q)
-		case "upload":
-			//TODO
-		case "points":
+		case "upload": //the url query will be < >before the date and it will search dates before, after or equal to the date setted
+			for _, ds := range v {
+				dateElements := strings.Split(ds, "-")
+				if len(dateElements) != 3 {
+					PrintErr(w, "date not defined correctly")
+					return
+				}
+				dateString := ds[1:] + "T00:00:00+00:00"
+				d, err := time.Parse(time.RFC3339, dateString)
+				if err != nil {
+					PrintErr(w, err.Error())
+				}
+				switch ds[0] {
+				case '>':
+					q := bson.D{{"$match", bson.D{{"videoData.uploadDate", bson.M{"$gt": primitive.NewDateTimeFromTime(d)}}}}}
+					queries = append(queries, q)
+				case '<':
+					q := bson.D{{"$match", bson.D{{"videoData.uploadDate", bson.M{"$lt": primitive.NewDateTimeFromTime(d)}}}}}
+					queries = append(queries, q)
+				default:
+					PrintErr(w, "date search operand not correct, must use '<', '>'")
+					return
+				}
+			}
+		case "points": //the url will be s,r. to define if search in all the games made by syn or red and so, ro to search in the overall stats
+			for _, ps := range v {
+				pointsElements := strings.Split(ps, "-")
+				if len(pointsElements) != 3 && len(pointsElements) != 2 {
+					PrintErr(w, "points has an incorrect format")
+					return
+				}
 
+				switch pointsElements[0] {
+				case "r":
+					points, err := strconv.Atoi(pointsElements[2])
+					if err != nil {
+						PrintErr(w, err.Error())
+						return
+					}
+					switch pointsElements[1] {
+					case ">":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.points", bson.M{"$gt": points}}}, {{"stats.redez.g2.points", bson.M{"$gt": points}}}, {{"stats.redez.g3.points", bson.M{"$gt": points}}}}}}}}
+						queries = append(queries, q)
+					case "<":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.points", bson.M{"$lt": points}}}, {{"stats.redez.g2.points", bson.M{"$lt": points}}}, {{"stats.redez.g3.points", bson.M{"$lt": points}}}}}}}}
+						queries = append(queries, q)
+					default:
+						PrintErr(w, "incorrect operator in points search")
+						return
+					}
+				case "s":
+					points, err := strconv.Atoi(pointsElements[2])
+					if err != nil {
+						PrintErr(w, err.Error())
+						return
+					}
+					switch pointsElements[1] {
+					case ">":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.points", bson.M{"$gt": points}}}, {{"stats.synergo.g2.points", bson.M{"$gt": points}}}, {{"stats.synergo.g3.points", bson.M{"$gt": points}}}}}}}}
+						queries = append(queries, q)
+					case "<":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.points", bson.M{"$lt": points}}}, {{"stats.synergo.g2.points", bson.M{"$lt": points}}}, {{"stats.synergo.g3.points", bson.M{"$lt": points}}}}}}}}
+						queries = append(queries, q)
+					default:
+						PrintErr(w, "incorrect operator in points search")
+						return
+					}
+				case "ro":
+					switch pointsElements[1] {
+					case ">":
+						points, err := strconv.Atoi(pointsElements[2])
+						if err != nil {
+							PrintErr(w, err.Error())
+							return
+						}
+						q := bson.D{{"$match", bson.D{{"stats.redez.overall.tPoints", bson.M{"$gt": points}}}}}
+						queries = append(queries, q)
+					case "<":
+						points, err := strconv.Atoi(pointsElements[2])
+						if err != nil {
+							PrintErr(w, err.Error())
+							return
+						}
+						q := bson.D{{"$match", bson.D{{"stats.redez.overall.tPoints", bson.M{"$lt": points}}}}}
+						queries = append(queries, q)
+					case "max":
+						lim = 1
+						q := bson.D{{"$sort", bson.M{"stats.redez.overall.tPoints": -1}}}
+						queries = append(queries, q)
+						sortByDate = false
+					case "min":
+						lim = 1
+						q := bson.D{{"$sort", bson.M{"stats.redez.overall.tPoints": 1}}}
+						queries = append(queries, q)
+						sortByDate = false
+					default:
+						PrintErr(w, "incorrect operator in points search")
+						return
+					}
+				case "so":
+					switch pointsElements[1] {
+					case ">":
+						points, err := strconv.Atoi(pointsElements[2])
+						if err != nil {
+							PrintErr(w, err.Error())
+							return
+						}
+						q := bson.D{{"$match", bson.D{{"stats.synergo.overall.tPoints", bson.M{"$gt": points}}}}}
+						queries = append(queries, q)
+					case "<":
+						points, err := strconv.Atoi(pointsElements[2])
+						if err != nil {
+							PrintErr(w, err.Error())
+							return
+						}
+						q := bson.D{{"$match", bson.D{{"stats.synergo.overall.tPoints", bson.M{"$lt": points}}}}}
+						queries = append(queries, q)
+					case "max":
+						lim = 1
+						q := bson.D{{"$sort", bson.M{"stats.synergo.overall.tPoints": -1}}}
+						queries = append(queries, q)
+						sortByDate = false
+					case "min":
+						lim = 1
+						q := bson.D{{"$sort", bson.M{"stats.synergo.overall.tPoints": 1}}}
+						queries = append(queries, q)
+						sortByDate = false
+					default:
+						PrintErr(w, "incorrect operator in points search")
+						return
+					}
+				default:
+					PrintErr(w, "points search operand not correct")
+					return
+				}
+			}
 		case "n-25":
+			for _, ps := range v {
+				n25Elements := strings.Split(ps, "-")
+				if len(n25Elements) != 3 && len(n25Elements) != 2 {
+					PrintErr(w, "n-25 has an incorrect format")
+					return
+				}
+				fmt.Println(n25Elements)
+				switch n25Elements[0] {
+				case "r":
+					points, err := strconv.Atoi(n25Elements[2])
+					if err != nil {
+						PrintErr(w, err.Error())
+						return
+					}
+					switch n25Elements[1] {
+					case ">":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.n-25", bson.M{"$gt": points}}}, {{"stats.redez.g2.n-25", bson.M{"$gt": points}}}, {{"stats.redez.g3.n-25", bson.M{"$gt": points}}}}}}}}
+						queries = append(queries, q)
+					case "<":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.n-25", bson.M{"$lt": points}}}, {{"stats.redez.g2.n-25", bson.M{"$lt": points}}}, {{"stats.redez.g3.n-25", bson.M{"$lt": points}}}}}}}}
+						queries = append(queries, q)
+					default:
+						PrintErr(w, "incorrect operator in n-25 search")
+						return
+					}
+				case "s":
+					points, err := strconv.Atoi(n25Elements[2])
+					if err != nil {
+						PrintErr(w, err.Error())
+						return
+					}
+					switch n25Elements[1] {
+					case ">":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.n-25", bson.M{"$gt": points}}}, {{"stats.synergo.g2.n-25", bson.M{"$gt": points}}}, {{"stats.synergo.g3.n-25", bson.M{"$gt": points}}}}}}}}
+						queries = append(queries, q)
+					case "<":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.n-25", bson.M{"$lt": points}}}, {{"stats.synergo.g2.n-25", bson.M{"$lt": points}}}, {{"stats.synergo.g3.n-25", bson.M{"$lt": points}}}}}}}}
+						queries = append(queries, q)
+					default:
+						PrintErr(w, "incorrect operator in n-25 search")
+						return
+					}
+				case "ro":
+					switch n25Elements[1] {
+					case ">":
+						points, err := strconv.Atoi(n25Elements[2])
+						if err != nil {
+							PrintErr(w, err.Error())
+							return
+						}
+						q := bson.D{{"$match", bson.D{{"stats.redez.overall.t-25", bson.M{"$gt": points}}}}}
+						queries = append(queries, q)
+					case "<":
+						points, err := strconv.Atoi(n25Elements[2])
+						if err != nil {
+							PrintErr(w, err.Error())
+							return
+						}
+						q := bson.D{{"$match", bson.D{{"stats.redez.overall.t-25", bson.M{"$lt": points}}}}}
+						queries = append(queries, q)
+					case "max":
+						lim = 1
+						q := bson.D{{"$sort", bson.M{"stats.redez.overall.t-25": -1}}}
+						queries = append(queries, q)
+						sortByDate = false
+					case "min":
+						lim = 1
+						q := bson.D{{"$sort", bson.M{"stats.redez.overall.t-25": 1}}}
+						queries = append(queries, q)
+						sortByDate = false
+					default:
+						PrintErr(w, "incorrect operator in n-25 search")
+						return
+					}
+				case "so":
+					switch n25Elements[1] {
+					case ">":
+						points, err := strconv.Atoi(n25Elements[2])
+						if err != nil {
+							PrintErr(w, err.Error())
+							return
+						}
+						q := bson.D{{"$match", bson.D{{"stats.synergo.overall.t-25", bson.M{"$gt": points}}}}}
+						queries = append(queries, q)
+					case "<":
+						points, err := strconv.Atoi(n25Elements[2])
+						if err != nil {
+							PrintErr(w, err.Error())
+							return
+						}
+						q := bson.D{{"$match", bson.D{{"stats.synergo.overall.t-25", bson.M{"$lt": points}}}}}
+						queries = append(queries, q)
+					case "max":
+						lim = 1
+						q := bson.D{{"$sort", bson.M{"stats.synergo.overall.t-25": -1}}}
+						queries = append(queries, q)
+						sortByDate = false
+					case "min":
+						lim = 1
+						q := bson.D{{"$sort", bson.M{"stats.synergo.overall.t-25": 1}}}
+						queries = append(queries, q)
+						sortByDate = false
+					default:
+						PrintErr(w, "incorrect operator in n-25 search")
+						return
+					}
+				default:
+					PrintErr(w, "n-25 search operand not correct")
+					return
+				}
+			}
+		case "val-fe":
+			for _, fes := range v {
+				exfeElements := strings.Split(fes, "-")
+				if len(exfeElements) != 3 {
+					PrintErr(w, "extreme fever not defined correctly")
+					return
+				}
+				if exfeElements[2] != "0" && exfeElements[2] != "5000" && exfeElements[2] != "25000" && exfeElements[2] != "50000" {
+					PrintErr(w, "extreme fever's value is invalid, must use 0, 5000, 25000, 50000 only")
+					return
+				}
+				valFe, err := strconv.Atoi(exfeElements[2])
+				if err != nil {
+					PrintErr(w, err.Error())
+					return
+				}
 
-		case "valEF":
-
+				switch exfeElements[0] {
+				case "r":
+					switch exfeElements[1] {
+					case ">":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFE", bson.M{"$gt": valFe}}}, {{"stats.redez.g2.valFE", bson.M{"$gt": valFe}}}, {{"stats.redez.g3.valFE", bson.M{"$gt": valFe}}}}}}}}
+						queries = append(queries, q)
+					case "<":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFE", bson.M{"$lt": valFe}}}, {{"stats.redez.g2.valFE", bson.M{"$lt": valFe}}}, {{"stats.redez.g3.valFE", bson.M{"$lt": valFe}}}}}}}}
+						queries = append(queries, q)
+					case "e":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFE", valFe}}, {{"stats.redez.g2.valFE", valFe}}, {{"stats.redez.g3.valFE", valFe}}}}}}}
+						queries = append(queries, q)
+					default:
+						PrintErr(w, "extreme fever search operand not correct, must use '<', '>', 'e'")
+						return
+					}
+				case "s":
+					switch exfeElements[1] {
+					case ">":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFE", bson.M{"$gt": valFe}}}, {{"stats.synergo.g2.valFE", bson.M{"$gt": valFe}}}, {{"stats.synergo.g3.valFE", bson.M{"$gt": valFe}}}}}}}}
+						queries = append(queries, q)
+					case "<":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFE", bson.M{"$lt": valFe}}}, {{"stats.synergo.g2.valFE", bson.M{"$lt": valFe}}}, {{"stats.synergo.g3.valFE", bson.M{"$lt": valFe}}}}}}}}
+						queries = append(queries, q)
+					case "e":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFE", valFe}}, {{"stats.synergo.g2.valFE", valFe}}, {{"stats.synergo.g3.valFE", valFe}}}}}}}
+						queries = append(queries, q)
+					default:
+						PrintErr(w, "extreme fever search operand not correct, must use '<', '>', 'e'")
+						return
+					}
+				}
+			}
 		case "character":
-
+			//TODO
+		case "limit":
+			if len(v) != 1 {
+				PrintErr(w, "can't define more than a limit option")
+				return
+			}
+			val, err := strconv.Atoi(v[0])
+			if err != nil {
+				PrintErr(w, err.Error())
+				return
+			}
+			if val <= 0 {
+				PrintErr(w, "definte a positive number grater than 0 for the limit")
+				return
+			}
+			lim = val
+		default:
+			PrintErr(w, "invalid parameter")
+			return
 		}
 	}
+	if sortByDate {
+		q := bson.D{{"$sort", bson.M{"videoData.uploadDate": 1}}}
+		queries = append(queries, q)
+	}
+	limit := bson.D{{"$limit", lim}}
+	queries = append(queries, limit)
 
 	fmt.Println(queries)
 	fmt.Println(QueryGames(queries))
@@ -201,6 +539,9 @@ func main() {
 	//user login area
 	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")
 	r.HandleFunc(usersLogin.String(), LoginHandler).Methods("POST")
+
+	//get url for user's pfp
+	r.HandleFunc(usersPfp.String(), GetPfp).Methods("POST")
 
 	//commit area
 	r.HandleFunc(getCommits.String(), CommitHandler).Methods("POST")

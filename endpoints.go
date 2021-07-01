@@ -15,6 +15,7 @@ const (
 
 	//users endpoint
 	usersLogin endpoints = "/users/login"
+	usersPfp   endpoints = "/users/pfp"
 
 	//commits endpoints
 	getCommits     endpoints = "/commit/{param}"

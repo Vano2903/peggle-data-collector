@@ -146,7 +146,6 @@ func AddCommit(user, pass string) error {
 		m time.Month
 		y int
 	}
-	// var today time.Time
 	today := time.Now()
 	t := date{today.Day(), today.Month(), today.Year()}
 	// today := today.Date()

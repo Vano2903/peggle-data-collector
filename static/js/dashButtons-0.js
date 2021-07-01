@@ -15,3 +15,20 @@ function logout() {
     localStorage.removeItem("user");
     window.location.replace('/users/login');
 }
+
+async function getPfp() {
+    var res = await fetch('/users/pfp', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    });
+    var resp = await res.text();
+    console.log(resp);
+    var respJson = JSON.parse(resp);
+    console.log(respJson);
+    if (respJson.url != "") {
+        document.getElementById("pfp").src = respJson.url
+    }
+}

@@ -19,10 +19,11 @@ var (
 )
 
 type Game struct {
-	ID    primitive.ObjectID `bson:"_id, omitempty" json:"id,omitempty"`
-	VD    VideoData          `bson:"videoData, omitempty" json:"videoData, omitempty"`
-	WonBy int                `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
-	Stats Players            `bson:"stats, omitempty" json:"stats,omitempty"`
+	ID      primitive.ObjectID `bson:"_id, omitempty" json:"id,omitempty"`
+	VD      VideoData          `bson:"videoData, omitempty" json:"videoData, omitempty"`
+	WonBy   int                `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
+	Stats   Players            `bson:"stats, omitempty" json:"stats,omitempty"`
+	Comment string             `bson:"comment, omitempty" json:"comment, omitempty"`
 }
 
 type Players struct {
@@ -171,7 +172,7 @@ func init() {
 
 // func main() {
 // 	var game Game
-// 	err := game.VD.GetYoutubeDataFromId("S0-4ouN35gw")
+// 	err := game.VD.GetYoutubeDataFromId("IwvS8ft7DM8")
 // 	if err != nil {
 // 		panic(err)
 // 	}
@@ -187,32 +188,30 @@ func init() {
 // 	game.Stats.Redez.G1 = GameStats{32860, 0, 0, "castoro"}
 // 	game.Stats.Redez.G2 = GameStats{42840, 1, 5000, "alieno"}
 // 	game.Stats.Redez.G3 = GameStats{38805, 1, 0, "zucca"}
-
-// 	ConnectToDatabaseGame()
 // 	// ConnectToDatabaseUsers()
 
-// 	// fmt.Println(AddGame(game))
-// 	// fmt.Println(QueryGame())
+// 	fmt.Println(AddGame(game))
+// fmt.Println(QueryGame())
 
-// 	// update := bson.M{"wonBy": 1}
-// 	// fmt.Println(UpdateGame("IwvS8ft7DM8", update))
-// 	// fmt.Println(DeleteGame("IwvS8ft7DM9"))
+// update := bson.M{"wonBy": 1}
+// fmt.Println(UpdateGame("IwvS8ft7DM8", update))
+// fmt.Println(DeleteGame("IwvS8ft7DM9"))
 
-// 	// q1 := bson.D{{"$match", bson.D{{"wonBy", bson.M{"$in": []int{1}}}}}}
-// 	q3 := bson.D{{"$match", bson.D{{"videoData.title", bson.M{"$in": []string{"PEGGLE: NON E' POSSIBILE CHE VADA  COSI"}}}}}}
-// 	// q3 := bson.D{{"$match", bson.D{{"authLevel", bson.M{"$in": []int{0}}}}}}
-// 	q2 := bson.D{{"$sort", bson.M{"wonBy": 1}}}
+// q1 := bson.D{{"$match", bson.D{{"wonBy", bson.M{"$in": []int{1}}}}}}
+// q3 := bson.D{{"$match", bson.D{{"videoData.title", bson.M{"$in": []string{"PEGGLE: NON E' POSSIBILE CHE VADA  COSI"}}}}}}
+// // q3 := bson.D{{"$match", bson.D{{"authLevel", bson.M{"$in": []int{0}}}}}}
+// q2 := bson.D{{"$sort", bson.M{"wonBy": 1}}}
 
-// 	query := []bson.D{q3, q2}
+// query := []bson.D{q3, q2}
 
-// 	result, err := QueryGames(query)
-// 	fmt.Println(result)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	res, err := json.MarshalIndent(&result, "", "\t")
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	fmt.Println(string(res))
+// result, err := QueryGames(query)
+// fmt.Println(result)
+// if err != nil {
+// 	panic(err)
+// }
+// res, err := json.MarshalIndent(&result, "", "\t")
+// if err != nil {
+// 	panic(err)
+// }
+// fmt.Println(string(res))
 // }
