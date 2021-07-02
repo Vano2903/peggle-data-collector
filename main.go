@@ -16,9 +16,9 @@ import (
 )
 
 type Post struct {
-	Username string `json: "username, omitempty"`
-	Password string `json: "password, omitempty"`
-	Year     int    `json: "year, omitempty"`
+	Username string `json:"username, omitempty"`
+	Password string `json:"password, omitempty"`
+	Year     int    `json:"year, omitempty"`
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -35,14 +35,12 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 
 func GetPfp(w http.ResponseWriter, r *http.Request) {
 	var post Post
-	fmt.Println(r.Body)
 
 	//read post body
 	_ = json.NewDecoder(r.Body).Decode(&post)
 
 	//check if user is correct
 	user, err := QueryUser(post.Username, post.Password)
-	fmt.Println(post)
 	if err != nil {
 		PrintErr(w, err.Error())
 		return
@@ -55,19 +53,16 @@ func GetPfp(w http.ResponseWriter, r *http.Request) {
 
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var post Post
-	fmt.Println(r.Body)
 
 	//read post body
 	_ = json.NewDecoder(r.Body).Decode(&post)
 
 	//check if user is correct
 	user, err := IsCorrect(post.Username, post.Password)
-	fmt.Println(post)
 
 	//return response
 	if err != nil {
 		w.Header().Set("Content-Type", "application/json")
-		fmt.Println(err)
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte(`{"code": 401, "msg": "User Unauthorized"}`))
 		return
@@ -92,7 +87,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(page)
-	fmt.Println("the user: ", user.User, " just logged in, the auth lvl is: ", user.Level)
+	log.Println("the user: ", user.User, " just logged in, the auth lvl is: ", user.Level)
 }
 
 func CommitHandler(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +97,6 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 
 	//get param from url
 	param := mux.Vars(r)["param"]
-	fmt.Println("param ", param)
 
 	switch param {
 	//return the ammount of total commits made by the user
@@ -119,7 +113,6 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 	//return all the years a user has made at least 1 commit
 	case "years":
 		years, err := GetCommitsYear(post.Username, post.Password)
-		fmt.Println(years)
 		if err != nil {
 			PrintErr(w, err.Error())
 			return
@@ -173,13 +166,12 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 //TODO let user insert a date like 2021-2-4 and convert it to 2021-02-04 otherwhise it will return and error and it can be annoying
 //TODO documentation cause error messages are becoming a bit too long XD
 func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("ciaoo")
+	//parse url query
 	r.ParseForm()
 	sortByDate := true
-	fmt.Println(r.Form)
 	lim := 25
 	var queries []bson.D
-	// var result []User
+	//all options :D
 	for k, v := range r.Form {
 		switch k {
 		case "id":
@@ -343,7 +335,6 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					PrintErr(w, "n-25 has an incorrect format")
 					return
 				}
-				fmt.Println(n25Elements)
 				switch n25Elements[0] {
 				case "r":
 					points, err := strconv.Atoi(n25Elements[2])
@@ -499,7 +490,149 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 				}
 			}
 		case "character":
-			//TODO
+			for _, chs := range v {
+				char := chs[1:]
+				switch chs[0] {
+				case 's':
+					switch char {
+					case "cas":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "castoro"}},
+							{{"stats.synergo.g2.valFE", "castoro"}},
+							{{"stats.synergo.g3.valFE", "castoro"}}}}}}}
+						queries = append(queries, q)
+					case "uni":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "unicorno"}},
+							{{"stats.synergo.g2.valFE", "unicorno"}},
+							{{"stats.synergo.g3.valFE", "unicorno"}}}}}}}
+						queries = append(queries, q)
+					case "zuc":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "zucca"}},
+							{{"stats.synergo.g2.valFE", "zucca"}},
+							{{"stats.synergo.g3.valFE", "zucca"}}}}}}}
+						queries = append(queries, q)
+					case "gat":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "gatto"}},
+							{{"stats.synergo.g2.valFE", "gatto"}},
+							{{"stats.synergo.g3.valFE", "gatto"}}}}}}}
+						queries = append(queries, q)
+					case "ali":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "alieno"}},
+							{{"stats.synergo.g2.valFE", "alieno"}},
+							{{"stats.synergo.g3.valFE", "alieno"}}}}}}}
+						queries = append(queries, q)
+					case "gra":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "granchio"}},
+							{{"stats.synergo.g2.valFE", "granchio"}},
+							{{"stats.synergo.g3.valFE", "granchio"}}}}}}}
+						queries = append(queries, q)
+					case "gir":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "girasole"}},
+							{{"stats.redez.g2.valFE", "girasole"}},
+							{{"stats.redez.g3.valFE", "girasole"}}}}}}}
+						queries = append(queries, q)
+					case "dra":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "drago"}},
+							{{"stats.synergo.g2.valFE", "drago"}},
+							{{"stats.synergo.g3.valFE", "drago"}}}}}}}
+						queries = append(queries, q)
+					case "con":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "coniglio"}},
+							{{"stats.synergo.g2.valFE", "coniglio"}},
+							{{"stats.synergo.g3.valFE", "coniglio"}}}}}}}
+						queries = append(queries, q)
+					case "guf":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "gufo"}},
+							{{"stats.synergo.g2.valFE", "gufo"}},
+							{{"stats.synergo.g3.valFE", "gufo"}}}}}}}
+						queries = append(queries, q)
+					case "sep":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.synergo.g1.character", "seppia"}},
+							{{"stats.synergo.g2.valFE", "seppia"}},
+							{{"stats.synergo.g3.valFE", "seppia"}}}}}}}
+						queries = append(queries, q)
+					}
+				case 'r':
+					switch char {
+					case "cas":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "castoro"}},
+							{{"stats.redez.g2.valFE", "castoro"}},
+							{{"stats.redez.g3.valFE", "castoro"}}}}}}}
+						queries = append(queries, q)
+					case "uni":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "unicorno"}},
+							{{"stats.redez.g2.valFE", "unicorno"}},
+							{{"stats.redez.g3.valFE", "unicorno"}}}}}}}
+						queries = append(queries, q)
+					case "zuc":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "zucca"}},
+							{{"stats.redez.g2.valFE", "zucca"}},
+							{{"stats.redez.g3.valFE", "zucca"}}}}}}}
+						queries = append(queries, q)
+					case "gat":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "gatto"}},
+							{{"stats.redez.g2.valFE", "gatto"}},
+							{{"stats.redez.g3.valFE", "gatto"}}}}}}}
+						queries = append(queries, q)
+					case "ali":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "alieno"}},
+							{{"stats.redez.g2.valFE", "alieno"}},
+							{{"stats.redez.g3.valFE", "alieno"}}}}}}}
+						queries = append(queries, q)
+					case "gra":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "granchio"}},
+							{{"stats.redez.g2.valFE", "granchio"}},
+							{{"stats.redez.g3.valFE", "granchio"}}}}}}}
+						queries = append(queries, q)
+					case "gir":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "girasole"}},
+							{{"stats.redez.g2.valFE", "girasole"}},
+							{{"stats.redez.g3.valFE", "girasole"}}}}}}}
+						queries = append(queries, q)
+					case "dra":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "drago"}},
+							{{"stats.redez.g2.valFE", "drago"}},
+							{{"stats.redez.g3.valFE", "drago"}}}}}}}
+						queries = append(queries, q)
+					case "con":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "coniglio"}},
+							{{"stats.redez.g2.valFE", "coniglio"}},
+							{{"stats.redez.g3.valFE", "coniglio"}}}}}}}
+						queries = append(queries, q)
+					case "guf":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "gufo"}},
+							{{"stats.redez.g2.valFE", "gufo"}},
+							{{"stats.redez.g3.valFE", "gufo"}}}}}}}
+						queries = append(queries, q)
+					case "sep":
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
+							{{"stats.redez.g1.character", "seppia"}},
+							{{"stats.redez.g2.valFE", "seppia"}},
+							{{"stats.redez.g3.valFE", "seppia"}}}}}}}
+						queries = append(queries, q)
+					}
+				}
+			}
 		case "limit":
 			if len(v) != 1 {
 				PrintErr(w, "can't define more than a limit option")
@@ -527,8 +660,19 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 	limit := bson.D{{"$limit", lim}}
 	queries = append(queries, limit)
 
-	fmt.Println(queries)
-	fmt.Println(QueryGames(queries))
+	results, err := QueryGames(queries)
+	if err != nil {
+		PrintInternalErr(w, err.Error())
+		return
+	}
+	j, err := json.MarshalIndent(results, "", "\t")
+	if err != nil {
+		PrintInternalErr(w, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
 }
 
 func main() {

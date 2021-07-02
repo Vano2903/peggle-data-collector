@@ -34,23 +34,23 @@ var (
 // }
 
 type Commit struct {
-	Totals    int                `bson:"totals, omitempty" json: "totals, omitempty"`
-	CreatedAt primitive.DateTime `bson:"date, omitempty" json: "date, omitempty"`
+	Totals    int                `bson:"totals, omitempty" json:"totals, omitempty"`
+	CreatedAt primitive.DateTime `bson:"date, omitempty" json:"date, omitempty"`
 }
 
 type Stats struct {
-	TotalCommits int      `bson:"totals, omitempty" json: "totals, omitempty"`
-	Commits      []Commit `bson:"commits, omitempty" json: "commits, omitempty"`
+	TotalCommits int      `bson:"totals, omitempty" json:"totals, omitempty"`
+	Commits      []Commit `bson:"commits, omitempty" json:"commits, omitempty"`
 }
 
 //TODO pfpUrl and gitusername can be used as search parameters
 type User struct {
-	ID          primitive.ObjectID `bson:"_id, omitempty" json: "id, omitempty"`
-	User        string             `bson:"user, omitempty" json: "user, omitempty"`
-	GitUserName string             `bson:"git_user_name, omitempty" json: "git_user_name, omitempty"`
-	PfpUrl      string             `bson:"pfp_url, omitempty" json: "pfp_url, omitempty"`
-	Pass        string             `bson:"password, omitempty"  json: "password, omitempty"`
-	Level       int                `bson:"authLevel, omitempty" json: "authLevel, omitempty"` //0 admin (every priviliges), 1 every power relative to the games, 2 just adding
+	ID          primitive.ObjectID `bson:"_id, omitempty" json:"-"`
+	User        string             `bson:"user, omitempty" json:"user, omitempty"`
+	GitUserName string             `bson:"git_user_name, omitempty" json:"git_user_name, omitempty"`
+	PfpUrl      string             `bson:"pfp_url, omitempty" json:"pfp_url, omitempty"`
+	Pass        string             `bson:"password, omitempty"  json:"password, omitempty"`
+	Level       int                `bson:"authLevel, omitempty" json:"authLevel, omitempty"` //0 admin (every priviliges), 1 every power relative to the games, 2 just adding
 	Stats       Stats              `bson:"stats, omitempty" json:"stats, omitempty"`
 }
 

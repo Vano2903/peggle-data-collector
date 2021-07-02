@@ -23,9 +23,9 @@ type config struct {
 
 type VideoData struct {
 	Id             string             `bson:"id, omitempty" json:"id,omitempty"`
-	Title          string             `bson:"title, omitempty" json: "title, omitempty"`
-	ThumbMaxResUrl string             `bson:"thumbMaxResUrl, omitempty" json: "thumbMaxResUrl, omitempty"`
-	UploadDate     primitive.DateTime `bson:"uploadDate, omitempty" json: "uploadDate, omitempty"`
+	Title          string             `bson:"title, omitempty" json:"title, omitempty"`
+	ThumbMaxResUrl string             `bson:"thumbMaxResUrl, omitempty" json:"thumbMaxResUrl, omitempty"`
+	UploadDate     primitive.DateTime `bson:"uploadDate, omitempty" json:"uploadDate, omitempty"`
 }
 
 func (v *VideoData) CheckIfNotCompleted() bool {

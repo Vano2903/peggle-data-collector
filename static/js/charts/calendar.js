@@ -34,7 +34,7 @@ async function genCalendarCommits(user, year) {
     var dataSet = [];
 
     respJson.forEach(function (item) {
-        dataSet.push([new Date(item.CreatedAt), item.Totals])
+        dataSet.push([new Date(item.date), item.totals])
     });
 
     return dataSet;

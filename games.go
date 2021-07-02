@@ -19,11 +19,12 @@ var (
 )
 
 type Game struct {
-	ID      primitive.ObjectID `bson:"_id, omitempty" json:"id,omitempty"`
+	ID      primitive.ObjectID `bson:"_id, omitempty" json:"-"`
 	VD      VideoData          `bson:"videoData, omitempty" json:"videoData, omitempty"`
 	WonBy   int                `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
 	Stats   Players            `bson:"stats, omitempty" json:"stats,omitempty"`
 	Comment string             `bson:"comment, omitempty" json:"comment, omitempty"`
+	AddedBy string             `bson:"addedBy, omitempty" json:"addedBy, omitempty"`
 }
 
 type Players struct {
@@ -50,7 +51,6 @@ type GameStats struct {
 	Character string `bson:"character, omitempty" json:"character,omitempty"`
 }
 
-//*
 //will connect to database on games's collectionn
 func ConnectToDatabaseGame() error {
 	//get context
@@ -74,7 +74,6 @@ func ConnectToDatabaseGame() error {
 	return nil
 }
 
-//*
 func QueryGames(q []bson.D) ([]Game, error) {
 	cur, err := collectionGame.Aggregate(ctxGame, q)
 	if err != nil {
@@ -90,7 +89,6 @@ func QueryGames(q []bson.D) ([]Game, error) {
 	return gamesFound, nil
 }
 
-//*
 func CheckIfExist(id string) (bool, error) {
 	//search in database
 	cur, err := collectionGame.Find(ctxGame, bson.M{"videoData.id": id})
@@ -110,7 +108,6 @@ func CheckIfExist(id string) (bool, error) {
 	return false, nil
 }
 
-//*
 func AddGame(toAdd Game) (string, error) {
 	//TODO check if toAdd is not completed
 
@@ -142,7 +139,6 @@ func AddGame(toAdd Game) (string, error) {
 	return InsertedID, nil
 }
 
-//*
 func UpdateGame(id string, update bson.M) error {
 	_, err := collectionGame.UpdateOne(
 		ctxGame,
@@ -157,7 +153,6 @@ func UpdateGame(id string, update bson.M) error {
 	return nil
 }
 
-//*
 func DeleteGame(id string) error {
 	_, err := collectionGame.DeleteOne(ctxGame, bson.M{"videoData.id": id})
 	if err != nil {
