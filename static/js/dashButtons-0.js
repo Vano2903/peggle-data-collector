@@ -1,8 +1,11 @@
 var divs = { stats: document.getElementById("stats"), users: document.getElementById("users-managment"), game: document.getElementById("game"), user: document.getElementById("user") }
+var showing = "stats"
 
 function show(what) {
     hideAll()
     divs[what].style.display = "block";
+    console.log(what)
+    showing = what
 }
 
 function hideAll() {

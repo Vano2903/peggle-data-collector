@@ -3,6 +3,8 @@ google.charts.setOnLoadCallback(calendar);
 
 var years
 var commits
+var delay = 250
+var throttled = false
 
 async function getUsersCommitsYears(user) {
     var res = await fetch('/commit/years', {
@@ -62,9 +64,6 @@ async function calendar() {
     drawCommitChart(calendarOptions, commits);
 }
 
-$(window).resize(function () {
-    calendar()
-});
 
 function drawYearsButtons(years) {
     var buttonContainer = document.getElementById("calendar-buttons");
@@ -83,9 +82,22 @@ function drawYearsButtons(years) {
     });
 }
 
+window.addEventListener('resize', function () {
+    if (!throttled) {
+        if (showing == "stats") {
+            calendar()
+        }
+        throttled = true;
+        setTimeout(function () {
+            throttled = false;
+        }, delay);
+    }
+});
+
 $(document).ready(async function () {
     years = await getUsersCommitsYears(user);
     drawYearsButtons(years)
+    calendar()
 })
 
 function genCalendarOptions(width, name) {
