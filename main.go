@@ -665,13 +665,44 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 		PrintInternalErr(w, err.Error())
 		return
 	}
-	j, err := json.MarshalIndent(results, "", "\t")
+	j, err := json.Marshal(results)
 	if err != nil {
 		PrintInternalErr(w, err.Error())
 		return
 	}
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
+}
+
+//given a youtube url will search in database and if it's not found will return a message saying the video is not yet registered in the database
+//otherwise will return a json of the data of the game found
+func CheckGameHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	q := []bson.D{bson.D{{"$match", bson.D{{"videoData.id", params["id"]}}}}}
+	results, err := QueryGames(q)
+	if err != nil {
+		PrintInternalErr(w, err.Error())
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+
+	//if len is 0 then nothing was found and let the user know that this id is not in the database
+	if len(results) == 0 {
+		j := `{"msg": "the id is not in the database"}`
+		w.Write([]byte(j))
+		return
+	}
+
+	//return the stats of the game if found (need it for the update of a game)
+	j, err := json.Marshal(results)
+	if err != nil {
+		PrintInternalErr(w, err.Error())
+		return
+	}
+
 	w.Write(j)
 }
 
@@ -692,6 +723,7 @@ func main() {
 
 	//game area
 	r.HandleFunc(games.String(), SeachGameHandler).Methods("GET")
+	r.HandleFunc(checkGame.String(), CheckGameHandler).Methods("GET")
 
 	log.Println("starting on 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))

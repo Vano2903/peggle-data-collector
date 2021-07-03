@@ -22,7 +22,8 @@ const (
 	getCommitsYear endpoints = "/commit/{year}"
 
 	//games endpoints
-	games endpoints = "/games/search"
+	games     endpoints = "/games/search"
+	checkGame endpoints = "/games/check/{id}"
 )
 
 func (e endpoints) String() string {
