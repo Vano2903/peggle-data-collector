@@ -6,7 +6,6 @@ function youtube_parser(url) {
     return (match && match[7].length == 11) ? match[7] : false;
 }
 
-
 $(document).ready(
     function () {
         videoLink.addEventListener('input', async function () {

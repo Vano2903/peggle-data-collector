@@ -19,6 +19,7 @@ type Post struct {
 	Username string `json:"username, omitempty"`
 	Password string `json:"password, omitempty"`
 	Year     int    `json:"year, omitempty"`
+	Id       string `json:"id, omitempty"`
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -87,7 +88,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(page)
-	log.Println("the user: ", user.User, " just logged in, the auth lvl is: ", user.Level)
+	log.Println("the user:", user.User, " just logged in, the auth lvl is:", user.Level)
 }
 
 func CommitHandler(w http.ResponseWriter, r *http.Request) {
@@ -706,6 +707,57 @@ func CheckGameHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(j)
 }
 
+func AddGameHandler(w http.ResponseWriter, r *http.Request) {
+	//read user credentials
+	var post Game
+	json.NewDecoder(r.Body).Decode(&post)
+	//TODO function to check if some values are missing in the post request
+
+	id, err := AddGame(post)
+	if err != nil {
+		PrintErr(w, err.Error())
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(fmt.Sprintf(`{"msg":"Game added correctly and it's id is: %s"}`, id)))
+}
+
+func UpdateGameHandler(w http.ResponseWriter, r *http.Request) {
+	//updated game in post
+	var post Game
+	json.NewDecoder(r.Body).Decode(&post)
+	//id of the game to update
+	idGameUpdate := mux.Vars(r)["id"]
+	found, _ := CheckIfExist(idGameUpdate)
+	if !found {
+		PrintErr(w, "game not found")
+		return
+	}
+	err := FullUpdateGame(idGameUpdate, post)
+	if err != nil {
+		PrintInternalErr(w, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"msg":"game updated correctly"}`))
+}
+
+func DeleteGameHandler(w http.ResponseWriter, r *http.Request) {
+	var post Post
+	json.NewDecoder(r.Body).Decode(&post)
+	err := DeleteGame(post.Id)
+	if err != nil {
+		PrintInternalErr(w, err.Error())
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(`{"msg":"game deleted correctly"}`))
+}
+
 func main() {
 	r := mux.NewRouter()
 	//statics
@@ -724,6 +776,9 @@ func main() {
 	//game area
 	r.HandleFunc(games.String(), SeachGameHandler).Methods("GET")
 	r.HandleFunc(checkGame.String(), CheckGameHandler).Methods("GET")
+	r.HandleFunc(addGame.String(), AddGameHandler).Methods("POST")
+	r.HandleFunc(updateGame.String(), UpdateGameHandler).Methods("POST")
+	r.HandleFunc(deleteGame.String(), DeleteGameHandler).Methods("POST")
 
 	log.Println("starting on 8080")
 	log.Fatal(http.ListenAndServe(":8080", r))

@@ -29,7 +29,6 @@ func Contains(slice []int, item int) bool {
 	}
 
 	_, ok := set[item]
-	fmt.Println(ok)
 	return ok
 }
 

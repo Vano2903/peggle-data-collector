@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -19,12 +18,12 @@ var (
 )
 
 type Game struct {
-	ID      primitive.ObjectID `bson:"_id, omitempty" json:"-"`
-	VD      VideoData          `bson:"videoData, omitempty" json:"videoData, omitempty"`
-	WonBy   int                `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
-	Stats   Players            `bson:"stats, omitempty" json:"stats,omitempty"`
-	Comment string             `bson:"comment, omitempty" json:"comment, omitempty"`
-	AddedBy string             `bson:"addedBy, omitempty" json:"addedBy, omitempty"`
+	// ID      primitive.ObjectID `bson:"_id, omitempty" json:"-"`
+	VD      VideoData `bson:"videoData, omitempty" json:"videoData, omitempty"`
+	WonBy   int       `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
+	Stats   Players   `bson:"stats, omitempty" json:"stats,omitempty"`
+	Comment string    `bson:"comment, omitempty" json:"comment, omitempty"`
+	AddedBy string    `bson:"addedBy, omitempty" json:"addedBy, omitempty"`
 }
 
 type Players struct {
@@ -112,12 +111,9 @@ func AddGame(toAdd Game) (string, error) {
 	//TODO check if toAdd is not completed
 
 	//check if not already stored
-	found, err := CheckIfExist(toAdd.VD.Id)
-	if err != nil {
-		return "", errors.New(err.Error() + "if you want to update an already stored game use UpdateGame")
-	}
+	found, _ := CheckIfExist(toAdd.VD.Id)
 	if found == true {
-		return "", errors.New("game already stored, ")
+		return "", errors.New("game already stored, if you want to update an already stored game use UpdateGame")
 	}
 
 	//adding game to database
@@ -130,7 +126,6 @@ func AddGame(toAdd Game) (string, error) {
 		toAdd.WonBy,
 		toAdd.Stats,
 	}
-	fmt.Println(toAddNoId)
 	result, err := collectionGame.InsertOne(ctxGame, toAddNoId)
 	if err != nil {
 		return "", err
@@ -139,7 +134,21 @@ func AddGame(toAdd Game) (string, error) {
 	return InsertedID, nil
 }
 
-func UpdateGame(id string, update bson.M) error {
+func PartialUpdateGame(id string, update bson.M) error {
+	_, err := collectionGame.UpdateOne(
+		ctxGame,
+		bson.M{"videoData.id": id},
+		bson.D{
+			{"$set", update},
+		},
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func FullUpdateGame(id string, update Game) error {
 	_, err := collectionGame.UpdateOne(
 		ctxGame,
 		bson.M{"videoData.id": id},
@@ -175,7 +184,7 @@ func init() {
 // 	//syn
 // 	game.Stats.Synergo.Overall.TPoints = 132415
 // 	game.Stats.Synergo.Overall.T25 = 3
-// 	game.Stats.Synergo.G1 = GameStats{34195, 1, 0, "unicorno"}
+// 	game.Stats.Synergo.G1 = GameStats{34195, 1, 0, "puttana eva"}
 // 	game.Stats.Synergo.G2 = GameStats{39830, 1, 0, "girasole"}
 // 	game.Stats.Synergo.G3 = GameStats{58390, 1, 0, "gatto"}
 
@@ -184,8 +193,9 @@ func init() {
 // 	game.Stats.Redez.G2 = GameStats{42840, 1, 5000, "alieno"}
 // 	game.Stats.Redez.G3 = GameStats{38805, 1, 0, "zucca"}
 // 	// ConnectToDatabaseUsers()
+// 	fmt.Println(FullUpdateGame("IwvS8ft7DM8", game))
 
-// 	fmt.Println(AddGame(game))
+// fmt.Println(AddGame(game))
 // fmt.Println(QueryGame())
 
 // update := bson.M{"wonBy": 1}

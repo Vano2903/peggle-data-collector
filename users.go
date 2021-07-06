@@ -84,20 +84,17 @@ func ConnectToDatabaseUsers() error {
 //return all the years in which something has been commited
 func GetCommitsYear(user, pass string) ([]int, error) {
 	u, err := QueryUser(user, pass)
-	fmt.Println(u)
 	if err != nil {
 		return nil, err
 	}
 
 	var years []int
 	for _, c := range u.Stats.Commits {
-		fmt.Println(years)
 		date := c.CreatedAt.Time()
 		if !Contains(years, date.Year()) {
 			years = append(years, date.Year())
 		}
 	}
-	fmt.Println(years)
 	return years, nil
 }
 
@@ -156,7 +153,6 @@ func AddCommit(user, pass string) error {
 			User.Stats.TotalCommits += 1
 			User.Stats.Commits[ind].Totals += 1
 			update := bson.M{"stats": User.Stats}
-			fmt.Println(update)
 			UpdateUser(user, pass, update)
 			return nil
 		}
@@ -167,7 +163,6 @@ func AddCommit(user, pass string) error {
 
 	User.Stats.TotalCommits += 1
 	update := bson.M{"stats": User.Stats}
-	fmt.Println(update)
 	UpdateUser(user, pass, update)
 	return nil
 }
