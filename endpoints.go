@@ -18,8 +18,7 @@ const (
 	usersPfp   endpoints = "/users/pfp"
 
 	//commits endpoints
-	getCommits     endpoints = "/commit/{param}"
-	getCommitsYear endpoints = "/commit/{year}"
+	getCommits endpoints = "/commit/{param}"
 
 	//games endpoints
 	games      endpoints = "/games/search"

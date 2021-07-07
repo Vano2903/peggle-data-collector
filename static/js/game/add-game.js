@@ -130,6 +130,24 @@ function getOverall(player) {
     return overall;
 }
 
+async function addCommit() {
+    const res = await fetch('/commit/add', {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    });
+    const resp = await res.text();
+    const status = res.status;
+    if (status != 200) {
+        console.error("error sending the game: ", resp)
+    } else {
+        console.log("commit added correctly")
+    }
+}
+
 function genGameData() {
     return {
         videoData: {
@@ -186,12 +204,16 @@ function genGameData() {
 }
 
 async function uploadUpdateGame() {
-    await uploadGame()
+    document.getElementById("loader-wrapper").style.display = "block";
+    await Promise.all([
+        uploadGame(),
+        addCommit()
+    ])
+    document.getElementById("loader-wrapper").style.display = "none";
 }
 
 async function uploadGame() {
     if (checkIfAllComplete) {
-        document.getElementById("loader-wrapper").style.display = "block";
         let game;
         game = genGameData()
         const res = await fetch('/games/add', {
@@ -204,9 +226,8 @@ async function uploadGame() {
         });
         const resp = await res.json();
         const status = res.status;
-        document.getElementById("loader-wrapper").style.display = "none";
         if (status != 200) {
-            console.error("error sending the game")
+            console.error("error sending the game: ", resp)
         } else {
             console.log("%cgame sended correctly :D thanks", "color:green")
         }
