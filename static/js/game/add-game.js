@@ -241,15 +241,39 @@ function updataGame() {
 
 $("#wholeForm").on("input", function () {
     document.getElementById("send_data").disabled = !checkIfAllComplete()
-
-    // console.log("completed:", checkIfAllComplete())
-    // if (checkIfAllComplete) {
-    //     console.log("sono nel true")
-    //     document.getElementById("send_data").disabled = false
-    // } else {
-    //     document.getElementById("send_data").disabled = true
-    // }
 });
+
+function fillGameSections(gameObject) {
+    gameElements[0].syn.punt.value = gameObject.stats.synergo.g1.points
+    gameElements[0].syn.n25.value = gameObject.stats.synergo.g1.n25
+    gameElements[0].syn.per.value = gameObject.stats.synergo.g1.character
+    gameElements[0].syn.valFe.value = gameObject.stats.synergo.g1.valFe
+
+    gameElements[0].red.punt.value = gameObject.stats.redez.g1.points
+    gameElements[0].red.n25.value = gameObject.stats.redez.g1.n25
+    gameElements[0].red.per.value = gameObject.stats.redez.g1.character
+    gameElements[0].red.valFe.value = gameObject.stats.redez.g1.valFe
+
+    gameElements[1].syn.punt.value = gameObject.stats.synergo.g2.points
+    gameElements[1].syn.n25.value = gameObject.stats.synergo.g2.n25
+    gameElements[1].syn.per.value = gameObject.stats.synergo.g2.character
+    gameElements[1].syn.valFe.value = gameObject.stats.synergo.g2.valFe
+
+    gameElements[1].red.punt.value = gameObject.stats.redez.g2.points
+    gameElements[1].red.n25.value = gameObject.stats.redez.g2.n25
+    gameElements[1].red.per.value = gameObject.stats.redez.g2.character
+    gameElements[1].red.valFe.value = gameObject.stats.redez.g2.valFe
+
+    gameElements[2].syn.punt.value = gameObject.stats.synergo.g3.points
+    gameElements[2].syn.n25.value = gameObject.stats.synergo.g3.n25
+    gameElements[2].syn.per.value = gameObject.stats.synergo.g3.character
+    gameElements[2].syn.valFe.value = gameObject.stats.synergo.g3.valFe
+
+    gameElements[2].red.punt.value = gameObject.stats.redez.g3.points
+    gameElements[2].red.n25.value = gameObject.stats.redez.g3.n25
+    gameElements[2].red.per.value = gameObject.stats.redez.g3.character
+    gameElements[2].red.valFe.value = gameObject.stats.redez.g3.valFe
+}
 
 $(document).ready(
     function () {
@@ -262,7 +286,11 @@ $(document).ready(
                     }
                 })
                 var resp = await res.text();
-                console.log(JSON.parse(resp))
+                let respJson = JSON.parse(resp)
+                console.log(respJson)
+                if (!('msg' in respJson)) {
+                    fillGameSections(respJson[0])
+                }
             }
         });
     }

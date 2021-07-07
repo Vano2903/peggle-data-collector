@@ -699,6 +699,7 @@ func CheckGameHandler(w http.ResponseWriter, r *http.Request) {
 
 	//return the stats of the game if found (need it for the update of a game)
 	j, err := json.Marshal(results)
+	fmt.Println(string(j))
 	if err != nil {
 		PrintInternalErr(w, err.Error())
 		return

@@ -18,36 +18,36 @@ var (
 )
 
 type Game struct {
-	// ID      primitive.ObjectID `bson:"_id, omitempty" json:"-"`
-	VD      VideoData `bson:"videoData, omitempty" json:"videoData, omitempty"`
-	WonBy   int       `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
-	Stats   Players   `bson:"stats, omitempty" json:"stats,omitempty"`
-	Comment string    `bson:"comment, omitempty" json:"comment, omitempty"`
-	AddedBy string    `bson:"addedBy, omitempty" json:"addedBy, omitempty"`
+	// ID      primitive.ObjectID `bson:"_id" json:"-"`
+	VD      VideoData `bson:"videoData" json:"videoData"`
+	WonBy   int       `bson:"wonBy" json:"wonBy"` //syn = 1, red = 0, pareggio/null/whatever = -1
+	Stats   Players   `bson:"stats" json:"stats"`
+	Comment string    `bson:"comment" json:"comment"`
+	AddedBy string    `bson:"addedBy" json:"addedBy"`
 }
 
 type Players struct {
-	Synergo Player `bson:"synergo, omitempty" json:"synergo,omitempty"`
-	Redez   Player `bson:"redez, omitempty" json:"redez,omitempty"`
+	Synergo Player `bson:"synergo" json:"synergo"`
+	Redez   Player `bson:"redez" json:"redez"`
 }
 
 type Player struct {
-	Overall Overall   `bson:"overall, omitempty" json:"overall,omitempty"`
-	G1      GameStats `bson:"g1, omitempty" json:"g1,omitempty"`
-	G2      GameStats `bson:"g2, omitempty" json:"g2,omitempty"`
-	G3      GameStats `bson:"g3, omitempty" json:"g3,omitempty"`
+	Overall Overall   `bson:"overall" json:"overall"`
+	G1      GameStats `bson:"g1" json:"g1"`
+	G2      GameStats `bson:"g2" json:"g2"`
+	G3      GameStats `bson:"g3" json:"g3"`
 }
 
 type Overall struct {
-	TPoints int `bson:"tPoints, omitempty" json:"tPoints,omitempty"`
-	T25     int `bson:"t25, omitempty" json:"t25,omitempty"`
+	TPoints int `bson:"tPoints" json:"tPoints"`
+	T25     int `bson:"t25" json:"t25"`
 }
 
 type GameStats struct {
-	Points    int    `bson:"points, omitempty" json:"points,omitempty"`
-	N25       int    `bson:"n25, omitempty" json:"n25,omitempty"`
-	ValFE     int    `bson:"valFE, omitempty" json:"valFE,omitempty"`
-	Character string `bson:"character, omitempty" json:"character,omitempty"`
+	Points    int    `bson:"points" json:"points"`
+	N25       int    `bson:"n25" json:"n25"`
+	ValFE     int    `bson:"valFe" json:"valFe"`
+	Character string `bson:"character" json:"character"`
 }
 
 //will connect to database on games's collectionn
@@ -118,11 +118,11 @@ func AddGame(toAdd Game) (string, error) {
 
 	//adding game to database
 	toAddNoId := struct {
-		VD      VideoData `bson:"videoData, omitempty" json:"videoData, omitempty"`
-		WonBy   int       `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
-		Stats   Players   `bson:"stats, omitempty" json:"stats,omitempty"`
-		Comment string    `bson:"comment, omitempty" json:"comment, omitempty"`
-		AddedBy string    `bson:"addedBy, omitempty" json:"addedBy, omitempty"`
+		VD      VideoData `bson:"videoData" json:"videoData"`
+		WonBy   int       `bson:"wonBy" json:"wonBy"` //syn = 1, red = 0, pareggio/null/whatever = -1
+		Stats   Players   `bson:"stats" json:"stats"`
+		Comment string    `bson:"comment" json:"comment"`
+		AddedBy string    `bson:"addedBy" json:"addedBy"`
 	}{
 		toAdd.VD,
 		toAdd.WonBy,
