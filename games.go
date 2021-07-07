@@ -40,12 +40,12 @@ type Player struct {
 
 type Overall struct {
 	TPoints int `bson:"tPoints, omitempty" json:"tPoints,omitempty"`
-	T25     int `bson:"t-25, omitempty" json:"t-25,omitempty"`
+	T25     int `bson:"t25, omitempty" json:"t25,omitempty"`
 }
 
 type GameStats struct {
 	Points    int    `bson:"points, omitempty" json:"points,omitempty"`
-	N25       int    `bson:"n-25, omitempty" json:"n-25,omitempty"`
+	N25       int    `bson:"n25, omitempty" json:"n25,omitempty"`
 	ValFE     int    `bson:"valFE, omitempty" json:"valFE,omitempty"`
 	Character string `bson:"character, omitempty" json:"character,omitempty"`
 }
@@ -118,13 +118,17 @@ func AddGame(toAdd Game) (string, error) {
 
 	//adding game to database
 	toAddNoId := struct {
-		VD    VideoData `bson:"videoData, omitempty" json:"videoData, omitempty"`
-		WonBy int       `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
-		Stats Players   `bson:"stats, omitempty" json:"stats,omitempty"`
+		VD      VideoData `bson:"videoData, omitempty" json:"videoData, omitempty"`
+		WonBy   int       `bson:"wonBy, omitempty" json:"wonBy,omitempty"` //syn = 1, red = 0, pareggio/null/whatever = -1
+		Stats   Players   `bson:"stats, omitempty" json:"stats,omitempty"`
+		Comment string    `bson:"comment, omitempty" json:"comment, omitempty"`
+		AddedBy string    `bson:"addedBy, omitempty" json:"addedBy, omitempty"`
 	}{
 		toAdd.VD,
 		toAdd.WonBy,
 		toAdd.Stats,
+		toAdd.Comment,
+		toAdd.AddedBy,
 	}
 	result, err := collectionGame.InsertOne(ctxGame, toAddNoId)
 	if err != nil {

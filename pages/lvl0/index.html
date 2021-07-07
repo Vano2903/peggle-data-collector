@@ -83,7 +83,7 @@
 
     <div class="height-100 bg-light">
         <!-- stats area -->
-        <div style="display: block;" class="cont" id="stats">
+        <div style="display: block; padding: 50px 0 50px 10px;" class="cont" id="stats">
             <h1>stats</h1>
             <div id="calendar">
                 <div id="commits-graph" style="height: 250px; width: 100%"></div>
@@ -94,7 +94,7 @@
         </div>
 
         <!-- game area -->
-        <div style="display: none;" class="container bg-light" id="game">
+        <div style="display: none; padding: 50px;" class="container bg-light" id="game">
             <center>
                 <a>INSERISCI I DATI</a>
             </center>
@@ -106,7 +106,7 @@
                             <a>EPISODIO</a>
                         </center>
                         <label>LINK DEL VIDEO:</label>
-                        <input type="link" id="videoLink" class="form-control">
+                        <input type="link" id="videoLink" class="form-control" required>
                     </div>
                     <hr>
                     <div id="formsPanel">
@@ -121,14 +121,14 @@
                                     <hr>
                                     <br>
                                     <label>PUNTEGGIO PARTITA:</label>
-                                    <input type="number" id="SpointsPart1" class="form-control" placeholder="Punteggio">
-
+                                    <input min="0" type="number" id="SpointsPart1" class="form-control"
+                                        placeholder="Punteggio" required>
                                     <br>
                                     <label>NUMERO DI -25:</label>
                                     <div class="row">
                                         <div class="col">
                                             <input min="0" type="number" id="S25part1" class="form-control"
-                                                placeholder="0">
+                                                placeholder="0" required>
                                         </div>
                                     </div>
 
@@ -136,7 +136,7 @@
                                     <label>PERSONAGGIO:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <select size="5" class="form-control" id="ScharDropDownPart1" required="">
+                                            <select size="5" class="form-control" id="ScharDropDownPart1" required>
                                                 <option value="castoro">castoro</option>
                                                 <option value="unicorno">unicorno</option>
                                                 <option value="zucca">zucca</option>
@@ -156,8 +156,8 @@
                                     <label>VALORE FESTA ESTREMA:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <select size="5" class="form-control" id="SFEDropDownPart1" required="">
-                                                <option selected value="0">0</option>
+                                            <select size="5" class="form-control" id="SFEDropDownPart1" required>
+                                                <option value="0">0</option>
                                                 <option value="5000">5000</option>
                                                 <option value="25000">25000</option>
                                                 <option value="50000">50000</option>
@@ -174,13 +174,15 @@
                                     <hr>
                                     <br>
                                     <label>PUNTEGGIO PARTITA:</label>
-                                    <input type="text" id="RpointsPart1" class="form-control" placeholder="Punteggio">
+                                    <input min="0" type="number" id="RpointsPart1" class="form-control"
+                                        placeholder="Punteggio" required>
 
                                     <br>
                                     <label>NUMERO DI -25:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <input type="number" id="R25part1" class="form-control" placeholder="0">
+                                            <input min="0" type="number" id="R25part1" class="form-control"
+                                                placeholder="0" required>
                                         </div>
                                     </div>
 
@@ -190,7 +192,6 @@
                                         <div class="col">
                                             <!-- <select class="custom-select" id="made_in" required=""> -->
                                             <select size="5" class="form-control" id="RcharDropDownPart1" required="">
-
                                                 <option value="castoro">castoro</option>
                                                 <option value="unicorno">unicorno</option>
                                                 <option value="zucca">zucca</option>
@@ -211,7 +212,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <select size="5" class="form-control" id="RFEDropDownPart1" required="">
-                                                <option selected value="0">0</option>
+                                                <option value="0">0</option>
                                                 <option value="5000">5000</option>
                                                 <option value="25000">25000</option>
                                                 <option value="50000">50000</option>
@@ -233,13 +234,15 @@
                                     <hr>
                                     <br>
                                     <label>PUNTEGGIO PARTITA:</label>
-                                    <input type="text" id="SpointsPart2" class="form-control" placeholder="Punteggio">
+                                    <input min="0" type="number" id="SpointsPart2" class="form-control"
+                                        placeholder="Punteggio" required>
 
                                     <br>
                                     <label>NUMERO DI -25:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <input type="number" id="S25part2" class="form-control" placeholder="0">
+                                            <input min="0" type="number" id="S25part2" class="form-control"
+                                                placeholder="0" required>
                                         </div>
                                     </div>
 
@@ -248,8 +251,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <!-- <select class="custom-select" id="made_in" required=""> -->
-                                            <select size="5" class="form-control" id="ScharDropDownPart2" required="">
-
+                                            <select size="5" class="form-control" id="ScharDropDownPart2" required>
                                                 <option value="castoro">castoro</option>
                                                 <option value="unicorno">unicorno</option>
                                                 <option value="zucca">zucca</option>
@@ -269,8 +271,8 @@
                                     <label>VALORE FESTA ESTREMA:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <select size="5" class="form-control" id="SFEDropDownPart2" required="">
-                                                <option selected value="0">0</option>
+                                            <select size="5" class="form-control" id="SFEDropDownPart2" required>
+                                                <option value="0">0</option>
                                                 <option value="5000">5000</option>
                                                 <option value="25000">25000</option>
                                                 <option value="50000">50000</option>
@@ -287,13 +289,15 @@
                                     <hr>
                                     <br>
                                     <label>PUNTEGGIO PARTITA:</label>
-                                    <input type="text" id="RpointsPart2" class="form-control" placeholder="Punteggio">
+                                    <input min="0" type="number" id="RpointsPart2" class="form-control"
+                                        placeholder="Punteggio" required>
 
                                     <br>
                                     <label>NUMERO DI -25:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <input type="number" id="R25part2" class="form-control" placeholder="0">
+                                            <input min="0" type="number" id="R25part2" class="form-control"
+                                                placeholder="0" required>
                                         </div>
                                     </div>
 
@@ -302,8 +306,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <!-- <select class="custom-select" id="made_in" required=""> -->
-                                            <select size="5" class="form-control" id="RcharDropDownPart2" required="">
-
+                                            <select size="5" class="form-control" id="RcharDropDownPart2" required>
                                                 <option value="castoro">castoro</option>
                                                 <option value="unicorno">unicorno</option>
                                                 <option value="zucca">zucca</option>
@@ -323,8 +326,8 @@
                                     <label>VALORE FESTA ESTREMA:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <select size="5" class="form-control" id="RFEDropDownPart2" required="">
-                                                <option selected value="0">0</option>
+                                            <select size="5" class="form-control" id="RFEDropDownPart2" required>
+                                                <option value="0">0</option>
                                                 <option value="5000">5000</option>
                                                 <option value="25000">25000</option>
                                                 <option value="50000">50000</option>
@@ -346,13 +349,15 @@
                                     <hr>
                                     <br>
                                     <label>PUNTEGGIO PARTITA:</label>
-                                    <input type="text" id="SpointsPart3" class="form-control" placeholder="Punteggio">
+                                    <input min="0" type="number" id="SpointsPart3" class="form-control"
+                                        placeholder="Punteggio" required>
 
                                     <br>
                                     <label>NUMERO DI -25:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <input type="number" id="S25part3" class="form-control" placeholder="0">
+                                            <input min="0" type="number" id="S25part3" class="form-control"
+                                                placeholder="0" required>
                                         </div>
                                     </div>
 
@@ -382,7 +387,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <select size="5" class="form-control" id="SFEDropDownPart3" required>
-                                                <option selected value="0">0</option>
+                                                <option value="0">0</option>
                                                 <option value="5000">5000</option>
                                                 <option value="25000">25000</option>
                                                 <option value="50000">50000</option>
@@ -399,13 +404,15 @@
                                     <hr>
                                     <br>
                                     <label>PUNTEGGIO PARTITA:</label>
-                                    <input type="text" id="RpointsPart3" class="form-control" placeholder="Punteggio">
+                                    <input min="0" type="number" id="RpointsPart3" class="form-control"
+                                        placeholder="Punteggio" required>
 
                                     <br>
                                     <label>NUMERO DI -25:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <input type="number" id="R25part3" class="form-control" placeholder="0">
+                                            <input min="0" type="number" id="R25part3" class="form-control"
+                                                placeholder="0" required>
                                         </div>
                                     </div>
 
@@ -414,7 +421,7 @@
                                     <div class="row">
                                         <div class="col">
                                             <!-- <select class="custom-select" id="made_in" required=""> -->
-                                            <select size="5" class="form-control" id="RcharDropDownPart3" required="">
+                                            <select size="5" class="form-control" id="RcharDropDownPart3" required>
                                                 <option value="castoro">castoro</option>
                                                 <option value="unicorno">unicorno</option>
                                                 <option value="zucca">zucca</option>
@@ -434,30 +441,29 @@
                                     <label>VALORE FESTA ESTREMA:</label>
                                     <div class="row">
                                         <div class="col">
-                                            <select size="5" class="form-control" id="RFEDropDownPart3" required="">
-                                                <option selected value="0">0</option>
+                                            <select size="5" class="form-control" id="RFEDropDownPart3" required>
+                                                <option value="0">0</option>
                                                 <option value="5000">5000</option>
                                                 <option value="25000">25000</option>
                                                 <option value="50000">50000</option>
                                             </select>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                     </div>
                     <br />
-                    <input id="send_data" class="btn btn-primary" type="button" disabled>Invia i dati</button>
+                    <input id="send_data" class="btn btn-primary" onclick="uploadUpdateGame()" type="button"
+                        value="Invia i dati" disabled></input>
                 </form>
             </div>
-
-            <hr>
+            <br>
             <div id="changeSection">
                 <center>
-                    <button id="changeForm1" class="btn btn-outline-danger">1 partita</button>
-                    <button id="changeForm2" class="btn btn-outline-danger">2 partita</button>
-                    <button id="changeForm3" class="btn btn-outline-danger">3 partita</button>
+                    <button class="btn btn-outline-danger" onclick="showGameSections(0)">1 partita</button>
+                    <button class="btn btn-outline-danger" onclick="showGameSections(1)">2 partita</button>
+                    <button class="btn btn-outline-danger" onclick="showGameSections(2)">3 partita</button>
                 </center>
             </div>
         </div>
@@ -471,7 +477,7 @@
         </div>
     </div>
     </div>
-    <div style="display: none;" id="loader-wrapper-calendar" class="loader-wrapper">
+    <div style="display: none;" id="loader-wrapper" class="loader-wrapper">
         <div class="center">
             <lord-icon src="https://cdn.lordicon.com/xjovhxra.json" trigger="loop"
                 colors="primary:#0B6454,secondary:#0B6454" style="width:100px;height:100px">

@@ -712,7 +712,12 @@ func AddGameHandler(w http.ResponseWriter, r *http.Request) {
 	var post Game
 	json.NewDecoder(r.Body).Decode(&post)
 	//TODO function to check if some values are missing in the post request
-
+	err := post.VD.GetYoutubeDataFromId(post.VD.Id)
+	if err != nil {
+		PrintErr(w, err.Error())
+		return
+	}
+	fmt.Println(post)
 	id, err := AddGame(post)
 	if err != nil {
 		PrintErr(w, err.Error())
