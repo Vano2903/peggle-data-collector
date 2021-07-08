@@ -62,37 +62,6 @@ func (v *VideoData) GetYoutubeDataFromId(id string) error {
 	return nil
 }
 
-// type DateYt struct {
-// 	Day   int `bson:"day, omitempty" json: "day, omitempty"`
-// 	Month int `bson:"month, omitempty" json: "month, omitempty"`
-// 	Year  int `bson:"year, omitempty" json: "year, omitempty"`
-// }
-
-// //convert the way youtube store dates in DateYt struct
-// func (v *DateYt) ParseString(ytDate string) error {
-// 	da := ytDate[:len(ytDate)-10]
-// 	ele := strings.Split(da, "-")
-
-// 	y, err := strconv.Atoi(ele[0])
-// 	if err != nil {
-// 		return err
-
-// 	}
-// 	m, err := strconv.Atoi(ele[1])
-// 	if err != nil {
-// 		return err
-// 	}
-// 	d, err := strconv.Atoi(ele[2])
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	v.Year = y
-// 	v.Month = m
-// 	v.Day = d
-// 	return nil
-// }
-
 //return the youtube service given a valid youtube api key
 func GetYoutubeService(key string) (*youtube.Service, error) {
 	client := &http.Client{

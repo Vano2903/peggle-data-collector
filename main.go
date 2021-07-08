@@ -684,7 +684,7 @@ func CheckGameHandler(w http.ResponseWriter, r *http.Request) {
 	results, err := QueryGames(q)
 	if err != nil {
 		PrintInternalErr(w, err.Error())
-		return
+		return 
 	}
 
 	w.WriteHeader(http.StatusOK)
