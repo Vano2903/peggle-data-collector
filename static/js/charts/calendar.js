@@ -53,6 +53,20 @@ function drawCommitChart(opt, dataSet) {
     chart.draw(dataTable, opt);
 }
 
+async function getTotalCommits(user) {
+    var res = await fetch('/commit/totCommits', {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(user)
+    });
+    var resp = await res.text();
+    var respJson = JSON.parse(resp)
+    console.log(respJson.totalCommits)
+    return respJson.totalCommits
+}
+
 async function calendar() {
     var width = $(window).width();
     var calendarOptions = genCalendarOptions(width, user.username)
@@ -63,7 +77,6 @@ async function calendar() {
 
     drawCommitChart(calendarOptions, commits);
 }
-
 
 function drawYearsButtons(years) {
     var buttonContainer = document.getElementById("calendar-buttons");
@@ -98,6 +111,9 @@ $(document).ready(async function () {
     years = await getUsersCommitsYears(user);
     drawYearsButtons(years)
     calendar()
+    console.log(getTotalCommits(user))
+    document.getElementById("total-commits").innerHTML = "numero totale di contributi: " + await getTotalCommits(user)
+    // $(").innerHTML = 
 })
 
 function genCalendarOptions(width, name) {
