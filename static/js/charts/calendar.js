@@ -80,6 +80,7 @@ async function calendar() {
 
 function drawYearsButtons(years) {
     var buttonContainer = document.getElementById("calendar-buttons");
+    buttonContainer.innerHTML = "";
     years.forEach(function (item) {
         var but = document.createElement("button");
         but.innerHTML = item;
@@ -97,7 +98,7 @@ function drawYearsButtons(years) {
 
 window.addEventListener('resize', function () {
     if (!throttled) {
-        if (showing == "stats") {
+        if (locationSaver() == "stats") {
             calendar()
         }
         throttled = true;
@@ -107,13 +108,20 @@ window.addEventListener('resize', function () {
     }
 });
 
-$(document).ready(async function () {
+async function initCalendar() {
     years = await getUsersCommitsYears(user);
+
     drawYearsButtons(years)
     calendar()
     console.log(getTotalCommits(user))
     document.getElementById("total-commits").innerHTML = "numero totale di contributi: " + await getTotalCommits(user)
-    // $(").innerHTML = 
+
+}
+
+$(document).ready(async function () {
+    if (locationSaver() == "stats") {
+        await initCalendar()
+    }
 })
 
 function genCalendarOptions(width, name) {

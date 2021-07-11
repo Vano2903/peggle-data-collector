@@ -3,6 +3,7 @@ var showing = "stats"
 
 function show(what) {
     hideAll()
+    console.log("what: " + what);
     divs[what].style.display = "block";
     console.log(what)
     showing = what
@@ -33,5 +34,30 @@ async function getPfp() {
     console.log(respJson);
     if (respJson.url != "") {
         document.getElementById("pfp").src = respJson.url
+    }
+}
+
+async function stats() {
+    locationSaver('stats');
+    await initCalendar()
+}
+
+function locationSaver(position) {
+    if (position == undefined) {
+        if (localStorage.getItem("location") == undefined) {
+            localStorage.setItem("location", "stats");
+            show("stats");
+            return "stats";
+        } else {
+            showing = localStorage.getItem("location");
+            show(showing);
+            return showing;
+
+        }
+    } else {
+        localStorage["location"] = position;
+        showing = position;
+        show(position);
+        return position;
     }
 }

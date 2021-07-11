@@ -21,14 +21,14 @@
 
 </head>
 
-<body id="body-pd" onload="show('stats'); getPfp()">
+<body id="body-pd" onload="locationSaver(); getPfp()">
     <header class="header" id="header">
         <div class="header_toggle">
             <i class='bx bx-menu' id="header-toggle"></i>
         </div>
         <div class="header_img">
             <!-- user profile pic -->
-            <a onclick="show('user')">
+            <a onclick="locationSaver('user')">
                 <img id="pfp"
                     src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
                     alt="user-image">
@@ -45,7 +45,7 @@
                 </a>
 
                 <div class="nav_list">
-                    <a onclick="show('stats')" class="nav_link active">
+                    <a onclick="stats()" class="nav_link active">
                         <!-- <i class='bx bx-grid-alt nav_icon'></i> -->
                         <lord-icon src="https://cdn.lordicon.com/gqdnbnwt.json" trigger="loop-on-hover"
                             colors="primary:#2eb39d,secondary:#aff8f4" stroke="90" scale="75"
@@ -54,7 +54,7 @@
                         <span class="nav_name">Stats</span>
                     </a>
 
-                    <a onclick="show('game')" class="nav_link">
+                    <a onclick="locationSaver('game')" class="nav_link">
                         <lord-icon id="server" src="https://cdn.lordicon.com/wrprwmwt.json" trigger="loop-on-hover"
                             colors="primary:#2eb39d,secondary:#AFF8F4" stroke="90" scale="75"
                             style="width:20px;height:20px">
@@ -63,7 +63,7 @@
                         <span class="nav_name">Add Game</span>
                     </a>
 
-                    <a onclick="show('users')" class="nav_link">
+                    <a onclick="locationSaver('users')" class="nav_link">
                         <!-- <i class='bx bx-message-square-detail nav_icon'></i> -->
                         <lord-icon src="https://cdn.lordicon.com/dxjqoygy.json" trigger="loop-on-hover"
                             colors="primary:#2eb39d,secondary:#aff8f4" stroke="90" scale="75"
