@@ -210,6 +210,7 @@ async function uploadUpdateGame() {
         addCommit()
     ])
     document.getElementById("loader-wrapper").style.display = "none";
+    clearGameArea();
 }
 
 async function uploadGame() {
@@ -239,9 +240,42 @@ function updataGame() {
 
 }
 
+
 $("#wholeForm").on("input", function () {
     document.getElementById("send_data").disabled = !checkIfAllComplete()
 });
+
+function clearGameArea() {
+    gameElements[0].syn.punt.value = "";
+    gameElements[0].syn.n25.value = "";
+    gameElements[0].syn.per.value = "";
+    gameElements[0].syn.valFe.value = "";
+
+    gameElements[0].red.punt.value = "";
+    gameElements[0].red.n25.value = "";
+    gameElements[0].red.per.value = "";
+    gameElements[0].red.valFe.value = "";
+
+    gameElements[1].syn.punt.value = "";
+    gameElements[1].syn.n25.value = "";
+    gameElements[1].syn.per.value = "";
+    gameElements[1].syn.valFe.value = "";
+
+    gameElements[1].red.punt.value = "";
+    gameElements[1].red.n25.value = "";
+    gameElements[1].red.per.value = "";
+    gameElements[1].red.valFe.value = "";
+
+    gameElements[2].syn.punt.value = "";
+    gameElements[2].syn.n25.value = "";
+    gameElements[2].syn.per.value = "";
+    gameElements[2].syn.valFe.value = "";
+
+    gameElements[2].red.punt.value = "";
+    gameElements[2].red.n25.value = "";
+    gameElements[2].red.per.value = "";
+    gameElements[2].red.valFe.value = "";
+}
 
 function fillGameSections(gameObject) {
     gameElements[0].syn.punt.value = gameObject.stats.synergo.g1.points

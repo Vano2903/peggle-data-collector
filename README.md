@@ -10,6 +10,8 @@ one day i am gonna take good care of this ;-;
 
 things i wanna implement:
 
+- add function that let user clean just a section of the game adding function and not only everything
+- hash all the stored passwords
 - add jwt for user authentication
 - add OAuth2.0 (github OAuth seems the best option so far)
 - add full search algorithm (mongob atlas offer that but means migrate to atlas)

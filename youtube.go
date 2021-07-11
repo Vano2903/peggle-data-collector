@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -51,9 +52,24 @@ func (v *VideoData) GetYoutubeDataFromId(id string) error {
 	if len(response.Items) <= 0 {
 		return errors.New("no video found, check the id")
 	}
+	fmt.Println(response.Items[0].Snippet)
 	v.Id = id
 	v.Title = response.Items[0].Snippet.Title
-	v.ThumbMaxResUrl = response.Items[0].Snippet.Thumbnails.Maxres.Url
+
+	if response.Items[0].Snippet.Thumbnails.Maxres != nil {
+		v.ThumbMaxResUrl = response.Items[0].Snippet.Thumbnails.Maxres.Url
+	} else if response.Items[0].Snippet.Thumbnails.Standard != nil {
+		v.ThumbMaxResUrl = response.Items[0].Snippet.Thumbnails.Standard.Url
+	} else if response.Items[0].Snippet.Thumbnails.High != nil {
+		v.ThumbMaxResUrl = response.Items[0].Snippet.Thumbnails.High.Url
+	} else if response.Items[0].Snippet.Thumbnails.Medium != nil {
+		v.ThumbMaxResUrl = response.Items[0].Snippet.Thumbnails.Medium.Url
+	} else if response.Items[0].Snippet.Thumbnails.Default.Url != "" {
+		v.ThumbMaxResUrl = response.Items[0].Snippet.Thumbnails.Default.Url
+	} else {
+		v.ThumbMaxResUrl = ""
+	}
+
 	upDate, err := time.Parse(time.RFC3339, response.Items[0].Snippet.PublishedAt)
 	if err != nil {
 		return err
