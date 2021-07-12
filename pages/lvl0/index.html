@@ -465,9 +465,12 @@
             <br>
             <div id="changeSection">
                 <center>
-                    <button class="btn btn-outline-danger" onclick="showGameSections(0)">1 partita</button>
-                    <button class="btn btn-outline-danger" onclick="showGameSections(1)">2 partita</button>
-                    <button class="btn btn-outline-danger" onclick="showGameSections(2)">3 partita</button>
+                    <button id="gameBut1" class="btn btn-outline-danger" onclick="showGameSections(0); onSection(0)">1
+                        partita</button>
+                    <button id="gameBut2" class="btn btn-outline-danger" onclick="showGameSections(1); onSection(1)">2
+                        partita</button>
+                    <button id="gameBut3" class="btn btn-outline-danger" onclick="showGameSections(2); onSection(2)">3
+                        partita</button>
                 </center>
             </div>
         </div>
@@ -492,6 +495,7 @@
     <script type="text/javascript" src="/static/js/nav.js" defer></script>
     <script type="text/javascript" src="/static/js/dashButtons-0.js" defer></script>
     <script type="text/javascript" src="/static/js/charts/calendar.js" defer></script>
+    <script type="text/javascript" src="/static/js/game/buttons.js" defer></script>
     <script type="text/javascript" src="/static/js/game/add-game.js" defer></script>
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>

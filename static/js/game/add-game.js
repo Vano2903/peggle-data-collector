@@ -1,6 +1,6 @@
-var videoLink = document.getElementById("videoLink")
+let videoLink = document.getElementById("videoLink")
 
-var gameElements = [
+let gameElements = [
     {
         par: document.getElementById("par1"),
         syn: {
@@ -65,52 +65,59 @@ function showGameSections(index) {
     gameElements[index].par.style.display = "block";
 }
 
+function checkIfAreaIsComplete(index) {
+    if (gameElements[index].syn.punt.value == "") {
+        return false;
+    }
+    if (gameElements[index].syn.n25.value == "") {
+        return false;
+    }
+    if (gameElements[index].syn.per.selectedIndex == -1) {
+        return false;
+    }
+    if (gameElements[index].syn.valFe.selectedIndex == -1) {
+        return false;
+    }
+
+    if (gameElements[index].red.punt.value == "") {
+        return false;
+    }
+    if (gameElements[index].red.n25.value == "") {
+        return false;
+    }
+    if (gameElements[index].red.per.selectedIndex == -1) {
+        return false;
+    }
+    if (gameElements[index].red.valFe.selectedIndex == -1) {
+        return false;
+    }
+    return true;
+}
+
 function checkIfAllComplete() {
     if (videoLink.value == "") {
-        return false
+        return false;
     }
     for (var i = 0; i < gameElements.length; i++) {
-        if (gameElements[i].syn.punt.value == "") {
-            return false
-        }
-        if (gameElements[i].syn.n25.value == "") {
-            return false
-        }
-        if (gameElements[i].syn.per.selectedIndex == -1) {
-            return false
-        }
-        if (gameElements[i].syn.valFe.selectedIndex == -1) {
-            return false
-        }
-
-        if (gameElements[i].red.punt.value == "") {
-            return false
-        }
-        if (gameElements[i].red.n25.value == "") {
-            return false
-        }
-        if (gameElements[i].red.per.selectedIndex == -1) {
-            return false
-        }
-        if (gameElements[i].red.valFe.selectedIndex == -1) {
-            return false
+        if (!checkIfAreaIsComplete(i)) {
+            return false;
         }
     }
-    return true
+    return true;
 }
 
 function getWhoWon() {
     let [syn, red] = [0, 0];
     for (var i = 0; i < gameElements.length; i++) {
-        syn += parseInt(gameElements[i].syn.punt.value)
-        red += parseInt(gameElements[i].red.punt.value)
+        syn += parseInt(gameElements[i].syn.punt.value);
+        red += parseInt(gameElements[i].red.punt.value);
     }
     if (syn > red) {
         return 1;
     } else if (syn < red) {
         return 0;
     } else {
-        return -1
+        return -1;
     }
 }
 
@@ -118,13 +125,13 @@ function getOverall(player) {
     let overall = { tPoints: 0, t25: 0 };
     if (player == "syn") {
         for (var i = 0; i < gameElements.length; i++) {
-            overall.tPoints += parseInt(gameElements[i].syn.punt.value)
-            overall.t25 += parseInt(gameElements[i].syn.n25.value)
+            overall.tPoints += parseInt(gameElements[i].syn.punt.value);
+            overall.t25 += parseInt(gameElements[i].syn.n25.value);
         }
     } else if (player == "red") {
         for (var i = 0; i < gameElements.length; i++) {
-            overall.tPoints += parseInt(gameElements[i].red.punt.value)
-            overall.t25 += parseInt(gameElements[i].red.n25.value)
+            overall.tPoints += parseInt(gameElements[i].red.punt.value);
+            overall.t25 += parseInt(gameElements[i].red.n25.value);
         }
     }
     return overall;
@@ -142,9 +149,9 @@ async function addCommit() {
     const resp = await res.text();
     const status = res.status;
     if (status != 200) {
-        console.error("error sending the game: ", resp)
+        console.error("error sending the game: ", resp);
     } else {
-        console.log("commit added correctly")
+        console.log("commit added correctly");
     }
 }
 
@@ -208,7 +215,7 @@ async function uploadUpdateGame() {
     await Promise.all([
         uploadGame(),
         addCommit()
-    ])
+    ]);
     document.getElementById("loader-wrapper").style.display = "none";
     clearGameArea();
     showGameSections(0);
@@ -217,7 +224,7 @@ async function uploadUpdateGame() {
 async function uploadGame() {
     if (checkIfAllComplete) {
         let game;
-        game = genGameData()
+        game = genGameData();
         const res = await fetch('/games/add', {
             method: "POST",
             headers: {
@@ -229,9 +236,9 @@ async function uploadGame() {
         const resp = await res.json();
         const status = res.status;
         if (status != 200) {
-            console.error("error sending the game: ", resp)
+            console.error("error sending the game: ", resp);
         } else {
-            console.log("%cgame sended correctly :D thanks", "color:green")
+            console.log("%cgame sended correctly :D thanks", "color:green");
         }
     }
     return false;
@@ -243,7 +250,8 @@ function updataGame() {
 
 
 $("#wholeForm").on("input", function () {
-    document.getElementById("send_data").disabled = !checkIfAllComplete()
+    document.getElementById("send_data").disabled = !checkIfAllComplete();
+    buttonsCorrectArea();
 });
 
 function clearGameArea() {
@@ -279,35 +287,35 @@ function clearGameArea() {
 }
 
 function fillGameSections(gameObject) {
-    gameElements[0].syn.punt.value = gameObject.stats.synergo.g1.points
-    gameElements[0].syn.n25.value = gameObject.stats.synergo.g1.n25
-    gameElements[0].syn.per.value = gameObject.stats.synergo.g1.character
-    gameElements[0].syn.valFe.value = gameObject.stats.synergo.g1.valFe
+    gameElements[0].syn.punt.value = gameObject.stats.synergo.g1.points;
+    gameElements[0].syn.n25.value = gameObject.stats.synergo.g1.n25;
+    gameElements[0].syn.per.value = gameObject.stats.synergo.g1.character;
+    gameElements[0].syn.valFe.value = gameObject.stats.synergo.g1.valFe;
 
-    gameElements[0].red.punt.value = gameObject.stats.redez.g1.points
-    gameElements[0].red.n25.value = gameObject.stats.redez.g1.n25
-    gameElements[0].red.per.value = gameObject.stats.redez.g1.character
-    gameElements[0].red.valFe.value = gameObject.stats.redez.g1.valFe
+    gameElements[0].red.punt.value = gameObject.stats.redez.g1.points;
+    gameElements[0].red.n25.value = gameObject.stats.redez.g1.n25;
+    gameElements[0].red.per.value = gameObject.stats.redez.g1.character;
+    gameElements[0].red.valFe.value = gameObject.stats.redez.g1.valFe;
 
-    gameElements[1].syn.punt.value = gameObject.stats.synergo.g2.points
-    gameElements[1].syn.n25.value = gameObject.stats.synergo.g2.n25
-    gameElements[1].syn.per.value = gameObject.stats.synergo.g2.character
-    gameElements[1].syn.valFe.value = gameObject.stats.synergo.g2.valFe
+    gameElements[1].syn.punt.value = gameObject.stats.synergo.g2.points;
+    gameElements[1].syn.n25.value = gameObject.stats.synergo.g2.n25;
+    gameElements[1].syn.per.value = gameObject.stats.synergo.g2.character;
+    gameElements[1].syn.valFe.value = gameObject.stats.synergo.g2.valFe;
 
-    gameElements[1].red.punt.value = gameObject.stats.redez.g2.points
-    gameElements[1].red.n25.value = gameObject.stats.redez.g2.n25
-    gameElements[1].red.per.value = gameObject.stats.redez.g2.character
-    gameElements[1].red.valFe.value = gameObject.stats.redez.g2.valFe
+    gameElements[1].red.punt.value = gameObject.stats.redez.g2.points;
+    gameElements[1].red.n25.value = gameObject.stats.redez.g2.n25;
+    gameElements[1].red.per.value = gameObject.stats.redez.g2.character;
+    gameElements[1].red.valFe.value = gameObject.stats.redez.g2.valFe;
 
-    gameElements[2].syn.punt.value = gameObject.stats.synergo.g3.points
-    gameElements[2].syn.n25.value = gameObject.stats.synergo.g3.n25
-    gameElements[2].syn.per.value = gameObject.stats.synergo.g3.character
-    gameElements[2].syn.valFe.value = gameObject.stats.synergo.g3.valFe
+    gameElements[2].syn.punt.value = gameObject.stats.synergo.g3.points;
+    gameElements[2].syn.n25.value = gameObject.stats.synergo.g3.n25;
+    gameElements[2].syn.per.value = gameObject.stats.synergo.g3.character;
+    gameElements[2].syn.valFe.value = gameObject.stats.synergo.g3.valFe;
 
-    gameElements[2].red.punt.value = gameObject.stats.redez.g3.points
-    gameElements[2].red.n25.value = gameObject.stats.redez.g3.n25
-    gameElements[2].red.per.value = gameObject.stats.redez.g3.character
-    gameElements[2].red.valFe.value = gameObject.stats.redez.g3.valFe
+    gameElements[2].red.punt.value = gameObject.stats.redez.g3.points;
+    gameElements[2].red.n25.value = gameObject.stats.redez.g3.n25;
+    gameElements[2].red.per.value = gameObject.stats.redez.g3.character;
+    gameElements[2].red.valFe.value = gameObject.stats.redez.g3.valFe;
 }
 
 $(document).ready(
@@ -321,10 +329,11 @@ $(document).ready(
                     }
                 })
                 var resp = await res.text();
-                let respJson = JSON.parse(resp)
-                console.log(respJson)
+                let respJson = JSON.parse(resp);
+                console.log(respJson);
                 if (!('msg' in respJson)) {
-                    fillGameSections(respJson[0])
+                    fillGameSections(respJson[0]);
+                    buttonsCorrectArea();
                 }
             }
         });
