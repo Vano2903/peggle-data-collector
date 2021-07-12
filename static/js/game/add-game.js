@@ -211,6 +211,7 @@ async function uploadUpdateGame() {
     ])
     document.getElementById("loader-wrapper").style.display = "none";
     clearGameArea();
+    showGameSections(0);
 }
 
 async function uploadGame() {
