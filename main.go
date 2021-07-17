@@ -23,7 +23,7 @@ type Post struct {
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
-	home, err := os.ReadFile("pages/login/login.html")
+	home, err := os.ReadFile("pages/login.html")
 	if err != nil {
 		//TODO add an unavailable page
 		w.Header().Set("Content-Type", "application/json")
@@ -56,11 +56,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var page []byte
 	switch user.Level {
 	case 0:
-		page, err = os.ReadFile("pages/lvl0/index.html")
+		page, err = os.ReadFile("pages/lvl0.html")
 	case 1:
-		page, err = os.ReadFile("pages/lvl1/index.html")
+		page, err = os.ReadFile("pages/lvl1.html")
 	case 2:
-		page, err = os.ReadFile("pages/lvl2/index.html")
+		page, err = os.ReadFile("pages/lvl2.html")
 	}
 	if err != nil {
 		//TODO add an unavailable page
