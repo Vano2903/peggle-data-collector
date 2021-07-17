@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -120,8 +119,8 @@ func init() {
 	}
 }
 
-func main() {
-	var v VideoData
-	v.GetYoutubeDataFromId("S0-4ouN35gw")
-	fmt.Println(v)
-}
+// func main() {
+// 	var v VideoData
+// 	v.GetYoutubeDataFromId("S0-4ouN35gw")
+// 	fmt.Println(v)
+// }
