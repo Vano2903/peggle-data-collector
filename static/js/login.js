@@ -6,7 +6,6 @@ var user
 $(document).ready(
     function () {
         var localsUser = localStorage.getItem("user")
-        console.log(localsUser)
         if (localsUser !== null) {
             user = JSON.parse(localsUser)
             checkLogin("def")
@@ -32,8 +31,6 @@ async function checkLogin(code) {
             user = { username: ele[0], password: ele[1] };
         }
     }
-    console.log(user);
-    console.log(JSON.stringify(user))
     const res = await fetch('/users/login', {
         method: "POST",
         headers: {
@@ -53,12 +50,10 @@ function checkResponse(cont, resp) {
     errore = document.getElementById("errore");
     if (!cont.includes("text/html")) {
         const respJson = JSON.parse(resp);
-        console.log(respJson.message);
         errore.innerHTML = respJson.message;
         errore.style.display = "block";
     } else {
         errore.style.display = "none";
-        console.log(user)
         // tok = suppCode == undefined ? supp : suppCode;
         document.write(resp);
         localStorage.setItem("user", JSON.stringify(user))

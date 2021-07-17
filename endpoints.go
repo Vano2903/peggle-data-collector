@@ -14,8 +14,9 @@ const (
 	statics endpoints = "/static/"
 
 	//users endpoint
-	usersLogin endpoints = "/users/login"
-	usersPfp   endpoints = "/users/pfp"
+	usersLogin        endpoints = "/users/login"
+	usersPfp          endpoints = "/users/pfp"
+	userCustomization endpoints = "/users/customization/"
 
 	//commits endpoints
 	getCommits endpoints = "/commit/{param}"

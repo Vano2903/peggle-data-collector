@@ -83,7 +83,7 @@
 
     <div class="height-100 bg-light">
         <!-- stats area -->
-        <div style="display: block; padding: 50px 0 50px 10px;" class="cont" id="stats">
+        <div style="display: block; padding: 50px 0px 50px 20px;" class="cont" id="stats">
             <h1>stats</h1>
             <div id="calendar">
                 <div id="commits-graph" style="height: 250px; width: 100%"></div>
@@ -458,7 +458,7 @@
                     <br />
                     <input id="send_data" class="btn btn-primary" onclick="uploadUpdateGame()" type="button"
                         value="Invia i dati" disabled></input>
-                    <input id="send_data" class="btn btn-warning" onclick="clearGameArea()" type="button"
+                    <input id="clearData" class="btn btn-warning" onclick="clearGameArea()" type="button"
                         value="ripulisci tutto"></input>
                 </form>
             </div>
@@ -475,12 +475,46 @@
             </div>
         </div>
 
-        <div style="display: none;" class="container" id="users-managment">
+        <div style="display: none; padding: 20px;" id="users-managment">
             <h1>users-managment</h1>
         </div>
 
-        <div style="display: none;" class="container" id="user">
-            <h1>user</h1>
+        <div style="display: none; padding: 20px;" id="user">
+            <h1 id="user-welcome">Benvenuto </h1><br>
+            <img id="pfp2"
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80"
+                alt="user-image" class="rounded d-block" width="30%"><br><br>
+
+            <form style="display: none" id="updatePasswordForm" class="col-6">
+                <div class="mb-3">
+                    <label for="currentPassword" class="form-label">Password corrente</label>
+                    <input type="password" class="form-control" id="currentPassword">
+                    <a class="text-danger" id="errCurrentPass"></a>
+                    <label for="newPassword" class="form-label">Nuova password</label>
+                    <input type="password" class="form-control" id="newPassword">
+                    <a class="text-danger" id="errNewPass"></a>
+                    <label for="confirmNewPassword" class="form-label">Conferma la password</label>
+                    <input type="password" class="form-control" id="confirmNewPassword">
+                    <a class="text-danger" id="errConfirmPass"></a>
+                </div>
+                <input type="button" onclick="updatePassword()" class="btn btn-primary" value="update">
+            </form>
+
+            <form style="display: none" id="updatePfpForm" class="col-6">
+                <div class="mb-3">
+                    <label for="newPfpUrl" class="form-label">Link alla nuova foto profilo</label>
+                    <input type="text" class="form-control" id="newPfpUrl">
+                </div>
+                <input type="button" onclick="updatePfp()" class="btn btn-primary" value="update">
+            </form>
+
+            <br>
+            <input type="button" class="btn btn-primary" onclick="showPfpUpdateForm()" id="pfpUpdate"
+                value="cambia la tua foto profilo">
+
+            <input type="button" class="btn btn-primary" onclick="showPasswordUpdateForm()" id="pswUpdate"
+                value="cambia la tua password">
+
         </div>
     </div>
     </div>
@@ -493,10 +527,12 @@
     </div>
 
     <script type="text/javascript" src="/static/js/nav.js" defer></script>
-    <script type="text/javascript" src="/static/js/dashButtons-0.js" defer></script>
+    <script type="text/javascript" src="/static/js/dashButtons/dashButtons-0.js" defer></script>
     <script type="text/javascript" src="/static/js/charts/calendar.js" defer></script>
     <script type="text/javascript" src="/static/js/game/buttons.js" defer></script>
     <script type="text/javascript" src="/static/js/game/add-game.js" defer></script>
+    <script type="text/javascript" src="/static/js/user/user.js" defer></script>
+
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
 

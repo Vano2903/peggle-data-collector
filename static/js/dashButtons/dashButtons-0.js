@@ -3,9 +3,7 @@ var showing = "stats"
 
 function show(what) {
     hideAll()
-    console.log("what: " + what);
     divs[what].style.display = "block";
-    console.log(what)
     showing = what
 }
 
@@ -28,12 +26,11 @@ async function getPfp() {
         },
         body: JSON.stringify(user)
     });
-    var resp = await res.text();
-    console.log(resp);
-    var respJson = JSON.parse(resp);
+    var respJson = await res.json();
     console.log(respJson);
     if (respJson.url != "") {
         document.getElementById("pfp").src = respJson.url
+        document.getElementById("pfp2").src = respJson.url
     }
 }
 

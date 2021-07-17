@@ -279,7 +279,11 @@ func AddUser(user, pass string, authLvl int) (string, error) {
 }
 
 func UpdateUser(user, pass string, update bson.M) error {
-	_, err := collectionUser.UpdateOne(
+	_, err := IsCorrect(user, pass)
+	if err != nil {
+		return err
+	}
+	_, err = collectionUser.UpdateOne(
 		ctxUser,
 		bson.M{"user": user, "password": pass},
 		bson.D{

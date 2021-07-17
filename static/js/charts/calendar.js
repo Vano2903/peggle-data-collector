@@ -29,9 +29,7 @@ async function genCalendarCommits(user, year) {
         },
         body: JSON.stringify(user)
     });
-    var resp = await res.text();
-    console.log(resp);
-    var respJson = JSON.parse(resp);
+    var respJson = await res.json();
     console.log(respJson);
     var dataSet = [];
 
@@ -110,12 +108,9 @@ window.addEventListener('resize', function () {
 
 async function initCalendar() {
     years = await getUsersCommitsYears(user);
-
     drawYearsButtons(years)
     calendar()
-    console.log(getTotalCommits(user))
     document.getElementById("total-commits").innerHTML = "numero totale di contributi: " + await getTotalCommits(user)
-
 }
 
 $(document).ready(async function () {

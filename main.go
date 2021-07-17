@@ -34,24 +34,6 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(home)
 }
 
-func GetPfp(w http.ResponseWriter, r *http.Request) {
-	var post Post
-
-	//read post body
-	_ = json.NewDecoder(r.Body).Decode(&post)
-
-	//check if user is correct
-	user, err := QueryUser(post.Username, post.Password)
-	if err != nil {
-		PrintErr(w, err.Error())
-		return
-	}
-	imgJson := fmt.Sprintf(`{"url":"%s"}`, user.PfpUrl)
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusAccepted)
-	w.Write([]byte(imgJson))
-}
-
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var post Post
 
@@ -89,6 +71,63 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Write(page)
 	log.Println("the user:", user.User, " just logged in, the auth lvl is:", user.Level)
+}
+
+func GetPfp(w http.ResponseWriter, r *http.Request) {
+	var post Post
+
+	//read post body
+	_ = json.NewDecoder(r.Body).Decode(&post)
+
+	//check if user is correct
+	user, err := QueryUser(post.Username, post.Password)
+	if err != nil {
+		PrintErr(w, err.Error())
+		return
+	}
+	imgJson := fmt.Sprintf(`{"url":"%s"}`, user.PfpUrl)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusAccepted)
+	w.Write([]byte(imgJson))
+}
+
+func UserCustomizationHandler(w http.ResponseWriter, r *http.Request) {
+	var post Post
+	_ = json.NewDecoder(r.Body).Decode(&post)
+
+	r.ParseForm()
+	for k, v := range r.Form {
+		switch k {
+		case "password":
+			if len(v) != 1 {
+				PrintErr(w, "can not pass more than 1 password or none, nothing has been changed")
+				return
+			}
+			update := bson.M{"password": v[0]}
+			err := UpdateUser(post.Username, post.Password, update)
+			if err != nil {
+				PrintErr(w, err.Error())
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"msg": "the password has been updated"}`))
+		case "pfp":
+			if len(v) != 1 {
+				PrintErr(w, "can not pass more than 1 profile picture's url or none, nothing has been changed")
+				return
+			}
+			update := bson.M{"pfp_url": v[0]}
+			err := UpdateUser(post.Username, post.Password, update)
+			if err != nil {
+				PrintErr(w, err.Error())
+				return
+			}
+			w.WriteHeader(http.StatusOK)
+			w.Header().Set("Content-Type", "application/json")
+			w.Write([]byte(`{"msg": "the profile picture has been updated"}`))
+		}
+	}
 }
 
 func CommitHandler(w http.ResponseWriter, r *http.Request) {
@@ -684,7 +723,7 @@ func CheckGameHandler(w http.ResponseWriter, r *http.Request) {
 	results, err := QueryGames(q)
 	if err != nil {
 		PrintInternalErr(w, err.Error())
-		return 
+		return
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -774,6 +813,9 @@ func main() {
 
 	//get url for user's pfp
 	r.HandleFunc(usersPfp.String(), GetPfp).Methods("POST")
+
+	//user customization area
+	r.HandleFunc(userCustomization.String(), UserCustomizationHandler).Methods("POST")
 
 	//commit area
 	r.HandleFunc(getCommits.String(), CommitHandler).Methods("POST")
