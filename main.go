@@ -22,6 +22,18 @@ type Post struct {
 	Id       string `json:"id, omitempty"`
 }
 
+func MainPageHanler(w http.ResponseWriter, r *http.Request) {
+	home, err := os.ReadFile("pages/home.html")
+	if err != nil {
+		//TODO add an unavailable page
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusServiceUnavailable)
+		w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+		return
+	}
+	w.Write(home)
+}
+
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
 	home, err := os.ReadFile("pages/login.html")
 	if err != nil {
@@ -806,6 +818,9 @@ func main() {
 	r := mux.NewRouter()
 	//statics
 	r.PathPrefix(statics.String()).Handler(http.StripPrefix(statics.String(), http.FileServer(http.Dir("static/"))))
+
+	//home page handler
+	r.HandleFunc(root.String(), MainPageHanler).Methods("GET")
 
 	//user login area
 	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")

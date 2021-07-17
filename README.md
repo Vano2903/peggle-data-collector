@@ -21,7 +21,7 @@ todo for this version
 
 - add function that let user clean just a section of the game adding function and not only everything
 - colors on buttons in add-game ✔️
-- user section
+- user section ✔️
 - users section
 - stats database
 - main page

@@ -8,7 +8,7 @@ const (
 	root endpoints = "/"
 
 	//API route
-	endApi endpoints = "/api/"
+	// endApi endpoints = "/api/"
 
 	//statics
 	statics endpoints = "/static/"
