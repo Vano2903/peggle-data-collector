@@ -17,9 +17,10 @@ things i wanna implement:
 - let user query a date like 2021-2-4 and convert it to 2021-02-04
 - check if a structure has default values (means not modified)
 
-todo for this version
+todo for this version:
 
 - add function that let user clean just a section of the game adding function and not only everything
+- section to add a comment while inserting a game
 - colors on buttons in add-game ✔️
 - user section ✔️
 - users section
