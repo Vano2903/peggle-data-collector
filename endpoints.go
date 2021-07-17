@@ -6,7 +6,7 @@ const (
 
 	//base route
 	root endpoints = "/"
-
+	
 	//API route
 	// endApi endpoints = "/api/"
 

@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -27,8 +29,10 @@ type VideoData struct {
 	Title          string             `bson:"title, omitempty" json:"title, omitempty"`
 	ThumbMaxResUrl string             `bson:"thumbMaxResUrl, omitempty" json:"thumbMaxResUrl, omitempty"`
 	UploadDate     primitive.DateTime `bson:"uploadDate, omitempty" json:"uploadDate, omitempty"`
+	Length         int                `bson:"length, omitempty`
 }
 
+//TODO
 func (v *VideoData) CheckIfNotCompleted() bool {
 	if v.Title == "" || v.ThumbMaxResUrl == "" {
 		return false
@@ -42,7 +46,7 @@ func (v *VideoData) GetYoutubeDataFromId(id string) error {
 	if err != nil {
 		return err
 	}
-	call := service.Videos.List([]string{"snippet"})
+	call := service.Videos.List([]string{"snippet", "contentDetails"})
 	call.Id(id)
 
 	response, err := call.Do()
@@ -52,7 +56,6 @@ func (v *VideoData) GetYoutubeDataFromId(id string) error {
 	if len(response.Items) <= 0 {
 		return errors.New("no video found, check the id")
 	}
-	fmt.Println(response.Items[0].Snippet)
 	v.Id = id
 	v.Title = response.Items[0].Snippet.Title
 
@@ -70,10 +73,26 @@ func (v *VideoData) GetYoutubeDataFromId(id string) error {
 		v.ThumbMaxResUrl = ""
 	}
 
+	length := response.Items[0].ContentDetails.Duration
+	length = strings.Replace(length, "PT", "", -1)
+	length = strings.Replace(length, "S", "", -1)
+	lengthItems := strings.Split(length, "M")
+	var lengthItemsInt [2]int
+	lengthItemsInt[0], err = strconv.Atoi(lengthItems[0])
+	if err != nil {
+		return err
+	}
+	lengthItemsInt[1], err = strconv.Atoi(lengthItems[1])
+	if err != nil {
+		return err
+	}
+	v.Length = (lengthItemsInt[0] * 60) + lengthItemsInt[1]
+
 	upDate, err := time.Parse(time.RFC3339, response.Items[0].Snippet.PublishedAt)
 	if err != nil {
 		return err
 	}
+
 	v.UploadDate = primitive.NewDateTimeFromTime(upDate)
 	return nil
 }
@@ -101,8 +120,8 @@ func init() {
 	}
 }
 
-// func main() {
-// 	var v VideoData
-// 	v.GetYoutubeDataFromId("S0-4ouN35gw")
-// 	fmt.Println(v)
-// }
+func main() {
+	var v VideoData
+	v.GetYoutubeDataFromId("S0-4ouN35gw")
+	fmt.Println(v)
+}

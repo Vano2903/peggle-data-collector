@@ -30,5 +30,5 @@ todo for this version:
   - individual game page with all the stats of the game
   - players stats (use stats databaes) (scatter graph, bar graph, pie graph)
   - api documentation area
-  - support area (my paypall or buymeacoffe)
+  - support area (my paypal or buymeacoffe)
   - story of the idea (why am i doing this and effort)
