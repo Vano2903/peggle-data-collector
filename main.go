@@ -777,7 +777,7 @@ func AddGameHandler(w http.ResponseWriter, r *http.Request) {
 
 	var s OverallStats
 	err = s.AddStatsData(post)
-	if err != {
+	if err != nil {
 		PrintInternalErr(w, err.Error())
 	}
 
