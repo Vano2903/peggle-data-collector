@@ -325,7 +325,7 @@ func testAggregate() ([]User, error) {
 }
 
 func init() {
-	if err := ConnectToDatabaseUser(); err != nil {
+	if err := ConnectToDatabaseUsers(); err != nil {
 		log.Fatal(err)
 	}
 }
