@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
@@ -379,18 +378,18 @@ func init() {
 	}
 }
 
-func main() {
-	var queries []bson.D
-	v := []string{"z8bj_wLQf5I", "IwvS8ft7DM8", "5sRCGYPyA5I", "VqQYoqEE_18", "_xcs2X9jZRg", "iOjp4-M3bsk", "7bVgyEdsV60"}
-	q := bson.D{{"$match", bson.D{{"videoData.id", bson.M{"$in": v}}}}}
-	queries = append(queries, q)
-	g, _ := QueryGames(queries)
+// func main() {
+// 	var queries []bson.D
+// 	v := []string{"z8bj_wLQf5I", "IwvS8ft7DM8", "5sRCGYPyA5I", "VqQYoqEE_18", "_xcs2X9jZRg", "iOjp4-M3bsk", "7bVgyEdsV60"}
+// 	q := bson.D{{"$match", bson.D{{"videoData.id", bson.M{"$in": v}}}}}
+// 	queries = append(queries, q)
+// 	g, _ := QueryGames(queries)
 
-	fmt.Println(g)
+// 	fmt.Println(g)
 
-	var s Stats
+// 	var s Stats
 
-	for _, gam := range g {
-		s.AddStatsData(gam)
-	}
-}
+// 	for _, gam := range g {
+// 		s.AddStatsData(gam)
+// 	}
+// }
