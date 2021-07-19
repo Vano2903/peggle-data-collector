@@ -16,7 +16,7 @@ var (
 	collectionStats *mongo.Collection
 )
 
-type Stats struct {
+type OverallStats struct {
 	Id      int          `bson:"id" json:"-"`
 	Generic GenericStats `bson:"generic, omitempty" json:"generic, omitempty"`
 	Synergo PlayerStats  `bson:"synergo, omitempty" json:"synergo, omitempty"`
@@ -303,7 +303,7 @@ func (c *CharStats) addCharData(g Game, who string) {
 	}
 }
 
-func (s Stats) AddStatsData(g Game) error {
+func (s OverallStats) AddStatsData(g Game) error {
 	s, err := LoadStatsFromDB()
 	if err != nil {
 		return err
@@ -334,7 +334,7 @@ func (s Stats) AddStatsData(g Game) error {
 	return nil
 }
 
-func (s *Stats) insertFirst() error {
+func (s *OverallStats) insertFirst() error {
 	_, err := collectionStats.InsertOne(ctxStats, s)
 	if err != nil {
 		return err
@@ -342,7 +342,7 @@ func (s *Stats) insertFirst() error {
 	return nil
 }
 
-func (s *Stats) UploadStatsToDB() error {
+func (s *OverallStats) UploadStatsToDB() error {
 	_, err := collectionStats.UpdateOne(
 		ctxStats,
 		bson.M{"id": 0},
@@ -356,18 +356,18 @@ func (s *Stats) UploadStatsToDB() error {
 	return nil
 }
 
-func LoadStatsFromDB() (Stats, error) {
+func LoadStatsFromDB() (OverallStats, error) {
 	query := bson.M{"id": 0}
 	cur, err := collectionStats.Find(ctxStats, query)
 	if err != nil {
-		return Stats{}, err
+		return OverallStats{}, err
 	}
 	defer cur.Close(ctxStats)
-	var stat []Stats
+	var stat []OverallStats
 
-	//convert cur in []Stats
+	//convert cur in []OverallStats
 	if err = cur.All(context.TODO(), &stat); err != nil {
-		return Stats{}, err
+		return OverallStats{}, err
 	}
 	return stat[0], nil
 }
@@ -387,7 +387,7 @@ func init() {
 
 // 	fmt.Println(g)
 
-// 	var s Stats
+// 	var s OverallStats
 
 // 	for _, gam := range g {
 // 		s.AddStatsData(gam)

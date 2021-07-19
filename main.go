@@ -775,6 +775,12 @@ func AddGameHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var s OverallStats
+	err = s.AddStatsData(post)
+	if err != {
+		PrintInternalErr(w, err.Error())
+	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write([]byte(fmt.Sprintf(`{"msg":"Game added correctly and it's id is: %s"}`, id)))
