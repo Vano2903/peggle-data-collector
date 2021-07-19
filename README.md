@@ -21,6 +21,7 @@ todo for this version:
 
 - add function that let user clean just a section of the game adding function and not only everything
 - section to add a comment while inserting a game
+- dont create a button in commit area if there are none
 - colors on buttons in add-game ✔️
 - user section ✔️
 - users section

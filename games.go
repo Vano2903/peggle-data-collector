@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -107,8 +108,8 @@ func CheckIfExist(id string) (bool, error) {
 	return false, nil
 }
 
+//TODO check if toAdd is not completed
 func AddGame(toAdd Game) (string, error) {
-	//TODO check if toAdd is not completed
 
 	//check if not already stored
 	found, _ := CheckIfExist(toAdd.VD.Id)
@@ -175,7 +176,9 @@ func DeleteGame(id string) error {
 }
 
 func init() {
-	ConnectToDatabaseGame()
+	if err := ConnectToDatabaseGame(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // func main() {

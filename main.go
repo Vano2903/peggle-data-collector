@@ -69,10 +69,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	switch user.Level {
 	case 0:
 		page, err = os.ReadFile("pages/lvl0.html")
-	case 1:
-		page, err = os.ReadFile("pages/lvl1.html")
-	case 2:
-		page, err = os.ReadFile("pages/lvl2.html")
+		// case 1:
+		// 	page, err = os.ReadFile("pages/lvl1.html")
+		// case 2:
+		// 	page, err = os.ReadFile("pages/lvl2.html")
 	}
 	if err != nil {
 		//TODO add an unavailable page

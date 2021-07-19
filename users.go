@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"reflect"
 	"time"
 
@@ -324,7 +325,9 @@ func testAggregate() ([]User, error) {
 }
 
 func init() {
-	ConnectToDatabaseUsers()
+	if err := ConnectToDatabaseUser(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // func main() {
