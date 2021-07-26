@@ -22,10 +22,7 @@ todo for this version:
 - add function that let user clean just a section of the game adding function and not only everything
 - section to add a comment while inserting a game
 - dont create a button in commit area if there are none
-- colors on buttons in add-game ✔️
-- user section ✔️
 - users section
-- stats database
 - main page
   - home with all the basic general statistics
   - individual game page with all the stats of the game
@@ -33,3 +30,9 @@ todo for this version:
   - api documentation area
   - support area (my paypal or buymeacoffe)
   - story of the idea (why am i doing this and effort)
+
+done:
+
+- colors on buttons in add-game ✔️
+- user section ✔️
+- stats database ✔️
