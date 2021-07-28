@@ -27,7 +27,7 @@ todo for this version:
 - [ ] dont create a button in commit area if there are none
 - [ ] users section
 - [ ] main page
-  - [ ] home with all the basic general statistics
+  - [ ] home with game's cards, navbar and search box
   - [ ] individual game page with all the stats of the game
   - [ ] players stats (use stats databaes) (scatter graph, bar graph, pie graph)
   - [ ] api documentation area
