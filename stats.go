@@ -378,16 +378,17 @@ func init() {
 	}
 }
 
+//! use this main if you need to rewrite the whole stats db
 // func main() {
 // 	var queries []bson.D
-// 	v := []string{"z8bj_wLQf5I", "IwvS8ft7DM8", "5sRCGYPyA5I", "VqQYoqEE_18", "_xcs2X9jZRg", "iOjp4-M3bsk", "7bVgyEdsV60"}
-// 	q := bson.D{{"$match", bson.D{{"videoData.id", bson.M{"$in": v}}}}}
+// 	q := bson.D{{"$match", bson.D{{"videoData.title", bson.D{{"$regex", primitive.Regex{Pattern: "", Options: "i"}}}}}}}
 // 	queries = append(queries, q)
 // 	g, _ := QueryGames(queries)
 
 // 	fmt.Println(g)
 
 // 	var s OverallStats
+// 	s.insertFirst()
 
 // 	for _, gam := range g {
 // 		s.AddStatsData(gam)

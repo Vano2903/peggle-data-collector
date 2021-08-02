@@ -226,17 +226,17 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 	//all options :D
 	for k, v := range r.Form {
 		switch k {
-		case "id":
+		case "id": //*
 			q := bson.D{{"$match", bson.D{{"videoData.id", bson.M{"$in": v}}}}}
 			queries = append(queries, q)
-		case "title":
+		case "title": //*
 			if len(v) != 1 {
 				PrintErr(w, "you can't query over multiple titles (yet)")
 				return
 			}
 			q := bson.D{{"$match", bson.D{{"videoData.title", bson.D{{"$regex", primitive.Regex{Pattern: v[0], Options: "i"}}}}}}}
 			queries = append(queries, q)
-		case "wonBy":
+		case "wonBy": //*
 			vi, err := ConvertToSliceInt(v)
 			if err != nil {
 				PrintErr(w, err.Error())
@@ -244,14 +244,14 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 			}
 			q := bson.D{{"$match", bson.D{{"wonBy", bson.M{"$in": vi}}}}}
 			queries = append(queries, q)
-		case "upload": //the url query will be < >before the date and it will search dates before, after or equal to the date setted
+		case "upload": //* the url query will be < >before the date and it will search dates before or after to the date setted
 			for _, ds := range v {
 				dateElements := strings.Split(ds, "-")
-				if len(dateElements) != 3 {
+				if len(dateElements) != 4 {
 					PrintErr(w, "date not defined correctly")
 					return
 				}
-				dateString := ds[1:] + "T00:00:00+00:00"
+				dateString := ds[2:] + "T00:00:00+00:00"
 				d, err := time.Parse(time.RFC3339, dateString)
 				if err != nil {
 					PrintErr(w, err.Error())
@@ -268,7 +268,7 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
-		case "points": //the url will be s,r. to define if search in all the games made by syn or red and so, ro to search in the overall stats
+		case "points": //*the url will be s,r. to define if search in all the games made by syn or red and so, ro to search in the overall stats
 			for _, ps := range v {
 				pointsElements := strings.Split(ps, "-")
 				if len(pointsElements) != 3 && len(pointsElements) != 2 {
@@ -380,13 +380,14 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 			}
-		case "n-25":
+		case "n25": //*
 			for _, ps := range v {
 				n25Elements := strings.Split(ps, "-")
 				if len(n25Elements) != 3 && len(n25Elements) != 2 {
-					PrintErr(w, "n-25 has an incorrect format")
+					PrintErr(w, "n25 has an incorrect format")
 					return
 				}
+				fmt.Println(n25Elements)
 				switch n25Elements[0] {
 				case "r":
 					points, err := strconv.Atoi(n25Elements[2])
@@ -396,13 +397,13 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					}
 					switch n25Elements[1] {
 					case ">":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.n-25", bson.M{"$gt": points}}}, {{"stats.redez.g2.n-25", bson.M{"$gt": points}}}, {{"stats.redez.g3.n-25", bson.M{"$gt": points}}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.n25", bson.M{"$gt": points}}}, {{"stats.redez.g2.n25", bson.M{"$gt": points}}}, {{"stats.redez.g3.n25", bson.M{"$gt": points}}}}}}}}
 						queries = append(queries, q)
 					case "<":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.n-25", bson.M{"$lt": points}}}, {{"stats.redez.g2.n-25", bson.M{"$lt": points}}}, {{"stats.redez.g3.n-25", bson.M{"$lt": points}}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.n25", bson.M{"$lt": points}}}, {{"stats.redez.g2.n25", bson.M{"$lt": points}}}, {{"stats.redez.g3.n25", bson.M{"$lt": points}}}}}}}}
 						queries = append(queries, q)
 					default:
-						PrintErr(w, "incorrect operator in n-25 search")
+						PrintErr(w, "incorrect operator in n25 search")
 						return
 					}
 				case "s":
@@ -413,13 +414,13 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					}
 					switch n25Elements[1] {
 					case ">":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.n-25", bson.M{"$gt": points}}}, {{"stats.synergo.g2.n-25", bson.M{"$gt": points}}}, {{"stats.synergo.g3.n-25", bson.M{"$gt": points}}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.n25", bson.M{"$gt": points}}}, {{"stats.synergo.g2.n25", bson.M{"$gt": points}}}, {{"stats.synergo.g3.n25", bson.M{"$gt": points}}}}}}}}
 						queries = append(queries, q)
 					case "<":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.n-25", bson.M{"$lt": points}}}, {{"stats.synergo.g2.n-25", bson.M{"$lt": points}}}, {{"stats.synergo.g3.n-25", bson.M{"$lt": points}}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.n25", bson.M{"$lt": points}}}, {{"stats.synergo.g2.n25", bson.M{"$lt": points}}}, {{"stats.synergo.g3.n25", bson.M{"$lt": points}}}}}}}}
 						queries = append(queries, q)
 					default:
-						PrintErr(w, "incorrect operator in n-25 search")
+						PrintErr(w, "incorrect operator in n25 search")
 						return
 					}
 				case "ro":
@@ -430,7 +431,7 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 							PrintErr(w, err.Error())
 							return
 						}
-						q := bson.D{{"$match", bson.D{{"stats.redez.overall.t-25", bson.M{"$gt": points}}}}}
+						q := bson.D{{"$match", bson.D{{"stats.redez.overall.t25", bson.M{"$gt": points}}}}}
 						queries = append(queries, q)
 					case "<":
 						points, err := strconv.Atoi(n25Elements[2])
@@ -438,20 +439,20 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 							PrintErr(w, err.Error())
 							return
 						}
-						q := bson.D{{"$match", bson.D{{"stats.redez.overall.t-25", bson.M{"$lt": points}}}}}
+						q := bson.D{{"$match", bson.D{{"stats.redez.overall.t25", bson.M{"$lt": points}}}}}
 						queries = append(queries, q)
 					case "max":
 						lim = 1
-						q := bson.D{{"$sort", bson.M{"stats.redez.overall.t-25": -1}}}
+						q := bson.D{{"$sort", bson.M{"stats.redez.overall.t25": -1}}}
 						queries = append(queries, q)
 						sortByDate = false
 					case "min":
 						lim = 1
-						q := bson.D{{"$sort", bson.M{"stats.redez.overall.t-25": 1}}}
+						q := bson.D{{"$sort", bson.M{"stats.redez.overall.t25": 1}}}
 						queries = append(queries, q)
 						sortByDate = false
 					default:
-						PrintErr(w, "incorrect operator in n-25 search")
+						PrintErr(w, "incorrect operator in n25 search")
 						return
 					}
 				case "so":
@@ -462,7 +463,7 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 							PrintErr(w, err.Error())
 							return
 						}
-						q := bson.D{{"$match", bson.D{{"stats.synergo.overall.t-25", bson.M{"$gt": points}}}}}
+						q := bson.D{{"$match", bson.D{{"stats.synergo.overall.t25", bson.M{"$gt": points}}}}}
 						queries = append(queries, q)
 					case "<":
 						points, err := strconv.Atoi(n25Elements[2])
@@ -470,28 +471,28 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 							PrintErr(w, err.Error())
 							return
 						}
-						q := bson.D{{"$match", bson.D{{"stats.synergo.overall.t-25", bson.M{"$lt": points}}}}}
+						q := bson.D{{"$match", bson.D{{"stats.synergo.overall.t25", bson.M{"$lt": points}}}}}
 						queries = append(queries, q)
 					case "max":
 						lim = 1
-						q := bson.D{{"$sort", bson.M{"stats.synergo.overall.t-25": -1}}}
+						q := bson.D{{"$sort", bson.M{"stats.synergo.overall.t25": -1}}}
 						queries = append(queries, q)
 						sortByDate = false
 					case "min":
 						lim = 1
-						q := bson.D{{"$sort", bson.M{"stats.synergo.overall.t-25": 1}}}
+						q := bson.D{{"$sort", bson.M{"stats.synergo.overall.t25": 1}}}
 						queries = append(queries, q)
 						sortByDate = false
 					default:
-						PrintErr(w, "incorrect operator in n-25 search")
+						PrintErr(w, "incorrect operator in n25 search")
 						return
 					}
 				default:
-					PrintErr(w, "n-25 search operand not correct")
+					PrintErr(w, "n25 search operand not correct")
 					return
 				}
 			}
-		case "val-fe":
+		case "val-fe": //*
 			for _, fes := range v {
 				exfeElements := strings.Split(fes, "-")
 				if len(exfeElements) != 3 {
@@ -507,18 +508,18 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					PrintErr(w, err.Error())
 					return
 				}
-
+				fmt.Println(exfeElements)
 				switch exfeElements[0] {
 				case "r":
 					switch exfeElements[1] {
 					case ">":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFE", bson.M{"$gt": valFe}}}, {{"stats.redez.g2.valFE", bson.M{"$gt": valFe}}}, {{"stats.redez.g3.valFE", bson.M{"$gt": valFe}}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFe", bson.M{"$gt": valFe}}}, {{"stats.redez.g2.valFe", bson.M{"$gt": valFe}}}, {{"stats.redez.g3.valFe", bson.M{"$gt": valFe}}}}}}}}
 						queries = append(queries, q)
 					case "<":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFE", bson.M{"$lt": valFe}}}, {{"stats.redez.g2.valFE", bson.M{"$lt": valFe}}}, {{"stats.redez.g3.valFE", bson.M{"$lt": valFe}}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFe", bson.M{"$lt": valFe}}}, {{"stats.redez.g2.valFe", bson.M{"$lt": valFe}}}, {{"stats.redez.g3.valFe", bson.M{"$lt": valFe}}}}}}}}
 						queries = append(queries, q)
 					case "e":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFE", valFe}}, {{"stats.redez.g2.valFE", valFe}}, {{"stats.redez.g3.valFE", valFe}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.redez.g1.valFe", valFe}}, {{"stats.redez.g2.valFe", valFe}}, {{"stats.redez.g3.valFe", valFe}}}}}}}
 						queries = append(queries, q)
 					default:
 						PrintErr(w, "extreme fever search operand not correct, must use '<', '>', 'e'")
@@ -527,13 +528,13 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 				case "s":
 					switch exfeElements[1] {
 					case ">":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFE", bson.M{"$gt": valFe}}}, {{"stats.synergo.g2.valFE", bson.M{"$gt": valFe}}}, {{"stats.synergo.g3.valFE", bson.M{"$gt": valFe}}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFe", bson.M{"$gt": valFe}}}, {{"stats.synergo.g2.valFe", bson.M{"$gt": valFe}}}, {{"stats.synergo.g3.valFe", bson.M{"$gt": valFe}}}}}}}}
 						queries = append(queries, q)
 					case "<":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFE", bson.M{"$lt": valFe}}}, {{"stats.synergo.g2.valFE", bson.M{"$lt": valFe}}}, {{"stats.synergo.g3.valFE", bson.M{"$lt": valFe}}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFe", bson.M{"$lt": valFe}}}, {{"stats.synergo.g2.valFe", bson.M{"$lt": valFe}}}, {{"stats.synergo.g3.valFe", bson.M{"$lt": valFe}}}}}}}}
 						queries = append(queries, q)
 					case "e":
-						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFE", valFe}}, {{"stats.synergo.g2.valFE", valFe}}, {{"stats.synergo.g3.valFE", valFe}}}}}}}
+						q := bson.D{{"$match", bson.D{{"$or", []bson.D{{{"stats.synergo.g1.valFe", valFe}}, {{"stats.synergo.g2.valFe", valFe}}, {{"stats.synergo.g3.valFe", valFe}}}}}}}
 						queries = append(queries, q)
 					default:
 						PrintErr(w, "extreme fever search operand not correct, must use '<', '>', 'e'")
@@ -541,77 +542,80 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					}
 				}
 			}
-		case "character":
+		case "character": //*
 			for _, chs := range v {
-				char := chs[1:]
+
+				char := chs[2:]
+				fmt.Println(chs[2:])
+				fmt.Println(chs[0])
 				switch chs[0] {
 				case 's':
 					switch char {
 					case "cas":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "castoro"}},
-							{{"stats.synergo.g2.valFE", "castoro"}},
-							{{"stats.synergo.g3.valFE", "castoro"}}}}}}}
+							{{"stats.synergo.g2.character", "castoro"}},
+							{{"stats.synergo.g3.character", "castoro"}}}}}}}
 						queries = append(queries, q)
 					case "uni":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "unicorno"}},
-							{{"stats.synergo.g2.valFE", "unicorno"}},
-							{{"stats.synergo.g3.valFE", "unicorno"}}}}}}}
+							{{"stats.synergo.g2.character", "unicorno"}},
+							{{"stats.synergo.g3.character", "unicorno"}}}}}}}
 						queries = append(queries, q)
 					case "zuc":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "zucca"}},
-							{{"stats.synergo.g2.valFE", "zucca"}},
-							{{"stats.synergo.g3.valFE", "zucca"}}}}}}}
+							{{"stats.synergo.g2.character", "zucca"}},
+							{{"stats.synergo.g3.character", "zucca"}}}}}}}
 						queries = append(queries, q)
 					case "gat":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "gatto"}},
-							{{"stats.synergo.g2.valFE", "gatto"}},
-							{{"stats.synergo.g3.valFE", "gatto"}}}}}}}
+							{{"stats.synergo.g2.character", "gatto"}},
+							{{"stats.synergo.g3.character", "gatto"}}}}}}}
 						queries = append(queries, q)
 					case "ali":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "alieno"}},
-							{{"stats.synergo.g2.valFE", "alieno"}},
-							{{"stats.synergo.g3.valFE", "alieno"}}}}}}}
+							{{"stats.synergo.g2.character", "alieno"}},
+							{{"stats.synergo.g3.character", "alieno"}}}}}}}
 						queries = append(queries, q)
 					case "gra":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "granchio"}},
-							{{"stats.synergo.g2.valFE", "granchio"}},
-							{{"stats.synergo.g3.valFE", "granchio"}}}}}}}
+							{{"stats.synergo.g2.character", "granchio"}},
+							{{"stats.synergo.g3.character", "granchio"}}}}}}}
 						queries = append(queries, q)
 					case "gir":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "girasole"}},
-							{{"stats.redez.g2.valFE", "girasole"}},
-							{{"stats.redez.g3.valFE", "girasole"}}}}}}}
+							{{"stats.synergo.g2.character", "girasole"}},
+							{{"stats.synergo.g3.character", "girasole"}}}}}}}
 						queries = append(queries, q)
 					case "dra":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "drago"}},
-							{{"stats.synergo.g2.valFE", "drago"}},
-							{{"stats.synergo.g3.valFE", "drago"}}}}}}}
+							{{"stats.synergo.g2.character", "drago"}},
+							{{"stats.synergo.g3.character", "drago"}}}}}}}
 						queries = append(queries, q)
 					case "con":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "coniglio"}},
-							{{"stats.synergo.g2.valFE", "coniglio"}},
-							{{"stats.synergo.g3.valFE", "coniglio"}}}}}}}
+							{{"stats.synergo.g2.character", "coniglio"}},
+							{{"stats.synergo.g3.character", "coniglio"}}}}}}}
 						queries = append(queries, q)
 					case "guf":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "gufo"}},
-							{{"stats.synergo.g2.valFE", "gufo"}},
-							{{"stats.synergo.g3.valFE", "gufo"}}}}}}}
+							{{"stats.synergo.g2.character", "gufo"}},
+							{{"stats.synergo.g3.character", "gufo"}}}}}}}
 						queries = append(queries, q)
 					case "sep":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.synergo.g1.character", "seppia"}},
-							{{"stats.synergo.g2.valFE", "seppia"}},
-							{{"stats.synergo.g3.valFE", "seppia"}}}}}}}
+							{{"stats.synergo.g2.character", "seppia"}},
+							{{"stats.synergo.g3.character", "seppia"}}}}}}}
 						queries = append(queries, q)
 					}
 				case 'r':
@@ -619,73 +623,73 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					case "cas":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "castoro"}},
-							{{"stats.redez.g2.valFE", "castoro"}},
-							{{"stats.redez.g3.valFE", "castoro"}}}}}}}
+							{{"stats.redez.g2.character", "castoro"}},
+							{{"stats.redez.g3.character", "castoro"}}}}}}}
 						queries = append(queries, q)
 					case "uni":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "unicorno"}},
-							{{"stats.redez.g2.valFE", "unicorno"}},
-							{{"stats.redez.g3.valFE", "unicorno"}}}}}}}
+							{{"stats.redez.g2.character", "unicorno"}},
+							{{"stats.redez.g3.character", "unicorno"}}}}}}}
 						queries = append(queries, q)
 					case "zuc":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "zucca"}},
-							{{"stats.redez.g2.valFE", "zucca"}},
-							{{"stats.redez.g3.valFE", "zucca"}}}}}}}
+							{{"stats.redez.g2.character", "zucca"}},
+							{{"stats.redez.g3.character", "zucca"}}}}}}}
 						queries = append(queries, q)
 					case "gat":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "gatto"}},
-							{{"stats.redez.g2.valFE", "gatto"}},
-							{{"stats.redez.g3.valFE", "gatto"}}}}}}}
+							{{"stats.redez.g2.character", "gatto"}},
+							{{"stats.redez.g3.character", "gatto"}}}}}}}
 						queries = append(queries, q)
 					case "ali":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "alieno"}},
-							{{"stats.redez.g2.valFE", "alieno"}},
-							{{"stats.redez.g3.valFE", "alieno"}}}}}}}
+							{{"stats.redez.g2.character", "alieno"}},
+							{{"stats.redez.g3.character", "alieno"}}}}}}}
 						queries = append(queries, q)
 					case "gra":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "granchio"}},
-							{{"stats.redez.g2.valFE", "granchio"}},
-							{{"stats.redez.g3.valFE", "granchio"}}}}}}}
+							{{"stats.redez.g2.character", "granchio"}},
+							{{"stats.redez.g3.character", "granchio"}}}}}}}
 						queries = append(queries, q)
 					case "gir":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "girasole"}},
-							{{"stats.redez.g2.valFE", "girasole"}},
-							{{"stats.redez.g3.valFE", "girasole"}}}}}}}
+							{{"stats.redez.g2.character", "girasole"}},
+							{{"stats.redez.g3.character", "girasole"}}}}}}}
 						queries = append(queries, q)
 					case "dra":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "drago"}},
-							{{"stats.redez.g2.valFE", "drago"}},
-							{{"stats.redez.g3.valFE", "drago"}}}}}}}
+							{{"stats.redez.g2.character", "drago"}},
+							{{"stats.redez.g3.character", "drago"}}}}}}}
 						queries = append(queries, q)
 					case "con":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "coniglio"}},
-							{{"stats.redez.g2.valFE", "coniglio"}},
-							{{"stats.redez.g3.valFE", "coniglio"}}}}}}}
+							{{"stats.redez.g2.character", "coniglio"}},
+							{{"stats.redez.g3.character", "coniglio"}}}}}}}
 						queries = append(queries, q)
 					case "guf":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "gufo"}},
-							{{"stats.redez.g2.valFE", "gufo"}},
-							{{"stats.redez.g3.valFE", "gufo"}}}}}}}
+							{{"stats.redez.g2.character", "gufo"}},
+							{{"stats.redez.g3.character", "gufo"}}}}}}}
 						queries = append(queries, q)
 					case "sep":
 						q := bson.D{{"$match", bson.D{{"$or", []bson.D{
 							{{"stats.redez.g1.character", "seppia"}},
-							{{"stats.redez.g2.valFE", "seppia"}},
-							{{"stats.redez.g3.valFE", "seppia"}}}}}}}
+							{{"stats.redez.g2.character", "seppia"}},
+							{{"stats.redez.g3.character", "seppia"}}}}}}}
 						queries = append(queries, q)
 					}
 				}
 			}
-		case "limit":
+		case "limit": //*
 			if len(v) != 1 {
 				PrintErr(w, "can't define more than a limit option")
 				return
@@ -717,12 +721,15 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 		PrintInternalErr(w, err.Error())
 		return
 	}
-	j, err := json.Marshal(results)
-	if err != nil {
-		PrintInternalErr(w, err.Error())
-		return
+	j := []byte("[]")
+	if len(results) != 0 {
+		j, err = json.Marshal(results)
+		if err != nil {
+			PrintInternalErr(w, err.Error())
+			return
+		}
 	}
-	w.WriteHeader(http.StatusOK)
+	// w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(j)
 }
