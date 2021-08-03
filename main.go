@@ -824,7 +824,7 @@ func DeleteGameHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	port := os.Getenv("PORT")
-
+	//router
 	r := mux.NewRouter()
 	//statics
 	r.PathPrefix(statics.String()).Handler(http.StripPrefix(statics.String(), http.FileServer(http.Dir("static/"))))
