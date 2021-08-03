@@ -1,6 +1,6 @@
 module github.com/Vano2903/peggle-go-thingy-data
 
-// +heroku goVersion go1.16.4
+// +heroku goVersion go1.16.1
 go 1.16
 
 require (
