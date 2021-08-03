@@ -823,6 +823,8 @@ func DeleteGameHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	port := os.Getenv("PORT")
+
 	r := mux.NewRouter()
 	//statics
 	r.PathPrefix(statics.String()).Handler(http.StripPrefix(statics.String(), http.FileServer(http.Dir("static/"))))
@@ -851,5 +853,5 @@ func main() {
 	r.HandleFunc(deleteGame.String(), DeleteGameHandler).Methods("POST")
 
 	log.Println("starting on 8080")
-	log.Fatal(http.ListenAndServe(":8080", r))
+	log.Fatal(http.ListenAndServe(port, r))
 }
