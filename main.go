@@ -851,7 +851,6 @@ func main() {
 	r.HandleFunc(addGame.String(), AddGameHandler).Methods("POST")
 	r.HandleFunc(updateGame.String(), UpdateGameHandler).Methods("POST")
 	r.HandleFunc(deleteGame.String(), DeleteGameHandler).Methods("POST")
-
-	log.Println("starting on 8080")
+	log.Println("starting on", port)
 	log.Fatal(http.ListenAndServe(port, r))
 }
