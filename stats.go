@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -64,7 +63,7 @@ func ConnectToDatabaseStats() error {
 	ctxStats, _ := context.WithTimeout(context.TODO(), 10*time.Second)
 
 	//try to connect
-	clientOptions := options.Client().ApplyURI("mongodb://192.168.1.9:27017")
+	clientOptions := options.Client().ApplyURI(conf.Uri)
 	clientStats, err := mongo.Connect(ctxStats, clientOptions)
 	if err != nil {
 		return err
@@ -370,12 +369,6 @@ func LoadStatsFromDB() (OverallStats, error) {
 		return OverallStats{}, err
 	}
 	return stat[0], nil
-}
-
-func init() {
-	if err := ConnectToDatabaseStats(); err != nil {
-		log.Fatal(err)
-	}
 }
 
 //! use this main if you need to rewrite the whole stats db

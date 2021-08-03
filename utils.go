@@ -2,9 +2,22 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"gopkg.in/yaml.v2"
+)
+
+type config struct {
+	Apikey string `yaml:"yt_api_v3_key"`
+	Uri    string `yaml:"mongo_uri"`
+}
+
+var (
+	conf config
 )
 
 //printInternalErr set the status code to 500 of the http response
@@ -49,4 +62,21 @@ func ConvertToSliceInt(s []string) ([]int, error) {
 		converted = append(converted, i)
 	}
 	return converted, nil
+}
+
+func init() {
+	dat, err := ioutil.ReadFile("config.yaml")
+	err = yaml.Unmarshal([]byte(dat), &conf)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	if err := ConnectToDatabaseStats(); err != nil {
+		log.Fatal(err)
+	}
+	if err := ConnectToDatabaseGame(); err != nil {
+		log.Fatal(err)
+	}
+	if err := ConnectToDatabaseUsers(); err != nil {
+		log.Fatal(err)
+	}
 }

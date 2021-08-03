@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -57,7 +56,7 @@ func ConnectToDatabaseGame() error {
 	ctxGame, _ := context.WithTimeout(context.TODO(), 10*time.Second)
 
 	//try to connect
-	clientOptions := options.Client().ApplyURI("mongodb://192.168.1.9:27017")
+	clientOptions := options.Client().ApplyURI(conf.Uri)
 	clientGame, err := mongo.Connect(ctxGame, clientOptions)
 	if err != nil {
 		return err
@@ -173,12 +172,6 @@ func DeleteGame(id string) error {
 		return err
 	}
 	return nil
-}
-
-func init() {
-	if err := ConnectToDatabaseGame(); err != nil {
-		log.Fatal(err)
-	}
 }
 
 // func main() {

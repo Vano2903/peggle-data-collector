@@ -2,8 +2,6 @@ package main
 
 import (
 	"errors"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -12,16 +10,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"google.golang.org/api/googleapi/transport"
 	youtube "google.golang.org/api/youtube/v3"
-	"gopkg.in/yaml.v2"
 )
-
-var (
-	conf config
-)
-
-type config struct {
-	Apikey string `yaml:"yt_api_v3_key"`
-}
 
 type VideoData struct {
 	Id             string             `bson:"id, omitempty" json:"id,omitempty"`
@@ -108,15 +97,6 @@ func GetYoutubeService(key string) (*youtube.Service, error) {
 	}
 
 	return service, nil
-}
-
-//get the api key from config.yaml
-func init() {
-	dat, err := ioutil.ReadFile("config.yaml")
-	err = yaml.Unmarshal([]byte(dat), &conf)
-	if err != nil {
-		log.Fatalf("error: %v", err)
-	}
 }
 
 // func main() {

@@ -387,7 +387,6 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					PrintErr(w, "n25 has an incorrect format")
 					return
 				}
-				fmt.Println(n25Elements)
 				switch n25Elements[0] {
 				case "r":
 					points, err := strconv.Atoi(n25Elements[2])
@@ -508,7 +507,6 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 					PrintErr(w, err.Error())
 					return
 				}
-				fmt.Println(exfeElements)
 				switch exfeElements[0] {
 				case "r":
 					switch exfeElements[1] {
@@ -546,8 +544,6 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 			for _, chs := range v {
 
 				char := chs[2:]
-				fmt.Println(chs[2:])
-				fmt.Println(chs[0])
 				switch chs[0] {
 				case 's':
 					switch char {
@@ -775,7 +771,6 @@ func AddGameHandler(w http.ResponseWriter, r *http.Request) {
 		PrintErr(w, err.Error())
 		return
 	}
-	fmt.Println(post)
 	id, err := AddGame(post)
 	if err != nil {
 		PrintErr(w, err.Error())

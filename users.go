@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"reflect"
 	"time"
 
@@ -61,11 +60,11 @@ func (x User) IsStructureEmpty() bool {
 
 //will connect to database on user's collectionn
 func ConnectToDatabaseUsers() error {
-	//get context
 	ctxUser, _ := context.WithTimeout(context.TODO(), 10*time.Second)
 
 	//try to connect
-	clientOptions := options.Client().ApplyURI("mongodb://192.168.1.9:27017")
+	// clientOptions := options.Client().ApplyURI("mongodb://192.168.1.9:27017")
+	clientOptions := options.Client().ApplyURI(conf.Uri)
 	clientUser, err := mongo.Connect(ctxUser, clientOptions)
 	if err != nil {
 		return err
@@ -322,12 +321,6 @@ func testAggregate() ([]User, error) {
 		return nil, err
 	}
 	return usersFound, nil
-}
-
-func init() {
-	if err := ConnectToDatabaseUsers(); err != nil {
-		log.Fatal(err)
-	}
 }
 
 // func main() {
