@@ -23,6 +23,10 @@ type Post struct {
 }
 
 func MainPageHanler(w http.ResponseWriter, r *http.Request) {
+	// params := strings.ReplaceAll(mux.Vars(r)["id"], "favicon.ico", "")
+	// fmt.Println(params)
+	// fmt.Println(len(params))
+	// if len(params) > 0 {
 	home, err := os.ReadFile("pages/home.html")
 	if err != nil {
 		//TODO add an unavailable page
@@ -32,6 +36,11 @@ func MainPageHanler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Write(home)
+}
+
+func GamePageHandler(w http.ResponseWriter, r *http.Request) {
+	param := mux.Vars(r)["id"]
+	w.Write([]byte(param))
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -706,7 +715,7 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if sortByDate {
-		q := bson.D{{"$sort", bson.M{"videoData.uploadDate": 1}}}
+		q := bson.D{{"$sort", bson.M{"videoData.uploadDate": -1}}}
 		queries = append(queries, q)
 	}
 	limit := bson.D{{"$limit", lim}}
@@ -824,6 +833,9 @@ func DeleteGameHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
 	//router
 	r := mux.NewRouter()
 	//statics
@@ -831,6 +843,7 @@ func main() {
 
 	//home page handler
 	r.HandleFunc(root.String(), MainPageHanler).Methods("GET")
+	r.HandleFunc(gamePage.String(), GamePageHandler).Methods("GET")
 
 	//user login area
 	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")

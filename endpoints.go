@@ -5,8 +5,9 @@ type endpoints string
 const (
 
 	//base route
-	root endpoints = "/"
-	
+	root     endpoints = "/"
+	gamePage endpoints = "/{id}"
+
 	//API route
 	// endApi endpoints = "/api/"
 

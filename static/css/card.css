@@ -15,3 +15,11 @@
   margin-right: 10px;
   border-radius: 45%;
 }
+
+a,
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none;
+  color: inherit;
+}
