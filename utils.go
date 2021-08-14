@@ -78,7 +78,6 @@ func init() {
 		conf.Apikey = yt
 		conf.Uri = uri
 	}
-	fmt.Println(conf)
 	if err := ConnectToDatabaseStats(); err != nil {
 		log.Fatal(err)
 	}
