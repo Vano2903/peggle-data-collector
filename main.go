@@ -38,9 +38,26 @@ func MainPageHanler(w http.ResponseWriter, r *http.Request) {
 	w.Write(home)
 }
 
-func GamePageHandler(w http.ResponseWriter, r *http.Request) {
-	param := mux.Vars(r)["id"]
-	w.Write([]byte(param))
+func PagesHandler(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)["id"]
+	// var page []byte
+	if params == "api" {
+		w.Write([]byte("apiii"))
+	} else if params == "stats" {
+		w.Write([]byte("stats"))
+	} else if params == "support" {
+		w.Write([]byte("support"))
+	} else if params != "favicon.ico" {
+		page, err := os.ReadFile("pages/single-game.html")
+		if err != nil {
+			//TODO add an unavailable page
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusServiceUnavailable)
+			w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+			return
+		}
+		w.Write(page)
+	}
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -843,7 +860,7 @@ func main() {
 
 	//home page handler
 	r.HandleFunc(root.String(), MainPageHanler).Methods("GET")
-	r.HandleFunc(gamePage.String(), GamePageHandler).Methods("GET")
+	r.HandleFunc(pages.String(), PagesHandler).Methods("GET")
 
 	//user login area
 	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")

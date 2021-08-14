@@ -3,19 +3,16 @@
 
 <head>
     <title>QDSS Peggle</title>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="../static/css/card.css">
+    <link rel="stylesheet" href="static/css/card.css">
 </head>
 
-<body>
-
+<body onload="createCards()">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">QDSS - PEGGLE</a>
@@ -27,16 +24,13 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Stats</a>
+                        <a class="nav-link active" href="/stats">Stats</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">API Docs</a>
+                        <a class="nav-link active" href="/api">API Docs</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">Supporta</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="#">Link</a>
+                        <a class="nav-link active" href="/support">Supporta</a>
                     </li>
                 </ul>
                 <form class="d-flex">
@@ -48,104 +42,6 @@
     </nav>
 
     <div id="card-container" style="margin: 10px;" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
-        <!-- <a href="https://www.google.com">
-            <div class="col">
-                <div class="card">
-                    <img src="https://i.ytimg.com/vi/z8bj_wLQf5I/maxresdefault.jpg" class="card-img-top" alt="...">
-                    <div class="card-body">
-                        <img class="wonBy" src="../static/images/synergo-png.png">
-                        <div class="datas">
-                            <h5 class="card-title">IL GUFO SARA' IL MIGLIORE AMICO DI REDEZ? #PEGGLE</h5>
-                            <p class="card-text"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </a>
-        <div class="col">
-            <div class="card">
-                <img src="https://i.ytimg.com/vi/z8bj_wLQf5I/maxresdefault.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <img class="wonBy" src="../static/images/synergo-png.png">
-                    <div class="datas">
-                        <h5 class="card-title">IL GUFO SARA' IL MIGLIORE AMICO DI REDEZ? #PEGGLE</h5>
-                        <p class="card-text"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img src="https://i.ytimg.com/vi/z8bj_wLQf5I/maxresdefault.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <img class="wonBy" src="../static/images/synergo-png.png">
-                    <div class="datas">
-                        <h5 class="card-title">IL GUFO SARA' IL MIGLIORE AMICO DI REDEZ? #PEGGLE</h5>
-                        <p class="card-text"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img src="https://i.ytimg.com/vi/z8bj_wLQf5I/maxresdefault.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <img class="wonBy" src="../static/images/synergo-png.png">
-                    <div class="datas">
-                        <h5 class="card-title">IL GUFO SARA' IL MIGLIORE AMICO DI REDEZ? #PEGGLE</h5>
-                        <p class="card-text"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img src="https://i.ytimg.com/vi/z8bj_wLQf5I/maxresdefault.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <img class="wonBy" src="../static/images/synergo-png.png">
-                    <div class="datas">
-                        <h5 class="card-title">IL GUFO SARA' IL MIGLIORE AMICO DI REDEZ? #PEGGLE</h5>
-                        <p class="card-text"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img src="https://i.ytimg.com/vi/z8bj_wLQf5I/maxresdefault.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <img class="wonBy" src="../static/images/redez-png.png">
-                    <div class="datas">
-                        <h5 class="card-title">IL GUFO SARA' IL MIGLIORE AMICO DI REDEZ? #PEGGLE</h5>
-                        <p class="card-text"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img src="https://i.ytimg.com/vi/z8bj_wLQf5I/maxresdefault.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <img class="wonBy" src="../static/images/synergo-png.png">
-                    <div class="datas">
-                        <h5 class="card-title">IL GUFO SARA' IL MIGLIORE AMICO DI REDEZ? #PEGGLE</h5>
-                        <p class="card-text"></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col">
-            <div class="card">
-                <img src="https://i.ytimg.com/vi/z8bj_wLQf5I/maxresdefault.jpg" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <img class="wonBy" src="../static/images/synergo-png.png">
-                    <div class="datas">
-                        <h5 class="card-title">IL GUFO SARA' IL MIGLIORE AMICO DI REDEZ? #PEGGLE</h5>
-                        <p class="card-text"></p>
-                    </div>
-                </div>
-            </div>
-        </div> -->
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -154,7 +50,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
-    <script src="../static/js/card.js"></script>
+    <script src="static/js/card.js"></script>
 </body>
 
 </html>
