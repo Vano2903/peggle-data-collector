@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -65,11 +66,19 @@ func ConvertToSliceInt(s []string) ([]int, error) {
 }
 
 func init() {
-	dat, err := ioutil.ReadFile("config.yaml")
-	err = yaml.Unmarshal([]byte(dat), &conf)
-	if err != nil {
-		log.Fatalf("error: %v", err)
+	uri := os.Getenv("mongo_uri")
+	yt := os.Getenv("yt_api_v3_key")
+	if uri == "" || yt == "" {
+		dat, err := ioutil.ReadFile("config.yaml")
+		err = yaml.Unmarshal([]byte(dat), &conf)
+		if err != nil {
+			log.Fatalf("error: %v", err)
+		}
+	} else {
+		conf.Apikey = yt
+		conf.Uri = uri
 	}
+	fmt.Println(conf)
 	if err := ConnectToDatabaseStats(); err != nil {
 		log.Fatal(err)
 	}
