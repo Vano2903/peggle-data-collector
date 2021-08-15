@@ -40,24 +40,28 @@ func MainPageHanler(w http.ResponseWriter, r *http.Request) {
 
 func PagesHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)["id"]
-	// var page []byte
+	var page []byte
+	var err error
 	if params == "api" {
 		w.Write([]byte("apiii"))
 	} else if params == "stats" {
 		w.Write([]byte("stats"))
 	} else if params == "support" {
 		w.Write([]byte("support"))
-	} else if params != "favicon.ico" {
-		page, err := os.ReadFile("pages/single-game.html")
+	} else if params == "404" {
+		page, err = os.ReadFile("pages/not-found.html")
 		if err != nil {
-			//TODO add an unavailable page
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusServiceUnavailable)
-			w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+			UnavailablePage(w)
 			return
 		}
-		w.Write(page)
+	} else if params != "favicon.ico" {
+		page, err = os.ReadFile("pages/single-game.html")
+		if err != nil {
+			UnavailablePage(w)
+			return
+		}
 	}
+	w.Write(page)
 }
 
 func HomeHandler(w http.ResponseWriter, r *http.Request) {
@@ -743,13 +747,18 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 		PrintInternalErr(w, err.Error())
 		return
 	}
-	j := []byte("[]")
+	var j []byte
 	if len(results) != 0 {
 		j, err = json.Marshal(results)
 		if err != nil {
 			PrintInternalErr(w, err.Error())
 			return
 		}
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		j = []byte(`{"code":404,"message":"nothing was found}`)
+		w.Write(j)
+		return
 	}
 	// w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/json")

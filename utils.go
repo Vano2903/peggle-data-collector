@@ -35,6 +35,14 @@ func PrintErr(w http.ResponseWriter, err string) {
 	w.Write([]byte(fmt.Sprintf(`{"code": 400, "msg": "%s"}`, err)))
 }
 
+//return the unavailable service response (adding a unaviable page)
+func UnavailablePage(w http.ResponseWriter) {
+	//TODO add an unavailable page
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusServiceUnavailable)
+	w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+}
+
 //check if element is present in a slice of int
 func Contains(slice []int, item int) bool {
 	set := make(map[int]int, len(slice))

@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../static/css/game.css">
 </head>
 
-<body>
+<body onload="genPage()">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">QDSS - PEGGLE</a>
@@ -44,27 +44,36 @@
             <h2 id="title">CIAOOOOOOOO PARTITA A COSE CHE FANNO ALTRE COSE BELLE MA NON TROPPO</h2>
         </div>
         <br>
-        <!-- <div class="container col-6 border border-muted rounded jumbotron text-dark" style="padding: 20px"> -->
         <div id="gameArea" class="col-10">
-            <!-- parte synergo -->
-            <div id="overall" style="display: show">
+
+            <div class="row">
+                <div class="col">
+                    <div class="player-img-container">
+                        <img class="player-img" src="../static/images/synergo-png.png" alt="synergo">
+                        <img class="crown" id="scrown" src="../static/images/crown-res.gif" alt="crown-gif">
+                    </div>
+                    <hr class="col-3">
+                </div>
+                <div class="col">
+                    <div class="player-img-container">
+                        <img class="player-img" src="../static/images/redez-png.png" alt="redez">
+                        <img class="crown" id="rcrown" src="../static/images/crown-res.gif" alt="crown-gif">
+                    </div>
+                    <hr class="col-3">
+                </div>
+            </div>
+
+            <div id="par0" style="display: show">
                 <div class="row">
                     <div class="col">
-                        <div class="player-img-container">
-                            <img class="player-img" src="../static/images/synergo-png.png" alt="synergo">
-                            <img class="crown" src="../static/images/crown-res.gif" alt="crown-gif">
-                        </div>
+                        <p id="stpoints">punti totali: </p>
                         <br>
-                        <p style="font-size:25px;" id="tpoints">punti totali: 10000</p>
+                        <p id="st25">-25 totali: </p>
                     </div>
-                    <!-- parte redez -->
                     <div class="col">
-                        <div class="player-img-container">
-                            <img class="player-img" src="../static/images/redez-png.png" alt="synergo">
-                            <img class="crown" src="../static/images/crown-res.gif" alt="crown-gif">
-                        </div>
+                        <p id="rtpoints">punti totali: </p>
                         <br>
-                        <p style="font-size:25px;" id="tpoints">punti totali: 10000</p>
+                        <p id="rt25">-25 totali: </p>
                     </div>
                 </div>
             </div>
@@ -74,7 +83,7 @@
                     <div class="col">
 
                     </div>
-                    <!-- parte redez -->
+
                     <div class="col">
 
                     </div>
@@ -85,7 +94,6 @@
                     <div class="col">
 
                     </div>
-                    <!-- parte redez -->
                     <div class="col">
 
                     </div>
@@ -96,7 +104,6 @@
                     <div class="col">
 
                     </div>
-                    <!-- parte redez -->
                     <div class="col">
 
                     </div>
@@ -109,18 +116,26 @@
     <br>
     <div id="changeSection">
         <center>
-            <button id="gameOverall" class="btn btn-outline-success"
-                onclick="showGameSections(0); onSection(0)">overall</button>
-            <button id="gamePart1" class="btn btn-outline-secondary" onclick="showGameSections(0); onSection(0)">partita
-                1</button>
-            <button id="gamePart2" class="btn btn-outline-secondary" onclick="showGameSections(1); onSection(1)">partita
-                2</button>
-            <button id="gamePart3" class="btn btn-outline-secondary" onclick="showGameSections(2); onSection(2)">partita
-                3</button>
+            <div class="btn-group" role="group" aria-label="Basic radio toggle button group">
+                <input onclick="showSection(0)" type="radio" class="btn-check" name="gameRadio" id="butPar0"
+                    autocomplete="off" checked>
+                <label class="btn btn-outline-success" id="labButPar0" for="butPar0">Overall</label>
+
+                <input onclick="showSection(1)" type="radio" class="btn-check" name="gameRadio" id="butPar1"
+                    autocomplete="off">
+                <label class="btn btn-outline-secondary" id="labButPar1" for="butPar1">Partita 1</label>
+
+                <input onclick="showSection(2)" type="radio" class="btn-check" name="gameRadio" id="butPar2"
+                    autocomplete="off">
+                <label class="btn btn-outline-secondary" id="labButPar2" for="butPar2">Partita 2</label>
+
+                <input onclick="showSection(3)" type="radio" class="btn-check" name="gameRadio" id="butPar3"
+                    autocomplete="off">
+                <label class="btn btn-outline-secondary" id="labButPar3" for="butPar3">Partita 3</label>
+            </div>
         </center>
     </div>
 
-    <!-- </div> -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
         crossorigin="anonymous"></script>

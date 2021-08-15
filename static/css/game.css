@@ -1,8 +1,13 @@
+p {
+  font-size: 25px;
+}
+
 .player-img-container {
   position: relative;
 }
 
 .crown {
+  display: none;
   position: absolute;
   height: 60px;
   top: 70%;
@@ -27,5 +32,8 @@
   }
   .crown {
     height: 40px;
+  }
+  p {
+    font-size: 17px;
   }
 }
