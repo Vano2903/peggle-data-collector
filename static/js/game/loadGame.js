@@ -1,4 +1,10 @@
 "use strict"
+document.getElementById("loader-wrapper").style.display = "block";
+window.onload = async function(){
+    await genPage()
+    document.getElementById("loader-wrapper").style.display = "none";
+}
+
 let id = window.location.pathname.slice(1);
 let gameData;
 document.getElementsByTagName('title')[0].innerHTML += id;
@@ -33,7 +39,9 @@ async function genPage(){
         document.getElementById("scrown").style.display = "block";
         document.getElementById("rcrown").style.display = "block";
     }
-
+    for (let i = 0; i < 4; i++){
+        setSection(i, gameData)
+    }
 }
 
 function hideAllSections(){
@@ -52,7 +60,24 @@ function showSection(section){
     document.getElementById(`labButPar${section}`).classList.add("btn-outline-success");
 }
 
-function setOverall(game){
-    
+function setSection(index, game){
+    if (index === 0){
+        document.getElementById("stpoints").innerHTML += game.stats.synergo.overall.tPoints;
+        document.getElementById("st25").innerHTML += game.stats.synergo.overall.t25;
+        document.getElementById("rtpoints").innerHTML += game.stats.redez.overall.tPoints;
+        document.getElementById("rt25").innerHTML += game.stats.redez.overall.t25;
+    }else{
+        document.getElementById(`s${index}points`).innerHTML += game.stats.synergo["g"+index].points;
+        document.getElementById(`s${index}25`).innerHTML += game.stats.synergo["g"+index].n25;
+        document.getElementById(`s${index}fe`).innerHTML += game.stats.synergo["g"+index].valFe;
+        document.getElementById(`s${index}charName`).innerHTML += game.stats.synergo["g"+index].character;
+        document.getElementById(`s${index}charImg`).src = "/static/images/" + game.stats.synergo["g"+index].character.slice(0, 3)+".png";
+
+        document.getElementById(`r${index}points`).innerHTML += game.stats.redez["g"+index].points;
+        document.getElementById(`r${index}25`).innerHTML += game.stats.redez["g"+index].n25;
+        document.getElementById(`r${index}fe`).innerHTML += game.stats.synergo["g"+index].valFe;
+        document.getElementById(`r${index}charName`).innerHTML += game.stats.redez["g"+index].character;
+        document.getElementById(`r${index}charImg`).src = "/static/images/" + game.stats.redez["g"+index].character.slice(0, 3)+".png";
+    }
 }
 

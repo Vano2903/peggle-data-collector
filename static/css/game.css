@@ -22,6 +22,11 @@ p {
   border-radius: 50%;
 }
 
+.char {
+  border-radius: 50%;
+  height: 50px;
+}
+
 /* #gameArea {
   margin: auto;
 } */
