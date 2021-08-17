@@ -9,8 +9,6 @@ let id = window.location.pathname.slice(1);
 let gameData;
 document.getElementsByTagName('title')[0].innerHTML += id;
 
-
-
 async function fetchGameData(){
     let url = `/games/search?id=${id}`;
     const res = await fetch(url, {
@@ -22,8 +20,20 @@ async function fetchGameData(){
     }
     const resp = await res.json();
     console.log(resp[0]);
-    console.log(status);
     return resp[0];
+}
+
+async function getUserProfilePicture(name){
+    let url = "/users/pfp/"+ name;
+    const res = await fetch(url, {
+        method: "GET"
+    });
+    const status = res.status;
+    if (status === 400){
+        return ""
+    }
+    const resp = await res.json();
+    return resp.url;
 }
 
 async function genPage(){
@@ -42,6 +52,9 @@ async function genPage(){
     for (let i = 0; i < 4; i++){
         setSection(i, gameData)
     }
+    document.getElementById("youtube-embed").src = `https://www.youtube.com/embed/${id}?rel=0`
+    document.getElementById("userName").innerHTML += gameData.addedBy;
+    document.getElementById("userPfp").src = await getUserProfilePicture(gameData.addedBy);
 }
 
 function hideAllSections(){

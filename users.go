@@ -194,6 +194,26 @@ func IsCorrect(user, pass string) (User, error) {
 	}
 }
 
+//return the url of a user pfp given the username
+func GetProfilePicture(username string) (string, error) {
+	query := bson.M{"user": username}
+	cur, err := collectionUser.Find(ctxUser, query)
+	if err != nil {
+		return "", err
+	}
+	defer cur.Close(ctxUser)
+	var userFound []User
+
+	//convert cur in []User
+	if err = cur.All(context.TODO(), &userFound); err != nil {
+		return "", err
+	}
+	if len(userFound) > 0 {
+		return userFound[0].PfpUrl, nil
+	}
+	return "", errors.New("no user found")
+}
+
 //return the user based on username and password
 func QueryUser(user, pass string) (User, error) {
 	query := bson.M{"user": user, "password": pass}

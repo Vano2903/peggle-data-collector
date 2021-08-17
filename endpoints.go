@@ -16,7 +16,7 @@ const (
 
 	//users endpoint
 	usersLogin        endpoints = "/users/login"
-	usersPfp          endpoints = "/users/pfp"
+	usersPfp          endpoints = "/users/pfp/{user}"
 	userCustomization endpoints = "/users/customization/"
 
 	//commits endpoints

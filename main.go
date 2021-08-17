@@ -22,17 +22,10 @@ type Post struct {
 	Id       string `json:"id, omitempty"`
 }
 
-func MainPageHanler(w http.ResponseWriter, r *http.Request) {
-	// params := strings.ReplaceAll(mux.Vars(r)["id"], "favicon.ico", "")
-	// fmt.Println(params)
-	// fmt.Println(len(params))
-	// if len(params) > 0 {
+func HomePageHanler(w http.ResponseWriter, r *http.Request) {
 	home, err := os.ReadFile("pages/home.html")
 	if err != nil {
-		//TODO add an unavailable page
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+		UnavailablePage(w)
 		return
 	}
 	w.Write(home)
@@ -64,13 +57,10 @@ func PagesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(page)
 }
 
-func HomeHandler(w http.ResponseWriter, r *http.Request) {
+func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	home, err := os.ReadFile("pages/login.html")
 	if err != nil {
-		//TODO add an unavailable page
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+		UnavailablePage(w)
 		return
 	}
 	w.Write(home)
@@ -116,18 +106,12 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetPfp(w http.ResponseWriter, r *http.Request) {
-	var post Post
-
-	//read post body
-	_ = json.NewDecoder(r.Body).Decode(&post)
-
-	//check if user is correct
-	user, err := QueryUser(post.Username, post.Password)
+	url, err := GetProfilePicture(mux.Vars(r)["user"])
 	if err != nil {
 		PrintErr(w, err.Error())
 		return
 	}
-	imgJson := fmt.Sprintf(`{"url":"%s"}`, user.PfpUrl)
+	imgJson := fmt.Sprintf(`{"url":"%s"}`, url)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
 	w.Write([]byte(imgJson))
@@ -868,15 +852,15 @@ func main() {
 	r.PathPrefix(statics.String()).Handler(http.StripPrefix(statics.String(), http.FileServer(http.Dir("static/"))))
 
 	//home page handler
-	r.HandleFunc(root.String(), MainPageHanler).Methods("GET")
+	r.HandleFunc(root.String(), HomePageHanler).Methods("GET")
 	r.HandleFunc(pages.String(), PagesHandler).Methods("GET")
 
 	//user login area
-	r.HandleFunc(usersLogin.String(), HomeHandler).Methods("GET")
+	r.HandleFunc(usersLogin.String(), LoginPageHandler).Methods("GET")
 	r.HandleFunc(usersLogin.String(), LoginHandler).Methods("POST")
 
 	//get url for user's pfp
-	r.HandleFunc(usersPfp.String(), GetPfp).Methods("POST")
+	r.HandleFunc(usersPfp.String(), GetPfp).Methods("GET")
 
 	//user customization area
 	r.HandleFunc(userCustomization.String(), UserCustomizationHandler).Methods("POST")

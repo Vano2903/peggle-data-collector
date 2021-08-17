@@ -27,6 +27,15 @@ p {
   height: 50px;
 }
 
+.pfp {
+  border-radius: 50%;
+  height: 70px;
+}
+
+.userName {
+  text-align: center;
+}
+
 /* #gameArea {
   margin: auto;
 } */
