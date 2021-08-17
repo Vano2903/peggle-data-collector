@@ -27,10 +27,9 @@ todo for this version:
 - [ ] section to add a comment while inserting a game
 - [ ] dont create a button in commit area if there are none
 - [ ] users section
-- [ ] main page
-  - [ ] home with game's cards, navbar and search box
-  - [ ] individual game page with all the stats of the game
+- [x] main page
+  - [x] home with game's cards, navbar and search box
+  - [x] individual game page with all the stats of the game
   - [ ] players stats (use stats databaes) (scatter graph, bar graph, pie graph)
   - [ ] api documentation area
   - [ ] support area (my paypal or buymeacoffe)
-  - [ ] story of the idea (why am i doing this and effort)

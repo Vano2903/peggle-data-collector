@@ -38,8 +38,6 @@ async function getUserProfilePicture(name){
 
 async function genPage(){
     gameData = await fetchGameData();
-    console.log(id);
-    console.log(gameData);
     document.getElementById("title").innerHTML = gameData.videoData.title;
     if (gameData.wonBy == 1) {
         document.getElementById("scrown").style.display = "block";
