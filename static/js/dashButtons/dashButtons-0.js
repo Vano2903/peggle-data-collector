@@ -19,12 +19,8 @@ function logout() {
 }
 
 async function getPfp() {
-    var res = await fetch('/users/pfp', {
-        method: "POST",
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(user)
+    var res = await fetch('/users/pfp/'+user.username, {
+        method: "GET"
     });
     var respJson = await res.json();
     console.log(respJson);
