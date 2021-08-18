@@ -38,7 +38,11 @@ func PagesHandler(w http.ResponseWriter, r *http.Request) {
 	if params == "api" {
 		w.Write([]byte("apiii"))
 	} else if params == "stats" {
-		w.Write([]byte("stats"))
+		page, err = os.ReadFile("pages/stats.html")
+		if err != nil {
+			UnavailablePage(w)
+			return
+		}
 	} else if params == "support" {
 		w.Write([]byte("support"))
 	} else if params == "404" {

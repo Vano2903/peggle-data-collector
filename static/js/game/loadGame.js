@@ -17,6 +17,12 @@ async function fetchGameData(){
     const status = res.status;
     if (status === 404){
         // window.location = "/404"
+        const res = await fetch('/404', {
+            method: "GET"
+        });
+        const resp = await res.text();
+        document.write(resp);
+        document.close();
     }
     const resp = await res.json();
     console.log(resp[0]);
