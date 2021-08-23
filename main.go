@@ -845,6 +845,49 @@ func DeleteGameHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"msg":"game deleted correctly"}`))
 }
 
+//return a json with the stats information requested
+//can search only "all", "generic", "synergo", "redez"
+func StatsHandler(w http.ResponseWriter, r *http.Request) {
+	var j []byte
+	stats, err := LoadStatsFromDB()
+	if err != nil {
+		PrintErr(w, err.Error())
+		return
+	}
+	switch mux.Vars(r)["id"] {
+	case "all":
+		j, err = json.Marshal(stats)
+		if err != nil {
+			PrintInternalErr(w, err.Error())
+			return
+		}
+	case "generic":
+		j, err = json.Marshal(stats.Generic)
+		if err != nil {
+			PrintInternalErr(w, err.Error())
+			return
+		}
+	case "synergo":
+		j, err = json.Marshal(stats.Synergo)
+		if err != nil {
+			PrintInternalErr(w, err.Error())
+			return
+		}
+	case "redez":
+		j, err = json.Marshal(stats.Redez)
+		if err != nil {
+			PrintInternalErr(w, err.Error())
+			return
+		}
+	default:
+		PrintErr(w, "the query must be 'generic', 'synergo', 'redez' or ''")
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(j)
+}
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -878,6 +921,9 @@ func main() {
 	r.HandleFunc(addGame.String(), AddGameHandler).Methods("POST")
 	r.HandleFunc(updateGame.String(), UpdateGameHandler).Methods("POST")
 	r.HandleFunc(deleteGame.String(), DeleteGameHandler).Methods("POST")
+
+	//stats area
+	r.HandleFunc(stats.String(), StatsHandler).Methods("GET")
 	log.Println("starting on", ":"+port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
 }
