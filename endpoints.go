@@ -28,6 +28,9 @@ const (
 	addGame    endpoints = "/games/add"
 	updateGame endpoints = "/games/update/{id}"
 	deleteGame endpoints = "/games/delete/{id}"
+
+	//statistic endpoints
+	stats endpoints = "/stats/{id}"
 )
 
 func (e endpoints) String() string {

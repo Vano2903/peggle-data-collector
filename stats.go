@@ -2,11 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -387,18 +385,18 @@ func LoadStatsFromDB() (OverallStats, error) {
 }
 
 //! use this main if you need to rewrite the whole stats db
-func main() {
-	var queries []bson.D
-	q := bson.D{{"$match", bson.D{{"videoData.title", bson.D{{"$regex", primitive.Regex{Pattern: "", Options: "i"}}}}}}}
-	queries = append(queries, q)
-	g, _ := QueryGames(queries)
+// func main() {
+// 	var queries []bson.D
+// 	q := bson.D{{"$match", bson.D{{"videoData.title", bson.D{{"$regex", primitive.Regex{Pattern: "", Options: "i"}}}}}}}
+// 	queries = append(queries, q)
+// 	g, _ := QueryGames(queries)
 
-	fmt.Println(g)
+// 	fmt.Println(g)
 
-	var s OverallStats
-	s.insertFirst()
+// 	var s OverallStats
+// 	s.insertFirst()
 
-	for _, gam := range g {
-		s.AddStatsData(gam)
-	}
-}
+// 	for _, gam := range g {
+// 		s.AddStatsData(gam)
+// 	}
+// }
