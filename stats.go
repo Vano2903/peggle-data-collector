@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -23,9 +25,18 @@ type OverallStats struct {
 }
 
 type GenericStats struct {
-	TotalTimeWatched    int `bson:"totTimeWatched, omitempty" json:"totTimeWatched, omitempty"`       //rappresent the total ammount of seconds watched
-	TotalEpisodesStored int `bson:"totEpisodesStored, omitempty" json:"totEpisodesStored, omitempty"` //number of all the episodes stored
-	// NumberCollaborators int `bson:"numOfCollaborators, omitempty" json:"numOfCollaborators, omitempty"` //number of all the users that have at least 1 commit
+	TotalTimeWatched    int      `bson:"totTimeWatched, omitempty" json:"totTimeWatched, omitempty"`       //rappresent the total ammount of seconds watched
+	TotalEpisodesStored int      `bson:"totEpisodesStored, omitempty" json:"totEpisodesStored, omitempty"` //number of all the episodes stored
+	Collaborators       []string `bson:"collaborators, omitempty" json:"collaborators, omitempty"`         //number of all the users that have at least 1 commit
+}
+
+func (g GenericStats) containsUser(u string) bool {
+	for _, col := range g.Collaborators {
+		if col == u {
+			return true
+		}
+	}
+	return false
 }
 
 type PlayerStats struct {
@@ -308,6 +319,10 @@ func (s OverallStats) AddStatsData(g Game) error {
 		return err
 	}
 
+	if !s.Generic.containsUser(g.AddedBy) {
+		s.Generic.Collaborators = append(s.Generic.Collaborators, g.AddedBy)
+	}
+
 	s.Generic.TotalTimeWatched += g.VD.Length
 	s.Generic.TotalEpisodesStored++
 
@@ -372,18 +387,18 @@ func LoadStatsFromDB() (OverallStats, error) {
 }
 
 //! use this main if you need to rewrite the whole stats db
-// func main() {
-// 	var queries []bson.D
-// 	q := bson.D{{"$match", bson.D{{"videoData.title", bson.D{{"$regex", primitive.Regex{Pattern: "", Options: "i"}}}}}}}
-// 	queries = append(queries, q)
-// 	g, _ := QueryGames(queries)
+func main() {
+	var queries []bson.D
+	q := bson.D{{"$match", bson.D{{"videoData.title", bson.D{{"$regex", primitive.Regex{Pattern: "", Options: "i"}}}}}}}
+	queries = append(queries, q)
+	g, _ := QueryGames(queries)
 
-// 	fmt.Println(g)
+	fmt.Println(g)
 
-// 	var s OverallStats
-// 	s.insertFirst()
+	var s OverallStats
+	s.insertFirst()
 
-// 	for _, gam := range g {
-// 		s.AddStatsData(gam)
-// 	}
-// }
+	for _, gam := range g {
+		s.AddStatsData(gam)
+	}
+}
