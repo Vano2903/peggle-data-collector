@@ -559,3 +559,133 @@ const gameData = [
     }
 ]
 
+const stats = {
+    "generic": {
+        "totTimeWatched": 4984,
+        "totEpisodesStored": 9,
+        "collaborators": [
+            "vano",
+            "MoraGames"
+        ]
+    },
+    "synergo": {
+        "totPoints": 1219290,
+        "totn25": 33,
+        "totWins": 4,
+        "FEstats": {
+            "n5000": 0,
+            "n25000": 1,
+            "n50000": 0,
+            "totPointsMade": 25000
+        },
+        "charStats": {
+            "cas": 0,
+            "uni": 6,
+            "zuc": 0,
+            "gat": 4,
+            "ali": 2,
+            "gra": 2,
+            "gir": 6,
+            "dra": 0,
+            "con": 3,
+            "guf": 4,
+            "sep": 0
+        }
+    },
+    "redez": {
+        "totPoints": 1205555,
+        "totn25": 17,
+        "totWins": 5,
+        "FEstats": {
+            "n5000": 2,
+            "n25000": 0,
+            "n50000": 3,
+            "totPointsMade": 160000
+        },
+        "charStats": {
+            "cas": 2,
+            "uni": 2,
+            "zuc": 4,
+            "gat": 2,
+            "ali": 3,
+            "gra": 1,
+            "gir": 0,
+            "dra": 4,
+            "con": 5,
+            "guf": 4,
+            "sep": 0
+        }
+    }
+}
+
+var usersPfps = [];
+
+var sPointData = [];
+var s25Data = [];
+var sCharData = [];
+var sFEData = [];
+
+var rPointData = [];
+var r25Data = [];
+var rCharData = [];
+var rFEData = [];
+
+"use strict"
+
+async function getStatsData(){
+    var res = await fetch("/games/search")
+    var resp = await res.json();
+    return resp
+}
+
+async function getGameData(){
+    var res = await fetch("/stats/all")
+    var resp = await res.json();
+    return resp
+}
+
+async function getUsersPfp(){
+    url = "/users/pfp/";
+    for(let i = 0; i < stats.generic.collaborators.length; i++){
+        if (i == 0){
+            url += stats.generic.collaborators;
+        }else{
+            url += ";" + stats.generic.collaborators;
+        }
+    }
+    var res = await fetch(url);
+    usersPfps = await res.json();
+}
+
+function secondToHHMMSS(sec_num) { 
+    var days = Math.floor(sec_num / 86400);
+    var hours   = Math.floor((sec_num - (days * 86400)) / 3600);
+    var minutes = Math.floor((sec_num - (days * 86400) - (hours * 3600)) / 60);
+    var seconds = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
+    return {"days": days, "hours": hours, "minutes": minutes, "seconds": seconds}
+}
+
+function initDataInHtml(){
+    //data synergo main section
+    document.getElementById("spoint").innerHTML = stats.synergo.totPoints;
+    document.getElementById("s25").innerHTML = stats.synergo.totn25;
+    document.getElementById("sFE").innerHTML = stats.synergo.FEstats.totPointsMade;
+    document.getElementById("sWins").innerHTML = stats.synergo.totWins;
+    
+    //data redez main section
+    document.getElementById("rpoint").innerHTML = stats.redez.totPoints;
+    document.getElementById("r25").innerHTML = stats.redez.totn25;
+    document.getElementById("rFE").innerHTML = stats.redez.FEstats.totPointsMade;
+    document.getElementById("rWins").innerHTML = stats.redez.totWins;
+
+    //give crown based on wins 
+    if (stats.redez.totWins < stats.synergo.totWins) {
+        document.getElementById("scrown").style.display = "block";
+    }else if (stats.redez.totWins > stats.synergo.totWins) {
+        document.getElementById("rcrown").style.display = "block";
+    }else{
+        document.getElementById("scrown").style.display = "block";
+        document.getElementById("rcrown").style.display = "block";
+    }
+
+}

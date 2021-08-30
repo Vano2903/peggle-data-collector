@@ -92,7 +92,7 @@ function setSection(index, game){
 
         document.getElementById(`r${index}points`).innerHTML += game.stats.redez["g"+index].points;
         document.getElementById(`r${index}25`).innerHTML += game.stats.redez["g"+index].n25;
-        document.getElementById(`r${index}fe`).innerHTML += game.stats.synergo["g"+index].valFe;
+        document.getElementById(`r${index}fe`).innerHTML += game.stats.redez["g"+index].valFe;
         document.getElementById(`r${index}charName`).innerHTML += game.stats.redez["g"+index].character;
         document.getElementById(`r${index}charImg`).src = "/static/images/" + game.stats.redez["g"+index].character.slice(0, 3)+".png";
     }

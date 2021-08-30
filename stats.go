@@ -38,10 +38,10 @@ func (g GenericStats) containsUser(u string) bool {
 }
 
 type PlayerStats struct {
-	TotalPoints int       `bson:"totPoints, omitempty" json:"totPoints, omitempty`
-	TotalN25    int       `bson:"totn25, omitempty" json:"totn25, omitempty`
-	TotalWins   int       `bson:"totalWins, omitempty" json:"totalWins, omitempty`
-	FEstats     FEstats   `bson:"FEstats, omitempty" json:"FEstats, omitempty`
+	TotalPoints int       `bson:"totPoints, omitempty" json:"totPoints, omitempty"`
+	TotalN25    int       `bson:"totn25, omitempty" json:"totn25, omitempty"`
+	TotalWins   int       `bson:"totalWins, omitempty" json:"totWins, omitempty"`
+	FEstats     FEstats   `bson:"FEstats, omitempty" json:"FEstats, omitempty"`
 	ChartStats  CharStats `bson:"charStats, omitempty" json:"charStats,omitempy"`
 }
 

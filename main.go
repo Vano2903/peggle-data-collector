@@ -110,15 +110,23 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetPfp(w http.ResponseWriter, r *http.Request) {
-	url, err := GetProfilePicture(mux.Vars(r)["user"])
-	if err != nil {
-		PrintErr(w, err.Error())
-		return
+	users := strings.Split(mux.Vars(r)["user"], ";")
+	var url []string
+	for _, user := range users {
+		u, err := GetProfilePicture(user)
+		if err != nil {
+			PrintErr(w, err.Error())
+			return
+		}
+		url = append(url, u)
 	}
-	imgJson := fmt.Sprintf(`{"url":"%s"}`, url)
+	imgJson, err := json.Marshal(url)
+	if err != nil {
+		PrintInternalErr(w, err.Error())
+	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusAccepted)
-	w.Write([]byte(imgJson))
+	w.Write(imgJson)
 }
 
 func UserCustomizationHandler(w http.ResponseWriter, r *http.Request) {
