@@ -211,7 +211,7 @@ func GetProfilePicture(username string) (string, error) {
 	if len(userFound) > 0 {
 		return userFound[0].PfpUrl, nil
 	}
-	return "", errors.New("no user found")
+	return "", errors.New("no user found as " + username)
 }
 
 //return the user based on username and password
