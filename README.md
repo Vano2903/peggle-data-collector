@@ -1,9 +1,71 @@
 # PEGGLE DATA COLLECTOR
 
-## If you don't know what's peggle why are you even here xD
+---
 
-one day i am gonna take good care of this ;-;
-i really should write something more useful here ;-;
+## [web server](https://peggle-data-collector.herokuapp.com/) & [api](https://peggle-data-collector.herokuapp.com/api) that collect all the [peggle games](https://www.youtube.com/watch?v=IwvS8ft7DM8&list=PLkjetvDN3k23J8nTmlDOnxiP3ZXDdCIZD) made by [QDSS 2](https://www.youtube.com/channel/UC5GSO2hiHevgZUhSQIJNd2A)
+
+---
+
+<!-- TABLE OF CONTENTS -->
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#built-with">Built With</a></li>
+      </ul>
+    </li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#installation">Installation</a></li>
+      </ul>
+    </li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgements">Acknowledgements</a></li>
+  </ol>
+</details>
+
+---
+
+### Built With
+
+- hosting
+  - [heroku](https://heroku.com)
+- database
+  - [mongodb-atlas](https://www.mongodb.com/cloud/atlas)
+- front-end
+  - [Bootstrap 5](https://getbootstrap.com/docs/5.1/getting-started/introduction/)
+  - [Bootstrap 4](https://getbootstrap.com/docs/4.6/getting-started/introduction/)
+  - [JQuery](https://jquery.com)
+  - [Google Charts](https://developers.google.com/chart)
+- back-end
+  - [gorilla-mux](https://github.com/gorilla/mux)
+  - [mongo-driver](https://pkg.go.dev/go.mongodb.org/mongo-driver?utm_source=godoc)
+  - [google-api](https://pkg.go.dev/google.golang.org/api)
+  - [yaml.v2](https://gopkg.in/yaml.v2)
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+[go](https://golang.org/) >= 1.16
+
+### Set Up
+
+To install all modules required to make the webserver work first you need to clone the repo
+
+```
+git clone https://github.com/Vano2903/peggle-data-collector
+```
 
 ## TODO / v2.0
 

@@ -60,3 +60,5 @@ function checkResponse(cont, resp) {
         document.close();
     }
 }
+
+var a = {'error': 'nessuno si é ancora loggato'}

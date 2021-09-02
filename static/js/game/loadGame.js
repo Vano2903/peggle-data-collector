@@ -3,6 +3,7 @@ document.getElementById("loader-wrapper").style.display = "block";
 window.onload = async function () {
     await genPage()
     document.getElementById("loader-wrapper").style.display = "none";
+    runAnimations(".countup0")
 }
 
 let id = window.location.pathname.slice(1);

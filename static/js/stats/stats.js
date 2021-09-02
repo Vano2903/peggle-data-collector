@@ -618,13 +618,20 @@ const stats = {
     }
 }
 
+//generic
 var usersPfps = [];
 
+//together
+var srPointData = [];
+var sr25Data = [];
+
+//synergo
 var sPointData = [];
 var s25Data = [];
 var sCharData = [];
 var sFEData = [];
 
+//redez
 var rPointData = [];
 var r25Data = [];
 var rCharData = [];
@@ -632,24 +639,24 @@ var rFEData = [];
 
 "use strict"
 
-async function getStatsData(){
+async function getStatsData() {
     var res = await fetch("/games/search")
     var resp = await res.json();
     return resp
 }
 
-async function getGameData(){
+async function getGameData() {
     var res = await fetch("/stats/all")
     var resp = await res.json();
     return resp
 }
 
-async function getUsersPfp(){
+async function getUsersPfp() {
     url = "/users/pfp/";
-    for(let i = 0; i < stats.generic.collaborators.length; i++){
-        if (i == 0){
+    for (let i = 0; i < stats.generic.collaborators.length; i++) {
+        if (i == 0) {
             url += stats.generic.collaborators;
-        }else{
+        } else {
             url += ";" + stats.generic.collaborators;
         }
     }
@@ -657,21 +664,38 @@ async function getUsersPfp(){
     usersPfps = await res.json();
 }
 
-function secondToHHMMSS(sec_num) { 
+function secondToHHMMSS(sec_num) {
     var days = Math.floor(sec_num / 86400);
-    var hours   = Math.floor((sec_num - (days * 86400)) / 3600);
+    var hours = Math.floor((sec_num - (days * 86400)) / 3600);
     var minutes = Math.floor((sec_num - (days * 86400) - (hours * 3600)) / 60);
     var seconds = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
-    return {"days": days, "hours": hours, "minutes": minutes, "seconds": seconds}
+    return { "days": days, "hours": hours, "minutes": minutes, "seconds": seconds }
 }
 
-function initDataInHtml(){
+function genSRPointData() {
+    srPointData = [];
+    sPointData = [];
+    rPointData = [];
+    gameData.forEach((game) => {
+        let date = new Date(game.videoData.uploadDate);
+        let sPoint = game.stats.synergo.overall.tPoints;
+        let s25 = game.stats.synergo.overall.t25;
+        let rPoint = game.stats.redez.overall.tPoints;
+        let r25 = game.stats.redez.overall.t25;
+        let annotation = "<a href='/" + game.videoData.id + "'>" + game.videoData.title + "</a>"
+        srPointData.push([new Date(date), sPoint, rPoint, annotation])
+        sPointData.push([new Date(date), sPoint, annotation])
+        rPointData.push([new Date(date), rPoint, annotation])
+    })
+}
+
+function initDataInHtml() {
     //data synergo main section
     document.getElementById("spoint").innerHTML = stats.synergo.totPoints;
     document.getElementById("s25").innerHTML = stats.synergo.totn25;
     document.getElementById("sFE").innerHTML = stats.synergo.FEstats.totPointsMade;
     document.getElementById("sWins").innerHTML = stats.synergo.totWins;
-    
+
     //data redez main section
     document.getElementById("rpoint").innerHTML = stats.redez.totPoints;
     document.getElementById("r25").innerHTML = stats.redez.totn25;
@@ -681,9 +705,9 @@ function initDataInHtml(){
     //give crown based on wins 
     if (stats.redez.totWins < stats.synergo.totWins) {
         document.getElementById("scrown").style.display = "block";
-    }else if (stats.redez.totWins > stats.synergo.totWins) {
+    } else if (stats.redez.totWins > stats.synergo.totWins) {
         document.getElementById("rcrown").style.display = "block";
-    }else{
+    } else {
         document.getElementById("scrown").style.display = "block";
         document.getElementById("rcrown").style.display = "block";
     }
