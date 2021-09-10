@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -22,7 +23,7 @@ type Post struct {
 	Id       string `json:"id, omitempty"`
 }
 
-func HomePageHanler(w http.ResponseWriter, r *http.Request) {
+func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	home, err := os.ReadFile("pages/home.html")
 	if err != nil {
 		UnavailablePage(w)
@@ -912,31 +913,35 @@ func main() {
 	r.PathPrefix(statics.String()).Handler(http.StripPrefix(statics.String(), http.FileServer(http.Dir("static/"))))
 
 	//home page handler
-	r.HandleFunc(root.String(), HomePageHanler).Methods("GET")
-	r.HandleFunc(pages.String(), PagesHandler).Methods("GET")
+	r.HandleFunc(root.String(), HomePageHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc(pages.String(), PagesHandler).Methods("GET", "OPTIONS")
 
 	//user login area
-	r.HandleFunc(usersLogin.String(), LoginPageHandler).Methods("GET")
-	r.HandleFunc(usersLogin.String(), LoginHandler).Methods("POST")
+	r.HandleFunc(usersLogin.String(), LoginPageHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc(usersLogin.String(), LoginHandler).Methods("POST", "OPTIONS")
 
 	//get url for user's pfp
-	r.HandleFunc(usersPfp.String(), GetPfp).Methods("GET")
+	r.HandleFunc(usersPfp.String(), GetPfp).Methods("GET", "OPTIONS")
 
 	//user customization area
-	r.HandleFunc(userCustomization.String(), UserCustomizationHandler).Methods("POST")
+	r.HandleFunc(userCustomization.String(), UserCustomizationHandler).Methods("POST", "OPTIONS")
 
 	//commit area
-	r.HandleFunc(getCommits.String(), CommitHandler).Methods("POST")
+	r.HandleFunc(getCommits.String(), CommitHandler).Methods("POST", "OPTIONS")
 
 	//game area
-	r.HandleFunc(games.String(), SeachGameHandler).Methods("GET")
-	r.HandleFunc(checkGame.String(), CheckGameHandler).Methods("GET")
-	r.HandleFunc(addGame.String(), AddGameHandler).Methods("POST")
-	r.HandleFunc(updateGame.String(), UpdateGameHandler).Methods("POST")
-	r.HandleFunc(deleteGame.String(), DeleteGameHandler).Methods("POST")
+	r.HandleFunc(games.String(), SeachGameHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc(checkGame.String(), CheckGameHandler).Methods("GET", "OPTIONS")
+	r.HandleFunc(addGame.String(), AddGameHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc(updateGame.String(), UpdateGameHandler).Methods("POST", "OPTIONS")
+	r.HandleFunc(deleteGame.String(), DeleteGameHandler).Methods("POST", "OPTIONS")
 
 	//stats area
-	r.HandleFunc(stats.String(), StatsHandler).Methods("GET")
+	r.HandleFunc(stats.String(), StatsHandler).Methods("GET", "OPTIONS")
+
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET"})
 	log.Println("starting on", ":"+port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
 }

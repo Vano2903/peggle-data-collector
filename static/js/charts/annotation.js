@@ -4,28 +4,28 @@ google.charts.load('current', { 'packages': ['annotatedtimeline'] });
 function drawChart(who, rows) {
     let chart;
     let data = new google.visualization.DataTable();
-    data.addColumn({ type: 'date', id: 'Date' });
+    var options = new Object();
+    data.addColumn('date', 'Date');
     if (who == "s") {
-        data.addColumn({ type: 'number', id: 'punti synergo' });
+        // options = ["blue"]
+        data.addColumn('number', 'punti synergo');
         chart = new google.visualization.AnnotatedTimeLine(document.getElementById('sPointsChart'));
     } else if (who == "r") {
-        data.addColumn({ type: 'number', id: 'punti redez' });
+        // options = ["red"]
+        data.addColumn('number', 'punti redez');
         chart = new google.visualization.AnnotatedTimeLine(document.getElementById('rPointsChart'));
     } else {
-        data.addColumn({ type: 'number', id: 'punti synergo' });
-        data.addColumn({ type: 'number', id: 'punti redez' });
+        // options = ["red", "blue"]
+        data.addColumn('number', 'punti synergo');
+        data.addColumn('number', 'punti redez');
         chart = new google.visualization.AnnotatedTimeLine(document.getElementById('srPointsChart'));
     }
-    data.addColumn({ type: 'string', id: 'titolo partita' });
+    data.addColumn('string', 'titolo partita');
     data.addRows(rows);
 
-    var options = {
-        displayAnnotations: true,
-        allowHtml: true,
-        table: {
-            sortAscending: true
-        }
-    };
+    options.displayAnnotations = true;
+    options.allowHtml = true;
+    options.table = { sortAscending: true }
 
     chart.draw(data, options);
 }

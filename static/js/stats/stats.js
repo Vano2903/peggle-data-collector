@@ -711,5 +711,10 @@ function initDataInHtml() {
         document.getElementById("scrown").style.display = "block";
         document.getElementById("rcrown").style.display = "block";
     }
+    runAnimations(".countup")
+    genSRPointData()
+    drawChart("s", sPointData)
+    drawChart("r", rPointData)
+    drawChart("sr", srPointData)
 
 }
