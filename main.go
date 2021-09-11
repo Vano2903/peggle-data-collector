@@ -253,7 +253,8 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 	//parse url query
 	r.ParseForm()
 	sortByDate := true
-	lim := 25
+	lim := 5
+	doLim := true
 	var queries []bson.D
 	//all options :D
 	for k, v := range r.Form {
@@ -727,11 +728,15 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 				PrintErr(w, err.Error())
 				return
 			}
-			if val <= 0 {
-				PrintErr(w, "definte a positive number grater than 0 for the limit")
-				return
+			if val == -1 {
+				doLim = false
+			} else {
+				if val <= 0 {
+					PrintErr(w, "definte a positive number grater than 0 for the limit or -1 to disable it")
+					return
+				}
+				lim = val
 			}
-			lim = val
 		default:
 			PrintErr(w, "invalid parameter")
 			return
@@ -741,8 +746,10 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 		q := bson.D{{"$sort", bson.M{"videoData.uploadDate": -1}}}
 		queries = append(queries, q)
 	}
-	limit := bson.D{{"$limit", lim}}
-	queries = append(queries, limit)
+	if doLim {
+		limit := bson.D{{"$limit", lim}}
+		queries = append(queries, limit)
+	}
 
 	results, err := QueryGames(queries)
 	if err != nil {
