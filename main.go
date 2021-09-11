@@ -253,7 +253,7 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 	//parse url query
 	r.ParseForm()
 	sortByDate := true
-	lim := 5
+	lim := 25
 	doLim := true
 	var queries []bson.D
 	//all options :D
