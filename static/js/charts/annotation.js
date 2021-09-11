@@ -1,25 +1,23 @@
 "use strict"
 google.charts.load('current', { 'packages': ['annotatedtimeline'] });
 
-function drawChart(who, rows) {
-    let chart;
+function drawAnnotationChart(who, rows, which) {
+    let chart = new google.visualization.AnnotatedTimeLine(document.getElementById(who + which + 'Chart'));
     let data = new google.visualization.DataTable();
     var options = new Object();
     data.addColumn('date', 'Date');
+
     if (who == "s") {
-        // options = ["blue"]
+        options.colors = ["blue"]
         data.addColumn('number', 'punti synergo');
-        chart = new google.visualization.AnnotatedTimeLine(document.getElementById('sPointsChart'));
     } else if (who == "r") {
-        // options = ["red"]
+        options.colors = ["red"]
         data.addColumn('number', 'punti redez');
-        chart = new google.visualization.AnnotatedTimeLine(document.getElementById('rPointsChart'));
     } else {
-        // options = ["red", "blue"]
         data.addColumn('number', 'punti synergo');
         data.addColumn('number', 'punti redez');
-        chart = new google.visualization.AnnotatedTimeLine(document.getElementById('srPointsChart'));
     }
+
     data.addColumn('string', 'titolo partita');
     data.addRows(rows);
 

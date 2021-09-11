@@ -622,17 +622,17 @@ const stats = {
 var usersPfps = [];
 
 //together
-var srPointData = [];
+var srPointsData = [];
 var sr25Data = [];
 
 //synergo
-var sPointData = [];
+var sPointsData = [];
 var s25Data = [];
 var sCharData = [];
 var sFEData = [];
 
 //redez
-var rPointData = [];
+var rPointsData = [];
 var r25Data = [];
 var rCharData = [];
 var rFEData = [];
@@ -640,7 +640,7 @@ var rFEData = [];
 "use strict"
 
 async function getStatsData() {
-    var res = await fetch("/games/search")
+    var res = await fetch("/games/search?limit=-1")
     var resp = await res.json();
     return resp
 }
@@ -672,10 +672,7 @@ function secondToHHMMSS(sec_num) {
     return { "days": days, "hours": hours, "minutes": minutes, "seconds": seconds }
 }
 
-function genSRPointData() {
-    srPointData = [];
-    sPointData = [];
-    rPointData = [];
+function genChartsData() {
     gameData.forEach((game) => {
         let date = new Date(game.videoData.uploadDate);
         let sPoint = game.stats.synergo.overall.tPoints;
@@ -683,10 +680,45 @@ function genSRPointData() {
         let rPoint = game.stats.redez.overall.tPoints;
         let r25 = game.stats.redez.overall.t25;
         let annotation = "<a href='/" + game.videoData.id + "'>" + game.videoData.title + "</a>"
-        srPointData.push([new Date(date), sPoint, rPoint, annotation])
-        sPointData.push([new Date(date), sPoint, annotation])
-        rPointData.push([new Date(date), rPoint, annotation])
+        srPointsData.push([new Date(date), sPoint, rPoint, annotation])
+        sPointsData.push([new Date(date), sPoint, annotation])
+        rPointsData.push([new Date(date), rPoint, annotation])
+
+        sr25Data.push([new Date(date), s25, r25, annotation]);
+        s25Data.push([new Date(date), s25, annotation]);
+        r25Data.push([new Date(date), r25, annotation]);
     })
+
+    var chars = ["castoro", "unicorno", "zucca", "gatto", "alieno", "granchio", "girasole", "drago", "coniglio", "gufo", "seppia"]
+    var fe = ["numero di 5000", "numero di 25000", "numero di 50000"]
+
+    sCharData = Object.entries(stats.synergo.charStats);
+    sCharData = replaceNames(sCharData, chars)
+    sCharData.unshift(["Tipo di Festa Estrema", "valore"]);
+
+
+    rCharData = Object.entries(stats.redez.charStats);
+    rCharData = replaceNames(rCharData, chars)
+    rCharData.unshift(["Tipo di Festa Estrema", "valore"]);
+
+
+    sFEData = Object.entries(stats.synergo.FEstats);
+    sFEData.pop();
+    sFEData = replaceNames(sFEData, fe)
+    sFEData.unshift(["Tipo di Festa Estrema", "valore"]);
+
+
+    rFEData = Object.entries(stats.redez.FEstats);
+    rFEData.pop();
+    rFEData = replaceNames(rFEData, fe)
+    rFEData.unshift(["Tipo di Festa Estrema", "valore"]);
+}
+
+function replaceNames(toReplace, fromReplace) {
+    for (let i = 0; i < toReplace.length; i++) {
+        toReplace[i][0] = fromReplace[i]
+    }
+    return toReplace
 }
 
 function initDataInHtml() {
@@ -712,9 +744,49 @@ function initDataInHtml() {
         document.getElementById("rcrown").style.display = "block";
     }
     runAnimations(".countup")
-    genSRPointData()
-    drawChart("s", sPointData)
-    drawChart("r", rPointData)
-    drawChart("sr", srPointData)
+    genChartsData()
+    drawAllCharts()
+}
 
+$(window).resize(drawAllCharts);
+
+function drawAllCharts() {
+    drawAnnotationChart("s", sPointsData, "Points");
+    drawAnnotationChart("r", rPointsData, "Points");
+    drawAnnotationChart("sr", srPointsData, "Points");
+    drawAnnotationChart("s", s25Data, "25");
+    drawAnnotationChart("r", r25Data, "25");
+    drawAnnotationChart("sr", sr25Data, "25");
+    drawPieChart("s", sCharData, "Char");
+    drawPieChart("r", rCharData, "Char");
+    drawPieChart("s", sFEData, "FE");
+    drawPieChart("r", rFEData, "FE");
+}
+
+function toggleChart(isAnnotation, chart) {
+    let sep = $("#sep" + chart + "Charts");
+    let sin = $("#sin" + chart + "Charts");
+    let button = $("#" + chart + "Button");
+    if (sep.css('display') == 'flex') {
+        sep.hide();
+        sin.show();
+        button.text("Dividi i grafici")
+        if (isAnnotation) {
+            drawAnnotationChart("sr", window["sr" + chart + "Data"], chart)
+        } else {
+            drawPieChart("sr", "", chart)
+        }
+    } else {
+        sep.show();
+        sin.hide();
+        button.text("Unisci")
+        if (isAnnotation) {
+            drawAnnotationChart("s", window["s" + chart + "Data"], chart)
+            drawAnnotationChart("r", window["r" + chart + "Data"], chart)
+        } else {
+            drawPieChart("s", window["s" + chart + "Data"], chart)
+            drawPieChart("r", window["r" + chart + "Data"], chart)
+        }
+
+    }
 }

@@ -20,7 +20,7 @@
     <title>QDSS Peggle - stats</title>
 </head>
 
-<body>
+<body onload="initDataInHtml()">
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">QDSS - PEGGLE</a>
@@ -85,15 +85,89 @@
         <hr class="col-10">
 
         <br>
-        <div class="row" id="sepPointsCharts">
-            <div class="col">
-                <div class="annChart" id='sPointsChart'></div>
+        <h3>Statistiche Punti</h3>
+        <div id="sepPointsCharts" class="row">
+            <div class="col-md-4 col-md-offset-4">
             </div>
-            <div class="col">
-                <div class="annChart" id='rPointsChart'></div>
+            <div class="clearfix"></div>
+            <div class="col-md-6">
+                <div id="sPointsChart" class="chart"></div>
+            </div>
+            <div class="col-md-6">
+                <div id="rPointsChart" class="chart"></div>
             </div>
         </div>
-        <div class="annChart" id='srPointsChart'></div>
+        <div id="sinPointsCharts" class="row" style="display: none;">
+            <div class="chart col-10" id='srPointsChart'></div>
+        </div>
+        <br>
+        <button id="PointsButton" class="btn btn-primary btn-lg" onclick="toggleChart(true,'Points')">Unisci</button>
+
+        <br>
+        <hr class="col-6">
+
+        <h3>Statistiche -25%</h3>
+        <div id="sep25Charts" class="row">
+            <div class="col-md-4 col-md-offset-4">
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-6">
+                <div id="s25Chart" class="chart"></div>
+            </div>
+            <div class="col-md-6">
+                <div id="r25Chart" class="chart"></div>
+            </div>
+        </div>
+        <div id="sin25Charts" class="row" style="display: none;">
+            <div class="chart col-10" id='sr25Chart'></div>
+        </div>
+        <br>
+        <button id="25Button" class="btn btn-primary btn-lg" onclick="toggleChart(true,'25')">Unisci</button>
+
+        <br>
+        <hr class="col-6">
+
+        <h3>Statistiche Personaggi</h3>
+        <div id="sepCharCharts" class="row">
+            <div class="col-md-4 col-md-offset-4">
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-6">
+                <div id="sCharChart" class="chart"></div>
+            </div>
+            <div class="col-md-6">
+                <div id="rCharChart" class="chart"></div>
+            </div>
+        </div>
+        <div id="sinCharCharts" class="row" style="display: none;">
+            <div class="chart col-10" id='srCharChart'></div>
+        </div>
+        <br>
+        <button id="CharButton" class="btn btn-primary btn-lg" onclick="toggleChart(false,'Char')">Unisci</button>
+
+        <br>
+        <hr class="col-6">
+
+        <h3>Statistiche Feste Estreme</h3>
+        <div id="sepFECharts" class="row">
+            <div class="col-md-4 col-md-offset-4">
+            </div>
+            <div class="clearfix"></div>
+            <div class="col-md-6">
+                <div id="sFEChart" class="chart"></div>
+            </div>
+            <div class="col-md-6">
+                <div id="rFEChart" class="chart"></div>
+            </div>
+        </div>
+        <div id="sinFECharts" class="row" style="display: none;">
+            <div class="chart col-10" id='srFEChart'></div>
+        </div>
+        <br>
+        <button id="FEButton" class="btn btn-primary btn-lg" onclick="toggleChart(false,'FE')">Unisci</button>
+
+        <br>
+        <br>
     </center>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -103,6 +177,7 @@
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
+    <script type="text/javascript" src="../static/js/charts/pie.js"></script>
     <script type="text/javascript" src="../static/js/charts/annotation.js"></script>
     <script type="text/javascript" src="../static/js/stats/stats.js"></script>
     <script type="text/javascript" src="../static/js/stats/countup.js"></script>
