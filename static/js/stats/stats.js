@@ -1,66 +1,8 @@
-const gameData = []
+let gameData = []
 
-const stats = {
-    "generic": {
-        "totTimeWatched": 4984,
-        "totEpisodesStored": 9,
-        "collaborators": [
-            "vano",
-            "MoraGames"
-        ]
-    },
-    "synergo": {
-        "totPoints": 1219290,
-        "totn25": 33,
-        "totWins": 4,
-        "FEstats": {
-            "n5000": 0,
-            "n25000": 1,
-            "n50000": 0,
-            "totPointsMade": 25000
-        },
-        "charStats": {
-            "cas": 0,
-            "uni": 6,
-            "zuc": 0,
-            "gat": 4,
-            "ali": 2,
-            "gra": 2,
-            "gir": 6,
-            "dra": 0,
-            "con": 3,
-            "guf": 4,
-            "sep": 0
-        }
-    },
-    "redez": {
-        "totPoints": 1205555,
-        "totn25": 17,
-        "totWins": 5,
-        "FEstats": {
-            "n5000": 2,
-            "n25000": 0,
-            "n50000": 3,
-            "totPointsMade": 160000
-        },
-        "charStats": {
-            "cas": 2,
-            "uni": 2,
-            "zuc": 4,
-            "gat": 2,
-            "ali": 3,
-            "gra": 1,
-            "gir": 0,
-            "dra": 4,
-            "con": 5,
-            "guf": 4,
-            "sep": 0
-        }
-    }
-}
+let stats = {}
 
-//generic
-var usersPfps = [];
+var animation2 = false;
 
 //together
 var srPointsData = [];
@@ -80,13 +22,13 @@ var rFEData = [];
 
 "use strict"
 
-async function getStatsData() {
+async function getGameData() {
     var res = await fetch("/games/search?limit=-1")
     var resp = await res.json();
     return resp
 }
 
-async function getGameData() {
+async function getStatsData() {
     var res = await fetch("/stats/all")
     var resp = await res.json();
     return resp
@@ -96,21 +38,22 @@ async function getUsersPfp() {
     url = "/users/pfp/";
     for (let i = 0; i < stats.generic.collaborators.length; i++) {
         if (i == 0) {
-            url += stats.generic.collaborators;
+            url += stats.generic.collaborators[i];
         } else {
-            url += ";" + stats.generic.collaborators;
+            url += ";" + stats.generic.collaborators[i];
         }
     }
     var res = await fetch(url);
-    usersPfps = await res.json();
+    let usersPfps = await res.json();
+    return usersPfps;
 }
 
-function secondToHHMMSS(sec_num) {
+function secondToDDHHMMSS(sec_num) {
     var days = Math.floor(sec_num / 86400);
     var hours = Math.floor((sec_num - (days * 86400)) / 3600);
     var minutes = Math.floor((sec_num - (days * 86400) - (hours * 3600)) / 60);
     var seconds = sec_num - (days * 86400) - (hours * 3600) - (minutes * 60);
-    return { "days": days, "hours": hours, "minutes": minutes, "seconds": seconds }
+    return { "days": ('0' + days).slice(-2), "hours": ('0' + hours).slice(-2), "minutes": ('0' + minutes).slice(-2), "seconds": ('0' + seconds).slice(-2) }
 }
 
 function genChartsData() {
@@ -162,8 +105,9 @@ function replaceNames(toReplace, fromReplace) {
     return toReplace
 }
 
-function initDataInHtml() {
+async function initDataInHtml() {
     gameData = await getGameData();
+    stats = await getStatsData();
     //data synergo main section
     document.getElementById("spoint").innerHTML = stats.synergo.totPoints;
     document.getElementById("s25").innerHTML = stats.synergo.totn25;
@@ -188,6 +132,26 @@ function initDataInHtml() {
     runAnimations(".countup")
     genChartsData()
     drawAllCharts()
+
+    let timePassed = secondToDDHHMMSS(stats.generic.totTimeWatched);
+    Object.keys(timePassed).forEach(key => {
+        $("#" + key).text(timePassed[key]);
+    });
+    $("#epWatched").text(stats.generic.totEpisodesStored);
+    let images = await getUsersPfp();
+    let grid = document.getElementById("users-grid");
+    for (let i = 0; i < images.length; i++) {
+        let a = document.createElement("a");
+        a.setAttribute("href", "/users/" + stats.generic.collaborators[i]);
+
+        let img = document.createElement("img");
+        img.setAttribute("src", images[i]);
+        img.setAttribute("alt", stats.generic.collaborators[i]);
+        img.setAttribute("class", "col avatar");
+
+        a.appendChild(img);
+        grid.appendChild(a);
+    }
 }
 
 $(window).resize(drawAllCharts);
@@ -232,3 +196,29 @@ function toggleChart(isAnnotation, chart) {
 
     }
 }
+
+function timeout(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function sleep(time) {
+    await timeout(time);
+}
+
+var observer = new IntersectionObserver(function (entries) {
+    // isIntersecting is true when element and viewport are overlapping
+    // isIntersecting is false when element and viewport don't overlap
+    if (entries[0].isIntersecting === true && !animation2) {
+        animation2 = true
+        setTimeout(async () => {
+            let timePassed = secondToDDHHMMSS(stats.generic.totTimeWatched);
+            runAnimations(".countup2")
+            await sleep(3000);
+            Object.keys(timePassed).forEach(key => {
+                $("#" + key).text(timePassed[key]);
+            });
+        }, 500)
+    }
+}, { threshold: [0] });
+
+observer.observe(document.querySelector("#user"));
