@@ -13,6 +13,7 @@
     <li><a href="#built-with">Built With</a></li>
     <li><a href="#prerequisites">Prerequisites</a></li>
     <li><a href="#set-up">Set Up</a></li>
+    <li><a href="#what-is-this-project">What is this project</a></li>
   </ol>
 </details>
 
@@ -62,6 +63,12 @@ go mod download
 ```
 
 > :warning: **it wont work if you dont have the proper config.yaml**: only I ([the creator](https://www.github.com/Vano2903)) have the correct file, the config contains the youtube api key and the uri for the atlas cluster
+
+### What is this project
+
+peggle data collector is a summer homework, the main goal is to store the most ammount of games of [peggle](https://www.youtube.com/watch?v=IwvS8ft7DM8&list=PLkjetvDN3k23J8nTmlDOnxiP3ZXDdCIZD) recorded by [QDSS 2](https://www.youtube.com/channel/UC5GSO2hiHevgZUhSQIJNd2A) and show the respective data with google charts.
+The games are stored in a atlas cluster (mongo db) and using golang to create a api and webserver that show and let people query those games freely.
+(It was a project I already wanted to create, the summer homework was more like a excuse to me).
 
 ## TODO / v2.0
 
