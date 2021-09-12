@@ -13,7 +13,6 @@
     <li><a href="#built-with">Built With</a></li>
     <li><a href="#prerequisites">Prerequisites</a></li>
     <li><a href="#set-up">Set Up</a></li>
-    <li><a href="#contact">Contact</a></li>
   </ol>
 </details>
 
@@ -49,6 +48,20 @@ To install all modules required to make the webserver work first you need to clo
 ```
 git clone https://github.com/Vano2903/peggle-data-collector
 ```
+
+cd into the directory created
+
+```
+cd peggle-data-collector
+```
+
+install all modules in go mod
+
+```
+go mod download
+```
+
+> :warning: **it wont work if you dont have the proper config.yaml**: only I ([the creator](https://www.github.com/Vano2903)) have the correct file, the config contains the youtube api key and the uri for the atlas cluster
 
 ## TODO / v2.0
 
