@@ -92,7 +92,7 @@ todo for this version:
 - [ ] section to add a comment while inserting a game
 - [ ] dont create a button in commit area if there are none
 - [ ] users section
-- [ ] working search box
+- [x] working search box
 - [ ] public page dedicated to collaborators
 - [x] main page
   - [x] home with game's cards, navbar and search box
