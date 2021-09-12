@@ -1,13 +1,16 @@
 "use strict"
 
 let last_date = undefined;
-let cardContainer = document.getElementById("card-container"); 
+let cardContainer = document.getElementById("card-container");
 
-async function fetchCardData(date) {
-    let url = '/games/search';//?limit=5'
+async function fetchCardData(date, title) {
+    if (title === undefined) {
+        title = "";
+    }
+    let url = '/games/search?title=' + title;
     // console.log(date)
     // if (date !== undefined) {
-    //     url = `/games/search?upload=<-${date}&limit=5`
+    //     url = `/games/search?upload=<-${date}`
     // }
     const res = await fetch(url, {
         method: "GET"
@@ -20,11 +23,12 @@ async function fetchCardData(date) {
     return resp;
 }
 
-async function createCards(){
-    let card_json = await fetchCardData(last_date);
-    for(let i = 0; i < card_json.length; i++){
+async function createCards(title) {
+    let card_json = await fetchCardData(last_date, title);
+    cardContainer.innerHTML = "";
+    for (let i = 0; i < card_json.length; i++) {
         let card = document.createElement('a');
-        card.setAttribute('href', '/'+card_json[i].videoData.id);
+        card.setAttribute('href', '/' + card_json[i].videoData.id);
         let col = document.createElement('div');
         col.setAttribute("class", "col");
         let c = document.createElement('div');
@@ -35,7 +39,7 @@ async function createCards(){
         cbody.setAttribute("class", "card-body");
         let wonBy = document.createElement('img');
         wonBy.setAttribute("src", "/static/images/synergo-png.png");
-        if (card_json[i].wonBy == 0){ 
+        if (card_json[i].wonBy == 0) {
             wonBy.setAttribute("src", "/static/images/redez-png.png");
         }
         let datas = document.createElement('div');
