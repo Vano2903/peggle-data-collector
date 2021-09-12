@@ -19,15 +19,15 @@ function logout() {
 }
 
 async function getPfp() {
-    var res = await fetch('/users/pfp/'+user.username, {
+    console.log('/users/pfp/' + user.username);
+    var res = await fetch('/users/pfp/' + user.username, {
         method: "GET"
     });
     var respJson = await res.json();
     console.log(respJson);
-    if (respJson.url != "") {
-        document.getElementById("pfp").src = respJson.url
-        document.getElementById("pfp2").src = respJson.url
-    }
+    document.getElementById("pfp").src = respJson[0]
+    document.getElementById("pfp2").src = respJson[0]
+
 }
 
 async function stats() {
