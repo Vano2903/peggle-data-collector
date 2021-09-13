@@ -1,6 +1,12 @@
 "use strict"
 google.charts.load('current', { 'packages': ['corechart'] });
 
+/**
+ * this function will draw the pie chart (in stats page)
+ * @param {[string]} who if "s" the func will draw the annotation chart of synergo, if "r" the redez one, if whatever the combination of both
+ * @param {[Array[]]} rows the data fromatted in google chart notation (will be a array of arrays that has a date, number and string)
+ * @param {[string]} which define which section in the stats page the function will draw the graph
+ */
 function drawPieChart(who, rows, which) {
     let chart = new google.visualization.PieChart(document.getElementById(who + which + 'Chart'));
     if (who != "sr") {

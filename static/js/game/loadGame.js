@@ -1,4 +1,8 @@
 "use strict"
+
+/**
+ * this function runs onload and show the loader, generate the page, hide the loader and run the countup animation
+ */
 document.getElementById("loader-wrapper").style.display = "block";
 window.onload = async function () {
     await genPage()
@@ -6,10 +10,18 @@ window.onload = async function () {
     runAnimations(".countup0")
 }
 
+//get the id from the url
 let id = window.location.pathname.slice(1);
+//game object
 let gameData;
+//set the title of the page to the id of the game
 document.getElementsByTagName('title')[0].innerHTML += id;
 
+/**
+ * this function will fetch the game by id and return the json,
+ * if the id is not found the 404 page will be loaded
+ * @returns object of the game found
+ */
 async function fetchGameData() {
     let url = `/games/search?id=${id}`;
     const res = await fetch(url, {
@@ -17,7 +29,6 @@ async function fetchGameData() {
     });
     const status = res.status;
     if (status === 404) {
-        // window.location = "/404"
         const res = await fetch('/404', {
             method: "GET"
         });
@@ -30,6 +41,11 @@ async function fetchGameData() {
     return resp[0];
 }
 
+/**
+ * this function will get the url of the user who added this game
+ * @param {string} name name of the user who added the game
+ * @returns the url of the user's profile picture
+ */
 async function getUserProfilePicture(name) {
     let url = "/users/pfp/" + name;
     const res = await fetch(url, {
@@ -44,6 +60,9 @@ async function getUserProfilePicture(name) {
     return resp[0];
 }
 
+/**
+ * this function will set all the information on the html
+ */
 async function genPage() {
     gameData = await fetchGameData();
     document.getElementById("title").innerHTML = gameData.videoData.title;
@@ -63,6 +82,9 @@ async function genPage() {
     document.getElementById("userPfp").src = await getUserProfilePicture(gameData.addedBy);
 }
 
+/**
+ * hide all the section of the game page
+ */
 function hideAllSections() {
     for (let i = 0; i < 4; i++) {
         document.getElementById(`par${i}`).style.display = "none";
@@ -72,6 +94,10 @@ function hideAllSections() {
     }
 }
 
+/**
+ * show just the section choosen
+ * @param {string} section name of the section
+ */
 function showSection(section) {
     hideAllSections()
     document.getElementById(`par${section}`).style.display = "block";
@@ -79,6 +105,11 @@ function showSection(section) {
     document.getElementById(`labButPar${section}`).classList.add("btn-outline-success");
 }
 
+/**
+ * set the "overall" section of the game and the game parts 
+ * @param {number} index index of the game (if 0 means overall, otherwise it's just a normal section)
+ * @param {object} game game object
+ */
 function setSection(index, game) {
     if (index === 0) {
         document.getElementById("stpoints").innerHTML += game.stats.synergo.overall.tPoints;
@@ -99,4 +130,3 @@ function setSection(index, game) {
         document.getElementById(`r${index}charImg`).src = "/static/images/" + game.stats.redez["g" + index].character.slice(0, 4) + ".png";
     }
 }
-

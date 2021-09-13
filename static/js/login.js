@@ -1,8 +1,12 @@
 //TODO add login with google (maybe github tho)
 //TODO jwt implementation
 
-var user
+//user object
+var user;
 
+/**
+ * onload check if the user is stored in the local storage, if so check the login using the local storage datas
+ */
 $(document).ready(
     function () {
         var localsUser = localStorage.getItem("user")
@@ -13,16 +17,23 @@ $(document).ready(
     }
 )
 
-
+/**
+ * get the values from user and password textbox
+ * @returns object with username and password
+ */
 function getLoginData() {
     var user = document.getElementById("user").value;
     var psw = document.getElementById("password").value;
     return { username: user, password: psw }
 }
 
+/**
+ * display the loading animation and send the user datas to the login api and check if the response is correct
+ * @param {string} code if "def" is set as code the function wont get the datas from the textboxes to check the login, 
+ * if undefined will get the datas from the textboxes, otherwise will split the code as user informations
+ */
 async function checkLogin(code) {
     document.getElementById("loader-wrapper").style.display = "block";
-
     if (code != "def") {
         if (code == undefined) {
             user = getLoginData()
@@ -46,6 +57,11 @@ async function checkLogin(code) {
 }
 
 //mini easteregg :D oggi é il 9/6/21 xD
+/**
+ * this function will check the response of the login api
+ * @param {string} cont content of the fetch (if is a "text/html" the login is succesful and will store the user in localstorage)
+ * @param {string} resp response of the api
+ */
 function checkResponse(cont, resp) {
     errore = document.getElementById("errore");
     if (!cont.includes("text/html")) {
@@ -61,4 +77,4 @@ function checkResponse(cont, resp) {
     }
 }
 
-var a = {'error': 'nessuno si é ancora loggato'}
+var a = { 'error': 'nessuno si é ancora loggato' }

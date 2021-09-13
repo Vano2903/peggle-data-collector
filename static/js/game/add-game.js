@@ -1,5 +1,7 @@
+//node with id #videoLink in the game page (user page)
 let videoLink = document.getElementById("videoLink")
 
+//object with all the nodes that contains values used to generate the game data
 let gameElements = [
     {
         par: document.getElementById("par1"),
@@ -48,23 +50,40 @@ let gameElements = [
     }
 ]
 
+/**
+ * given a youtube url this function (using a regex) will return just the id of the video
+ * @param {string} url url of a youtube video 
+ * @returns a string with the id of the video
+ */
 function youtube_parser(url) {
     var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
     var match = url.match(regExp);
     return (match && match[7].length == 11) ? match[7] : url;
 }
 
+/**
+ * set to display none all the section contained the gameElements
+ */
 function hideAllGameSections() {
     gameElements.forEach((item) => {
         item.par.style.display = "none";
     })
 }
 
+/**
+ * this function will set to display block just the section of the game area
+ * @param {number} index the index of the section to display, the names are stored in gameElements
+ */
 function showGameSections(index) {
     hideAllGameSections();
     gameElements[index].par.style.display = "block";
 }
 
+/**
+ * this function will check if all the section in a game section are completed
+ * @param {number} index index of the section to check
+ * @returns boolean, true if all the section are completed, false if not
+ */
 function checkIfAreaIsComplete(index) {
     if (gameElements[index].syn.punt.value == "") {
         return false;
@@ -94,6 +113,9 @@ function checkIfAreaIsComplete(index) {
     return true;
 }
 
+/**
+ * this function will check that all the section (game section and url textbox) are filled
+ */
 function checkIfAllComplete() {
     if (videoLink.value == "") {
         return false;
@@ -106,6 +128,11 @@ function checkIfAllComplete() {
     return true;
 }
 
+/**
+ * this function will sum all the points in the game sections and will calculate who won
+ * (the one with the most points made wins)
+ * @returns 1 if synergo wins, 0 if redez wins, -1 if they drawn
+ */
 function getWhoWon() {
     let [syn, red] = [0, 0];
     for (var i = 0; i < gameElements.length; i++) {
@@ -121,6 +148,11 @@ function getWhoWon() {
     }
 }
 
+/**
+ * this function will generate the overall object that will be used in the final game object
+ * @param {string} player if is "syn" the function will return the overall datas of synergo, if "red" the redez's one
+ * @returns object containig the ammount of points made and the ammount of -25% 
+ */
 function getOverall(player) {
     let overall = { tPoints: 0, t25: 0 };
     if (player == "syn") {
@@ -137,6 +169,10 @@ function getOverall(player) {
     return overall;
 }
 
+/**
+ * this function will run the the user will commit a game, will just do a post with 
+ * the user credentail to the add commit endpoint
+ */
 async function addCommit() {
     const res = await fetch('/commit/add', {
         method: "POST",
@@ -155,6 +191,10 @@ async function addCommit() {
     }
 }
 
+/**
+ * this function will generate the object of the game added
+ * @returns object with all the game data
+ */
 function genGameData() {
     return {
         videoData: {
@@ -210,6 +250,10 @@ function genGameData() {
     }
 }
 
+/**
+ * (bad name) this functino will show the loading section until the uploadGame and addCommit function
+ * will be done, after will set the loader to display none and clear the game area (and show the first game section)
+ */
 async function uploadUpdateGame() {
     document.getElementById("loader-wrapper").style.display = "block";
     await Promise.all([
@@ -221,6 +265,10 @@ async function uploadUpdateGame() {
     showGameSections(0);
 }
 
+/**
+ * this function will send the game object to the endpoint for adding games
+ * @returns false if not all the section are completed
+ */
 async function uploadGame() {
     if (checkIfAllComplete) {
         let game;
@@ -244,16 +292,23 @@ async function uploadGame() {
     return false;
 }
 
-function updataGame() {
+/**
+ * this function does not exist yet but should update a game if is already stored in the database
+ */
+function updataGame() { }
 
-}
-
-
+/**
+ * this function will run when any element of the game sections will change, will check if all the elements
+ * are completed and if they are the button "send_data" will be enabled and will set all the buttons to green
+ */
 $("#wholeForm").on("input", function () {
     document.getElementById("send_data").disabled = !checkIfAllComplete();
     buttonsCorrectArea();
 });
 
+/**
+ * this function will clear all the values in the game section
+ */
 function clearGameArea() {
     gameElements[0].syn.punt.value = "";
     gameElements[0].syn.n25.value = "";
@@ -286,6 +341,11 @@ function clearGameArea() {
     gameElements[2].red.valFe.value = "";
 }
 
+/**
+ * this function will run if in the url textbox there is a game already stored in the database 
+ * and will fill the game sections with the game data from the database
+ * @param {object} gameObject the game object stored in the database
+ */
 function fillGameSections(gameObject) {
     gameElements[0].syn.punt.value = gameObject.stats.synergo.g1.points;
     gameElements[0].syn.n25.value = gameObject.stats.synergo.g1.n25;
@@ -318,6 +378,10 @@ function fillGameSections(gameObject) {
     gameElements[2].red.valFe.value = gameObject.stats.redez.g3.valFe;
 }
 
+/**
+ * this function will run when the url textbox will change,
+ * this function is used to check if the game inserted is a new game or an already stored one
+ */
 $(document).ready(
     function () {
         videoLink.addEventListener('input', async function () {

@@ -1,8 +1,16 @@
 "use strict"
 
+//not in use, should be used for some buttons but was never really implemented cause idk how to
 let last_date = undefined;
+//node of the card container
 let cardContainer = document.getElementById("card-container");
 
+/**
+ * this function will return the games after using a title as query
+ * @param {string} date not in use
+ * @param {string} title title of the game to use as a query, if undefined the title will be empty string
+ * @returns array of the games found 
+ */
 async function fetchCardData(date, title) {
     if (title === undefined) {
         title = "";
@@ -23,6 +31,10 @@ async function fetchCardData(date, title) {
     return resp;
 }
 
+/**
+ * given a title the function will get the array of games and create the card with the datas from the game object
+ * @param {string} title title to use as a query
+ */
 async function createCards(title) {
     let card_json = await fetchCardData(last_date, title);
     cardContainer.innerHTML = "";

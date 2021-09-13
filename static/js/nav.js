@@ -1,3 +1,6 @@
+/**
+ * function that handle the navbar in the user section
+ */
 document.addEventListener("DOMContentLoaded", function (event) {
 
     const showNavbar = (toggleId, navId, bodyId, headerId) => {

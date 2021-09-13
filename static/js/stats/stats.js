@@ -2,6 +2,7 @@ let gameData = []
 
 let stats = {}
 
+//bool that will tell the page if to run the secon animation a secon time
 var animation2 = false;
 
 //together
@@ -22,18 +23,30 @@ var rFEData = [];
 
 "use strict"
 
+/**
+ * this function will fetch all the games stored in the database
+ * @returns array of games
+ */
 async function getGameData() {
     var res = await fetch("/games/search?limit=-1")
     var resp = await res.json();
     return resp
 }
 
+/**
+ * this function will fetch all the statistics possible
+ * @returns object containing all the statistics stored in the database
+ */
 async function getStatsData() {
     var res = await fetch("/stats/all")
     var resp = await res.json();
     return resp
 }
 
+/**
+ * this function will get an array of all user's profile pictures
+ * @returns array of strings (urls)
+ */
 async function getUsersPfp() {
     url = "/users/pfp/";
     for (let i = 0; i < stats.generic.collaborators.length; i++) {
@@ -48,6 +61,11 @@ async function getUsersPfp() {
     return usersPfps;
 }
 
+/**
+ * this function will return an object with days, hours, minutes and seconds given an ammount of seconds
+ * @param {number} sec_num number of seconds
+ * @returns object with days, hours, minutes and seconds
+ */
 function secondToDDHHMMSS(sec_num) {
     var days = Math.floor(sec_num / 86400);
     var hours = Math.floor((sec_num - (days * 86400)) / 3600);
@@ -56,6 +74,9 @@ function secondToDDHHMMSS(sec_num) {
     return { "days": ('0' + days).slice(-2), "hours": ('0' + hours).slice(-2), "minutes": ('0' + minutes).slice(-2), "seconds": ('0' + seconds).slice(-2) }
 }
 
+/**
+ * this function will fill all the global arrays that will be used for the google charts
+ */
 function genChartsData() {
     gameData.forEach((game) => {
         let date = new Date(game.videoData.uploadDate);
@@ -98,6 +119,13 @@ function genChartsData() {
     rFEData.unshift(["Tipo di Festa Estrema", "valore"]);
 }
 
+/**
+ * secondary function that replace the key of an array of objects to the 
+ * array of strings (fromReplace)
+ * @param {array} toReplace array of objects
+ * @param {array} fromReplace array of strings
+ * @returns array of object with the changed keys
+ */
 function replaceNames(toReplace, fromReplace) {
     for (let i = 0; i < toReplace.length; i++) {
         toReplace[i][0] = fromReplace[i]
@@ -105,6 +133,9 @@ function replaceNames(toReplace, fromReplace) {
     return toReplace
 }
 
+/**
+ * initialise the html page with all the datas and generate all the charts
+ */
 async function initDataInHtml() {
     gameData = await getGameData();
     stats = await getStatsData();
@@ -154,8 +185,14 @@ async function initDataInHtml() {
     }
 }
 
+/**
+ * will run on resize, used to make charts responsive
+ */
 $(window).resize(drawAllCharts);
 
+/**
+ * draw all charts in the stats page
+ */
 function drawAllCharts() {
     drawAnnotationChart("s", sPointsData, "Points");
     drawAnnotationChart("r", rPointsData, "Points");
@@ -169,6 +206,11 @@ function drawAllCharts() {
     drawPieChart("r", rFEData, "FE");
 }
 
+/**
+ * this function will switch a chart section from the separeted one to the single one
+ * @param {boolean} isAnnotation a boolean that tells if the graph is a annotation chart or a pie
+ * @param {string} chart name of the chart (in the html code)
+ */
 function toggleChart(isAnnotation, chart) {
     let sep = $("#sep" + chart + "Charts");
     let sin = $("#sin" + chart + "Charts");
@@ -197,14 +239,27 @@ function toggleChart(isAnnotation, chart) {
     }
 }
 
+/**
+ * this function makes the setTimeout function as a promise
+ * @param {number} ms number of milliseconds the function should wait 
+ * @returns promise
+ */
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/**
+ * sleep function
+ * @param {number} time number of milliseconds the function should sleep for
+ */
 async function sleep(time) {
     await timeout(time);
 }
 
+/**
+ * this function use the observer api of javascript to run the second animation when the 
+ * div with id as "user" is visible in the page
+ */
 var observer = new IntersectionObserver(function (entries) {
     // isIntersecting is true when element and viewport are overlapping
     // isIntersecting is false when element and viewport don't overlap
