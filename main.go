@@ -17,12 +17,13 @@ import (
 )
 
 type Post struct {
-	Username string `json:"username, omitempty"`
-	Password string `json:"password, omitempty"`
-	Year     int    `json:"year, omitempty"`
-	Id       string `json:"id, omitempty"`
+	Username string `json:"username, omitempty"` //username of the user
+	Password string `json:"password, omitempty"` //password of the user
+	Year     int    `json:"year, omitempty"`     //year for the commits
+	Id       string `json:"id, omitempty"`       //id is the id of the game to delete
 }
 
+//send to the client the home page html
 func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	home, err := os.ReadFile("pages/home.html")
 	if err != nil {
@@ -32,13 +33,17 @@ func HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(home)
 }
 
+//send the correct page to the user, if the id in the url is api will respond with the documentation
+//of the api, if stats will return the statistics page, if support will return the support me page,
+//if 404 will return the 404 error page, if none of those this handler will return the single page html.
+//api and support page are not avaible at the moment so it will responde with 503
 func PagesHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)["id"]
 	var page []byte
 	var err error
 	if params == "api" {
 		// w.Write([]byte("apiii"))
-		page, err = os.ReadFile("pages/testannotation.html")
+		page, err = os.ReadFile("pages/api.html")
 		if err != nil {
 			UnavailablePage(w)
 			return
@@ -50,7 +55,12 @@ func PagesHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else if params == "support" {
-		w.Write([]byte("support"))
+		// w.Write([]byte("support"))
+		page, err = os.ReadFile("pages/support.html")
+		if err != nil {
+			UnavailablePage(w)
+			return
+		}
 	} else if params == "404" {
 		page, err = os.ReadFile("pages/not-found.html")
 		if err != nil {
@@ -67,6 +77,7 @@ func PagesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(page)
 }
 
+//handler of the login (get)
 func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	home, err := os.ReadFile("pages/login.html")
 	if err != nil {
@@ -76,6 +87,7 @@ func LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(home)
 }
 
+//handler of the login (post), check if the user sent is a valid user and if it is will return the correct user page
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var post Post
 
@@ -106,15 +118,14 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if err != nil {
 		//TODO add an unavailable page
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusServiceUnavailable)
-		w.Write([]byte("{\"msg\": \"page unavailable at the moment\"}"))
+		UnavailablePage(w)
 		return
 	}
 	w.Write(page)
 	log.Println("the user:", user.User, " just logged in, the auth lvl is:", user.Level)
 }
 
+//will return a json of images in the order of the users sent, if there are more than one user they must be separated by ;
 func GetPfp(w http.ResponseWriter, r *http.Request) {
 	users := strings.Split(mux.Vars(r)["user"], ";")
 	var url []string
@@ -135,6 +146,8 @@ func GetPfp(w http.ResponseWriter, r *http.Request) {
 	w.Write(imgJson)
 }
 
+//will check if the url has "password" or "pfp" in it and will use a post to check the user
+//if password, the user will be updated with a new password, if it's pfp it will be a new pfp url
 func UserCustomizationHandler(w http.ResponseWriter, r *http.Request) {
 	var post Post
 	_ = json.NewDecoder(r.Body).Decode(&post)
@@ -174,6 +187,10 @@ func UserCustomizationHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//using mux vars check what parameter the handler should return,
+//if totCommits will return the ammount of commits, if years all the years the user has at least a commit it,
+//if year return all the commits made by the user over the year and add will increment the ammount of commits by 1 made in the day.
+//if none of those will return 400
 func CommitHandler(w http.ResponseWriter, r *http.Request) {
 	//read user credentials
 	var post Post
@@ -249,6 +266,7 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 
 //TODO let user insert a date like 2021-2-4 and convert it to 2021-02-04 otherwhise it will return and error and it can be annoying
 //TODO documentation cause error messages are becoming a bit too long XD
+//given the url query this function will run an aggregate query in the database and send to the client all the games found as json
 func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 	//parse url query
 	r.ParseForm()
@@ -774,8 +792,8 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(j)
 }
 
-//given a youtube url will search in database and if it's not found will return a message saying the video is not yet registered in the database
-//otherwise will return a json of the data of the game found
+//given a youtube url will search in database and if it's not found will return a message saying the video
+//is not yet registered in the database otherwise will return a json of the data of the game found
 func CheckGameHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	q := []bson.D{bson.D{{"$match", bson.D{{"videoData.id", params["id"]}}}}}
@@ -805,6 +823,7 @@ func CheckGameHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(j)
 }
 
+//the user will send as post the game json and will be added to the database
 func AddGameHandler(w http.ResponseWriter, r *http.Request) {
 	//read user credentials
 	var post Game
@@ -832,6 +851,7 @@ func AddGameHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf(`{"msg":"Game added correctly and it's id is: %s"}`, id)))
 }
 
+//send the game as post and will update the game in the database with the same id
 func UpdateGameHandler(w http.ResponseWriter, r *http.Request) {
 	//updated game in post
 	var post Game
@@ -853,6 +873,7 @@ func UpdateGameHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(`{"msg":"game updated correctly"}`))
 }
 
+//will delete a game from database given an id
 func DeleteGameHandler(w http.ResponseWriter, r *http.Request) {
 	var post Post
 	json.NewDecoder(r.Body).Decode(&post)
@@ -909,6 +930,7 @@ func StatsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(j)
 }
 
+//main function, handle the port and all the handleFunc, set the CORS policy
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {

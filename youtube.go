@@ -13,11 +13,11 @@ import (
 )
 
 type VideoData struct {
-	Id             string             `bson:"id, omitempty" json:"id,omitempty"`
-	Title          string             `bson:"title, omitempty" json:"title, omitempty"`
-	ThumbMaxResUrl string             `bson:"thumbMaxResUrl, omitempty" json:"thumbMaxResUrl, omitempty"`
-	UploadDate     primitive.DateTime `bson:"uploadDate, omitempty" json:"uploadDate, omitempty"`
-	Length         int                `bson:"length, omitempty`
+	Id             string             `bson:"id, omitempty" json:"id,omitempty"`                          //id of the youtube video
+	Title          string             `bson:"title, omitempty" json:"title, omitempty"`                   //title of the video
+	ThumbMaxResUrl string             `bson:"thumbMaxResUrl, omitempty" json:"thumbMaxResUrl, omitempty"` //url of the thumbnail
+	UploadDate     primitive.DateTime `bson:"uploadDate, omitempty" json:"uploadDate, omitempty"`         //date of upload
+	Length         int                `bson:"length, omitempty`                                           //length in second of the video
 }
 
 //TODO

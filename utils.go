@@ -13,8 +13,8 @@ import (
 )
 
 type config struct {
-	Apikey string `yaml:"yt_api_v3_key"`
-	Uri    string `yaml:"mongo_uri"`
+	Apikey string `yaml:"yt_api_v3_key"` //youtube api key
+	Uri    string `yaml:"mongo_uri"`     //atlas mongodb uri
 }
 
 var (
@@ -54,6 +54,7 @@ func Contains(slice []int, item int) bool {
 	return ok
 }
 
+//given a mongodb id as string will return just the id
 func CleanMongoId(mongoId string) string {
 	id := fmt.Sprintf("%v", mongoId)
 	id = strings.Replace(id, "ObjectID(\"", "", -1)
@@ -61,6 +62,7 @@ func CleanMongoId(mongoId string) string {
 	return id
 }
 
+//convert a slice of string (with int as string) to a slice of int
 func ConvertToSliceInt(s []string) ([]int, error) {
 	var converted []int
 	for _, v := range s {
@@ -73,6 +75,7 @@ func ConvertToSliceInt(s []string) ([]int, error) {
 	return converted, nil
 }
 
+//init all the connection to the database and get the api key and db uri
 func init() {
 	uri := os.Getenv("mongo_uri")
 	yt := os.Getenv("yt_api_v3_key")

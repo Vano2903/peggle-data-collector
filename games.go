@@ -19,11 +19,11 @@ var (
 
 type Game struct {
 	// ID      primitive.ObjectID `bson:"_id" json:"-"`
-	VD      VideoData `bson:"videoData" json:"videoData"`
-	WonBy   int       `bson:"wonBy" json:"wonBy"` //syn = 1, red = 0, pareggio/null/whatever = -1
-	Stats   Players   `bson:"stats" json:"stats"`
-	Comment string    `bson:"comment" json:"comment"`
-	AddedBy string    `bson:"addedBy" json:"addedBy"`
+	VD      VideoData `bson:"videoData" json:"videoData"` //videoData rappresent the information of the video
+	WonBy   int       `bson:"wonBy" json:"wonBy"`         //syn = 1, red = 0, pareggio/null/whatever = -1
+	Stats   Players   `bson:"stats" json:"stats"`         //statistics of synergo and redez
+	Comment string    `bson:"comment" json:"comment"`     //comment from the user
+	AddedBy string    `bson:"addedBy" json:"addedBy"`     //usename of who added the game
 }
 
 type Players struct {
@@ -32,22 +32,22 @@ type Players struct {
 }
 
 type Player struct {
-	Overall Overall   `bson:"overall" json:"overall"`
-	G1      GameStats `bson:"g1" json:"g1"`
-	G2      GameStats `bson:"g2" json:"g2"`
-	G3      GameStats `bson:"g3" json:"g3"`
+	Overall Overall   `bson:"overall" json:"overall"` //overall data
+	G1      GameStats `bson:"g1" json:"g1"`           //game 1 data
+	G2      GameStats `bson:"g2" json:"g2"`           //game 2 data
+	G3      GameStats `bson:"g3" json:"g3"`           //game 3 data
 }
 
 type Overall struct {
-	TPoints int `bson:"tPoints" json:"tPoints"`
-	T25     int `bson:"t25" json:"t25"`
+	TPoints int `bson:"tPoints" json:"tPoints"` //number of points made in a game by a player
+	T25     int `bson:"t25" json:"t25"`         //number of -25% made in a game by a player
 }
 
 type GameStats struct {
-	Points    int    `bson:"points" json:"points"`
-	N25       int    `bson:"n25" json:"n25"`
-	ValFE     int    `bson:"valFe" json:"valFe"`
-	Character string `bson:"character" json:"character"`
+	Points    int    `bson:"points" json:"points"`       //points made in a single part of the game by a player
+	N25       int    `bson:"n25" json:"n25"`             //-25% made in a single part of the game by a player
+	ValFE     int    `bson:"valFe" json:"valFe"`         //extreme fever made in a single part of the game by a player
+	Character string `bson:"character" json:"character"` //character choosen in a single part of the game by a player
 }
 
 //will connect to database on games's collectionn
@@ -73,6 +73,7 @@ func ConnectToDatabaseGame() error {
 	return nil
 }
 
+//will query a game using aggregate type for querying
 func QueryGames(q []bson.D) ([]Game, error) {
 	cur, err := collectionGame.Aggregate(ctxGame, q)
 	if err != nil {
@@ -88,6 +89,7 @@ func QueryGames(q []bson.D) ([]Game, error) {
 	return gamesFound, nil
 }
 
+//check if the id exist in the database, true if found
 func CheckIfExist(id string) (bool, error) {
 	//search in database
 	cur, err := collectionGame.Find(ctxGame, bson.M{"videoData.id": id})
@@ -108,8 +110,8 @@ func CheckIfExist(id string) (bool, error) {
 }
 
 //TODO check if toAdd is not completed
+//given a game this function will add the game in the database
 func AddGame(toAdd Game) (string, error) {
-
 	//check if not already stored
 	found, _ := CheckIfExist(toAdd.VD.Id)
 	if found == true {
@@ -138,6 +140,7 @@ func AddGame(toAdd Game) (string, error) {
 	return InsertedID, nil
 }
 
+//update just a section of a game
 func PartialUpdateGame(id string, update bson.M) error {
 	_, err := collectionGame.UpdateOne(
 		ctxGame,
@@ -152,6 +155,7 @@ func PartialUpdateGame(id string, update bson.M) error {
 	return nil
 }
 
+//update completly a game
 func FullUpdateGame(id string, update Game) error {
 	_, err := collectionGame.UpdateOne(
 		ctxGame,
@@ -166,6 +170,7 @@ func FullUpdateGame(id string, update Game) error {
 	return nil
 }
 
+//delete a game
 func DeleteGame(id string) error {
 	_, err := collectionGame.DeleteOne(ctxGame, bson.M{"videoData.id": id})
 	if err != nil {
