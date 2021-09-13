@@ -19,20 +19,6 @@ var (
 	collectionUser *mongo.Collection
 )
 
-// type DateU struct {
-// 	Day   int `bson:"day, omitempty" json: "day, omitempty"`
-// 	Month int `bson:"month, omitempty" json: "month, omitempty"`
-// 	Year  int `bson:"year, omitempty" json: "year, omitempty"`
-// }
-
-// func (d *DateU) Today() {
-// 	t := time.Now()
-// 	y, m, da := t.Date()
-// 	d.Year = y
-// 	d.Month = int(m)
-// 	d.Day = da
-// }
-
 type Commit struct {
 	Totals    int                `bson:"totals, omitempty" json:"totals, omitempty"`
 	CreatedAt primitive.DateTime `bson:"date, omitempty" json:"date, omitempty"`
@@ -278,18 +264,21 @@ func AddUser(user, pass string, authLvl int) (string, error) {
 	if !found.IsStructureEmpty() {
 		return "", errors.New("user already exist")
 	}
-
+	pfpUrl := "https://avatars.dicebear.com/api/identicon/" + user + ".svg"
 	//adding user to database
 	// toInsert := User{user, pass, authlvl}
 	toInsert := struct {
-		User  string `bson:"user, omitempty"      json: "user, omitempty"`
-		Pass  string `bson:"password, omitempty"  json: "password, omitempty"`
-		Level int    `bson:"authLevel, omitempty" json: "authLevel, omitempty"`
+		User   string `bson:"user, omitempty"      json: "user, omitempty"`
+		Pass   string `bson:"password, omitempty"  json: "password, omitempty"`
+		Level  int    `bson:"authLevel, omitempty" json: "authLevel, omitempty"`
+		PfpUrl string `bson:"pfp_url, omitempty" json:"pfp_url, omitempty"`
 	}{
 		user,
 		pass,
 		authLvl,
+		pfpUrl,
 	}
+
 	result, err := collectionUser.InsertOne(ctxUser, toInsert)
 	if err != nil {
 		return "", err
@@ -324,75 +313,49 @@ func DeleteUser(user, pass string) error {
 	return nil
 }
 
-func testAggregate() ([]User, error) {
-	names := []string{"vano", "MoraGames"}
-	// query := bson.D{{"$match", bson.D{{"user", bson.M{"$in": names}}}}}
-	query := bson.D{{"$match", bson.D{{"user", bson.M{"$in": names}}}}}
-	sort := bson.D{{"$sort", bson.M{"authLevel": 1}}}
-	cur, err := collectionUser.Aggregate(ctxUser, mongo.Pipeline{query, sort})
-	if err != nil {
-		return nil, err
-	}
-	defer cur.Close(ctxUser)
-	var usersFound []User
-
-	//convert cur in []User
-	if err = cur.All(context.TODO(), &usersFound); err != nil {
-		return nil, err
-	}
-	return usersFound, nil
-}
-
+// run this main to see all functionality
 // func main() {
-// 	ConnectToDatabaseUsers()
-// 	fmt.Println(testAggregate())
+// 	// Check the connection
+// 	err := ConnectToDatabaseUsers()
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+
+// 	users, _ := GetAllUsers()
+// 	fmt.Println("all users", users)
+// 	fmt.Println()
+
+// 	query := bson.M{"user": "cami<3"}
+// 	users, _ = QueryUsers(query)
+// 	fmt.Println("user == cami", users)
+// 	fmt.Println()
+
+// 	update := bson.M{"user": "cami<3"}
+// 	UpdateUser("cami", "HelloThere:D123!!!", update)
+// 	users, _ = GetAllUsers()
+// 	fmt.Println("updated cami into cami<3", users)
+// 	fmt.Println()
+
+// 	DeleteUser("ciao", "camiCwute")
+// 	users, _ = GetAllUsers()
+// 	fmt.Println("deleted ciao", users)
+// 	fmt.Println()
+
+// 	found, err := IsCorrect("vano", "HelloThere:D123!!!")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	fmt.Println("correct:", found)
+
+// 	found, err = IsCorrect("cami", "HelloThere:D123")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	fmt.Println("incorrect psw:", found)
+
+// 	found, err = IsCorrect("chonky", "HelloThere:D123!!!")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	fmt.Println("incorrect user:", found)
 // }
-
-/*run this main to see all functionality
-func main() {
-	// Check the connection
-	err := ConnectToDatabaseUsers()
-	if err != nil {
-		fmt.Println(err)
-	}
-
-
-	// users, _ := GetAllUsers()
-	// fmt.Println("all users", users)
-	// fmt.Println()
-
-	// query := bson.M{"user": "cami<3"}
-	// users, _ = QueryUsers(query)
-	// fmt.Println("user == cami", users)
-	// fmt.Println()
-
-	// update := bson.M{"user": "cami<3"}
-	// UpdateUser("cami", "HelloThere:D123!!!", update)
-	// users, _ = GetAllUsers()
-	// fmt.Println("updated cami into cami<3", users)
-	// fmt.Println()
-
-	// DeleteUser("ciao", "camiCwute")
-	// users, _ = GetAllUsers()
-	// fmt.Println("deleted ciao", users)
-	// fmt.Println()
-
-	// found, err := IsCorrect("vano", "HelloThere:D123!!!")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println("correct:", found)
-
-	// found, err = IsCorrect("cami", "HelloThere:D123")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println("incorrect psw:", found)
-
-	// found, err = IsCorrect("chonky", "HelloThere:D123!!!")
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	// fmt.Println("incorrect user:", found)
-}
-*/
