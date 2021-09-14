@@ -43,11 +43,13 @@ func PagesHandler(w http.ResponseWriter, r *http.Request) {
 	var err error
 	if params == "api" {
 		// w.Write([]byte("apiii"))
-		page, err = os.ReadFile("pages/api.html")
-		if err != nil {
-			UnavailablePage(w)
-			return
-		}
+		// page, err = os.ReadFile("pages/api.html")
+		// if err != nil {
+		// 	UnavailablePage(w)
+		// 	return
+		// }
+
+		http.Redirect(w, r, "https://documenter.getpostman.com/view/17047229/U16nMQeA", http.StatusSeeOther)
 	} else if params == "stats" {
 		page, err = os.ReadFile("pages/stats.html")
 		if err != nil {
@@ -254,7 +256,7 @@ func CommitHandler(w http.ResponseWriter, r *http.Request) {
 			PrintErr(w, err.Error())
 			return
 		}
-		w.Write([]byte("commit registered"))
+		w.Write([]byte(`{"status":200, "msg":"commit registered"}`))
 		return
 
 	//return bad request
@@ -593,7 +595,6 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 			}
 		case "character": //*
 			for _, chs := range v {
-
 				char := chs[2:]
 				switch chs[0] {
 				case 's':
@@ -783,7 +784,7 @@ func SeachGameHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} else {
 		w.WriteHeader(http.StatusNotFound)
-		j = []byte(`{"code":404,"message":"nothing was found}`)
+		j = []byte(`{"code":404,"message":"nothing was found"}`)
 		w.Write(j)
 		return
 	}
@@ -962,8 +963,8 @@ func main() {
 	r.HandleFunc(games.String(), SeachGameHandler).Methods("GET", "OPTIONS")
 	r.HandleFunc(checkGame.String(), CheckGameHandler).Methods("GET", "OPTIONS")
 	r.HandleFunc(addGame.String(), AddGameHandler).Methods("POST", "OPTIONS")
-	r.HandleFunc(updateGame.String(), UpdateGameHandler).Methods("POST", "OPTIONS")
-	r.HandleFunc(deleteGame.String(), DeleteGameHandler).Methods("POST", "OPTIONS")
+	// r.HandleFunc(updateGame.String(), UpdateGameHandler).Methods("POST", "OPTIONS")
+	// r.HandleFunc(deleteGame.String(), DeleteGameHandler).Methods("POST", "OPTIONS")
 
 	//stats area
 	r.HandleFunc(stats.String(), StatsHandler).Methods("GET", "OPTIONS")
